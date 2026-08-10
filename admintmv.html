@@ -122,13 +122,16 @@
         <button class="admin-tab-btn" data-tab="tab-webhooks"><i class="fa-solid fa-gear"></i> Tài Khoản & Tích Hợp</button>
       </div>
 
-      <!-- TAB 1: DANH SÁCH SẢN PHẨM -->
-      <div class="admin-tab-content" id="tab-products">
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 0.8rem;">
           <h3 style="font-size: 1.2rem; font-weight: 700;">Sản Phẩm Trong Cửa Hàng (<span id="admin-product-count" style="color: var(--accent-gold-dark);">0</span>)</h3>
-          <button class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;" onclick="document.querySelector('[data-tab=\\'tab-add-product\\']').click()">
-            <i class="fa-solid fa-plus"></i> Thêm Sản Phẩm Mới
-          </button>
+          <div style="display: flex; gap: 0.8rem;">
+            <button type="button" class="btn-secondary" style="padding: 0.5rem 1rem; font-size: 0.85rem;" onclick="app.exportProductsJSCode()" title="Sao chép mã JSON tất cả sản phẩm hiện tại để đồng bộ lên GitHub">
+              <i class="fa-solid fa-copy"></i> Sao Chép Mã JSON Đồng Bộ Web
+            </button>
+            <button class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;" onclick="document.querySelector('[data-tab=\\'tab-add-product\\']').click()">
+              <i class="fa-solid fa-plus"></i> Thêm Sản Phẩm Mới
+            </button>
+          </div>
         </div>
 
         <div style="overflow-x: auto;">

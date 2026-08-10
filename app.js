@@ -1,13 +1,104 @@
-const CURRENT_DATA_VERSION = "2026.08.10_v3";
+const CURRENT_DATA_VERSION = "2026.08.10_v4";
 
 const DEFAULT_CATEGORIES = [
   { id: "Articulated", name: "Mô Hình Linh Hoạt (Articulated)" },
   { id: "Miniatures", name: "Mech & Miniatures" },
-  { id: "Decor", name: "Trang Trí Voronoi" },
+  { id: "Decor", name: "Trang Trí & Fan Art" },
+  { id: "Accessories", name: "Phụ Kiện" },
   { id: "Cosplay", name: "Cosplay & Prop" }
 ];
 
 const DEFAULT_PRODUCTS = [
+  {
+    id: "p_zoro_cam_kiem",
+    title: "Mô Hình Zoro Cầm Kiếm",
+    category: "Decor",
+    price: 750000,
+    deposit: 200000,
+    image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjem5q7x4CcXGrq565HKUc_YPtzrsi3KhpUwUAnk1b23h1Zmt7XUYFgT_VtjRlndcIBHEhyphenhyphen1nrZBdQOOKHsyEQAXvZINt7ZW-LJohP7fcy0eK1wKWS4OwOFbOA3RN2c1bg5MXghuCxsXWSLt-1iDwzSVjROqTzb7j2IX_o9TtlpXlO7a9SenBoN2iCD34tc/s1600/TMV01520.jpg",
+    images: [
+      "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjem5q7x4CcXGrq565HKUc_YPtzrsi3KhpUwUAnk1b23h1Zmt7XUYFgT_VtjRlndcIBHEhyphenhyphen1nrZBdQOOKHsyEQAXvZINt7ZW-LJohP7fcy0eK1wKWS4OwOFbOA3RN2c1bg5MXghuCxsXWSLt-1iDwzSVjROqTzb7j2IX_o9TtlpXlO7a9SenBoN2iCD34tc/s1600/TMV01520.jpg"
+    ],
+    description: "Mô hình Roronoa Zoro Cầm Kiếm 3D sắc nét, uốn khớp linh hoạt phong cách One Piece cực ngầu. Chế tác từ nhựa PLA nguyên sinh cao cấp, thích hợp trang trí góc làm việc và sưu tầm.",
+    colors: [
+      { name: "Màu Gốc", extra: 0, hex: "#16a34a", image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjem5q7x4CcXGrq565HKUc_YPtzrsi3KhpUwUAnk1b23h1Zmt7XUYFgT_VtjRlndcIBHEhyphenhyphen1nrZBdQOOKHsyEQAXvZINt7ZW-LJohP7fcy0eK1wKWS4OwOFbOA3RN2c1bg5MXghuCxsXWSLt-1iDwzSVjROqTzb7j2IX_o9TtlpXlO7a9SenBoN2iCD34tc/s1600/TMV01520.jpg" }
+    ],
+    sizes: [
+      { name: "Cao 33cm", scale: "Cao 33cm", mult: 1.0, priceOverride: 750000 }
+    ]
+  },
+  {
+    id: "p_luffy_urban",
+    title: "Mô Hình Luffy Urban",
+    category: "Decor",
+    price: 750000,
+    deposit: 200000,
+    image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjFVRe45nloN6-cDN0UhFyRkmugANQFfmoGnFj9ZCakH2nyc5eyIC5IV5ZefeGLCbs_Dh3qRW6BSpeVFbZPzBSflLc_6j3pj9Z84Awj08yaFXsE934bBO6pLlPdnTuZ1k7t-g234j07jPf0THvTjM291j9jjECuYr9SXCvq2iMFRpCu4y4wt1n377djKrPz/s1600/TMV01527.jpg",
+    images: [
+      "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjFVRe45nloN6-cDN0UhFyRkmugANQFfmoGnFj9ZCakH2nyc5eyIC5IV5ZefeGLCbs_Dh3qRW6BSpeVFbZPzBSflLc_6j3pj9Z84Awj08yaFXsE934bBO6pLlPdnTuZ1k7t-g234j07jPf0THvTjM291j9jjECuYr9SXCvq2iMFRpCu4y4wt1n377djKrPz/s1600/TMV01527.jpg"
+    ],
+    description: "Mô hình Monkey D. Luffy Urban Vibes Fan art 3D ngồi trên rương kho báu, uốn khớp linh hoạt, thời trang hiện đại sắc nét.",
+    colors: [
+      { name: "Màu Gốc", extra: 0, hex: "#f59e0b", image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjFVRe45nloN6-cDN0UhFyRkmugANQFfmoGnFj9ZCakH2nyc5eyIC5IV5ZefeGLCbs_Dh3qRW6BSpeVFbZPzBSflLc_6j3pj9Z84Awj08yaFXsE934bBO6pLlPdnTuZ1k7t-g234j07jPf0THvTjM291j9jjECuYr9SXCvq2iMFRpCu4y4wt1n377djKrPz/s1600/TMV01527.jpg" }
+    ],
+    sizes: [
+      { name: "Cao 30cm", scale: "Cao 30cm", mult: 1.0, priceOverride: 750000 }
+    ]
+  },
+  {
+    id: "p_zoro_3d",
+    title: "Mô Hình Zoro 3D",
+    category: "Decor",
+    price: 650000,
+    deposit: 200000,
+    image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjem5q7x4CcXGrq565HKUc_YPtzrsi3KhpUwUAnk1b23h1Zmt7XUYFgT_VtjRlndcIBHEhyphenhyphen1nrZBdQOOKHsyEQAXvZINt7ZW-LJohP7fcy0eK1wKWS4OwOFbOA3RN2c1bg5MXghuCxsXWSLt-1iDwzSVjROqTzb7j2IX_o9TtlpXlO7a9SenBoN2iCD34tc/s1600/TMV01520.jpg",
+    images: [
+      "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjem5q7x4CcXGrq565HKUc_YPtzrsi3KhpUwUAnk1b23h1Zmt7XUYFgT_VtjRlndcIBHEhyphenhyphen1nrZBdQOOKHsyEQAXvZINt7ZW-LJohP7fcy0eK1wKWS4OwOFbOA3RN2c1bg5MXghuCxsXWSLt-1iDwzSVjROqTzb7j2IX_o9TtlpXlO7a9SenBoN2iCD34tc/s1600/TMV01520.jpg"
+    ],
+    description: "Mô hình Zoro 3D áo khoác phao đen cực chất, chi tiết sắc nét 32cm.",
+    colors: [
+      { name: "Màu Gốc", extra: 0, hex: "#1e293b", image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjem5q7x4CcXGrq565HKUc_YPtzrsi3KhpUwUAnk1b23h1Zmt7XUYFgT_VtjRlndcIBHEhyphenhyphen1nrZBdQOOKHsyEQAXvZINt7ZW-LJohP7fcy0eK1wKWS4OwOFbOA3RN2c1bg5MXghuCxsXWSLt-1iDwzSVjROqTzb7j2IX_o9TtlpXlO7a9SenBoN2iCD34tc/s1600/TMV01520.jpg" }
+    ],
+    sizes: [
+      { name: "Cao 32cm", scale: "Cao 32cm", mult: 1.0, priceOverride: 650000 }
+    ]
+  },
+  {
+    id: "p_hop_pin_fz100",
+    title: "Hộp đựng pin Fz100",
+    category: "Accessories",
+    price: 150000,
+    deposit: 50000,
+    image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjsj7vktaG7aCblrH1o6f22-ZBr8z5ayXN4x0PhYfYQvwBYJ8aZrW8g41UCZCqtY9fxHyKuocoKJpr6nJOuklbape8oGncqlUhsHb7ueUSjdttTvLFBmsJrQ68ko6MaITFdp_yW_dDBu_1sP7Am_H1rsONUYzegi4khJXxP5k8iGAO_JFUaQkbSLluf_2EL/s1600/TMV01526.jpg",
+    images: [
+      "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjsj7vktaG7aCblrH1o6f22-ZBr8z5ayXN4x0PhYfYQvwBYJ8aZrW8g41UCZCqtY9fxHyKuocoKJpr6nJOuklbape8oGncqlUhsHb7ueUSjdttTvLFBmsJrQ68ko6MaITFdp_yW_dDBu_1sP7Am_H1rsONUYzegi4khJXxP5k8iGAO_JFUaQkbSLluf_2EL/s1600/TMV01526.jpg"
+    ],
+    description: "Hộp đựng pin máy ảnh Sony Fz100 và thẻ nhớ in 3D chống va đập, bảo vệ an toàn.",
+    colors: [
+      { name: "Đỏ", extra: 0, hex: "#ef4444", image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjsj7vktaG7aCblrH1o6f22-ZBr8z5ayXN4x0PhYfYQvwBYJ8aZrW8g41UCZCqtY9fxHyKuocoKJpr6nJOuklbape8oGncqlUhsHb7ueUSjdttTvLFBmsJrQ68ko6MaITFdp_yW_dDBu_1sP7Am_H1rsONUYzegi4khJXxP5k8iGAO_JFUaQkbSLluf_2EL/s1600/TMV01526.jpg" }
+    ],
+    sizes: [
+      { name: "6 Quả Pin – 4 thẻ nhớ", scale: "6 Quả Pin – 4 thẻ nhớ", mult: 1.0, priceOverride: 150000 }
+    ]
+  },
+  {
+    id: "p_luffy_3d",
+    title: "Mô Hình Luffy 3D",
+    category: "Decor",
+    price: 750000,
+    deposit: 200000,
+    image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjFVRe45nloN6-cDN0UhFyRkmugANQFfmoGnFj9ZCakH2nyc5eyIC5IV5ZefeGLCbs_Dh3qRW6BSpeVFbZPzBSflLc_6j3pj9Z84Awj08yaFXsE934bBO6pLlPdnTuZ1k7t-g234j07jPf0THvTjM291j9jjECuYr9SXCvq2iMFRpCu4y4wt1n377djKrPz/s1600/TMV01527.jpg",
+    images: [
+      "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjFVRe45nloN6-cDN0UhFyRkmugANQFfmoGnFj9ZCakH2nyc5eyIC5IV5ZefeGLCbs_Dh3qRW6BSpeVFbZPzBSflLc_6j3pj9Z84Awj08yaFXsE934bBO6pLlPdnTuZ1k7t-g234j07jPf0THvTjM291j9jjECuYr9SXCvq2iMFRpCu4y4wt1n377djKrPz/s1600/TMV01527.jpg"
+    ],
+    description: "Mô hình Luffy mũ rơm 3D uốn linh hoạt cao 30cm.",
+    colors: [
+      { name: "Màu Gốc", extra: 0, hex: "#ef4444", image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjFVRe45nloN6-cDN0UhFyRkmugANQFfmoGnFj9ZCakH2nyc5eyIC5IV5ZefeGLCbs_Dh3qRW6BSpeVFbZPzBSflLc_6j3pj9Z84Awj08yaFXsE934bBO6pLlPdnTuZ1k7t-g234j07jPf0THvTjM291j9jjECuYr9SXCvq2iMFRpCu4y4wt1n377djKrPz/s1600/TMV01527.jpg" }
+    ],
+    sizes: [
+      { name: "Cao 30cm", scale: "Cao 30cm", mult: 1.0, priceOverride: 750000 }
+    ]
+  },
   {
     id: "p5",
     title: "Mô Hình Sonic 3D Articulated (Linh Hoạt)",
@@ -26,13 +117,13 @@ const DEFAULT_PRODUCTS = [
         name: "Xanh Dương (Sonic Blue)", 
         extra: 0, 
         hex: "#0052ff", 
-        image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjsj7vktaG7aCblrH1o6f22-ZBr8z5ayXN4x0PhYfYQvwBYJ8aZrW8g41UCZCqtY9fxHyKuocoKJpr6nJOuklbape8oGncqlUhsHb7ueUSjdttTvLFBmsJrQ68ko6MaITFdp_yW_dDBu_1sP7Am_H1rsONUYzegi4khJXxP5k8iGAO_JFUaQkbSLluf_2EL/s1600/TMV01526.jpg" 
+        image: "assets/images/sonic_30cm_hero.png" 
       },
       { 
         name: "Vàng (Super Sonic Gold)", 
         extra: 0, 
         hex: "#f59e0b", 
-        image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjsj7vktaG7aCblrH1o6f22-ZBr8z5ayXN4x0PhYfYQvwBYJ8aZrW8g41UCZCqtY9fxHyKuocoKJpr6nJOuklbape8oGncqlUhsHb7ueUSjdttTvLFBmsJrQ68ko6MaITFdp_yW_dDBu_1sP7Am_H1rsONUYzegi4khJXxP5k8iGAO_JFUaQkbSLluf_2EL/s1600/TMV01526.jpg" 
+        image: "assets/images/sonic_30cm_hero.png" 
       },
       { 
         name: "Trắng Đen (Monochrome)", 
@@ -256,6 +347,19 @@ class App {
     this.saveStorage('3d_store_products', this.products);
     this.showToast('✅ Đã xóa cache và làm mới dữ liệu mới nhất!', 'success');
     setTimeout(() => location.reload(true), 800);
+  }
+
+  exportProductsJSCode() {
+    const jsonStr = JSON.stringify(this.products, null, 2);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(jsonStr).then(() => {
+        this.showToast('📋 Đã sao chép mã dữ liệu toàn bộ sản phẩm! Đã sẵn sàng đồng bộ.', 'success');
+      }).catch(() => {
+        prompt("Mã JSON tất cả sản phẩm (Hãy sao chép mã bên dưới):", jsonStr);
+      });
+    } else {
+      prompt("Mã JSON tất cả sản phẩm (Hãy sao chép mã bên dưới):", jsonStr);
+    }
   }
 
   // --- HÀM TỰ ĐỘNG NÉN VÀ TỐI ƯU ẢNH TRÁNH TRÀN DUNG LƯỢNG KHI F5 ---
