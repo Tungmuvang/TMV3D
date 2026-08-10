@@ -1,4 +1,4 @@
-const CURRENT_DATA_VERSION = "2026.08.10_v8";
+const CURRENT_DATA_VERSION = "2026.08.10_v9";
 
 const DEFAULT_CATEGORIES = [
   {
@@ -523,6 +523,7 @@ class App {
       this.renderAdminProductTable();
       this.renderCategorySelectOptions();
       this.renderCategoryAdminList();
+      this.renderFeaturedProductSelectOptions();
 
       if (!document.getElementById('edit-product-id').value) {
         this.renderAdminGalleryImages([]);
@@ -680,6 +681,7 @@ class App {
   // --- CATALOG PAGE ---
   initCatalogPage() {
     this.renderCatalog();
+    this.renderHeroFeaturedProduct();
 
     const searchInput = document.getElementById('search-input');
     if (searchInput) {
