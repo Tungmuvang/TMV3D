@@ -260,7 +260,7 @@ input, select, textarea {
    HERO SECTION
    ========================================================================== */
 .hero {
-  padding: 3.5rem 0 2.5rem;
+  padding: 1.5rem 0 1.2rem;
   background: radial-gradient(circle at 80% 20%, var(--accent-gold-light) 0%, transparent 40%);
 }
 
