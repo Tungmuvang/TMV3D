@@ -615,13 +615,13 @@ class App {
         ? this.formatMoney(minP) 
         : `${this.formatMoney(minP)} - ${this.formatMoney(maxP)}`;
 
-      let heightBadgeText = "Tiêu chuẩn";
+      let variantBadgeText = "Tiêu chuẩn";
       if (p.sizes && p.sizes.length > 0) {
-        const cleanSizes = p.sizes.map(s => (s.name || s.scale || '').replace(/Cao\s*/gi, '').trim()).filter(Boolean);
-        if (cleanSizes.length === 1) {
-          heightBadgeText = `Cao ${cleanSizes[0]}`;
-        } else if (cleanSizes.length > 1) {
-          heightBadgeText = `${cleanSizes[0]} - ${cleanSizes[cleanSizes.length - 1]}`;
+        const cleanVariants = p.sizes.map(s => (s.name || s.scale || '').trim()).filter(Boolean);
+        if (cleanVariants.length === 1) {
+          variantBadgeText = cleanVariants[0];
+        } else if (cleanVariants.length > 1) {
+          variantBadgeText = `${cleanVariants[0]} - ${cleanVariants[cleanVariants.length - 1]}`;
         }
       }
 
@@ -639,7 +639,7 @@ class App {
           <h3 class="product-title">${p.title}</h3>
           <div class="product-specs-mini">
             <span class="spec-badge"><i class="fa-solid fa-palette"></i> ${p.colors ? p.colors.length : 1} Màu</span>
-            <span class="spec-badge"><i class="fa-solid fa-ruler-vertical"></i> ${heightBadgeText}</span>
+            <span class="spec-badge"><i class="fa-solid fa-layer-group"></i> ${variantBadgeText}</span>
           </div>
           <div class="product-footer">
             <div class="price-box">
@@ -1371,7 +1371,7 @@ ${itemsSummaryText}
     div.className = 'admin-size-row-item';
     div.innerHTML = `
       <div style="display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap;">
-        <input type="text" class="form-control size-name-input" placeholder="Kích thước / Chiều cao (Ví dụ: Cao 22.5cm)" value="${name}" style="flex: 1; min-width: 200px;" required>
+        <input type="text" class="form-control size-name-input" placeholder="Tên Phân Loại / Kích Thước (Ví dụ: 6 Quả Pin / Cao 30cm / Size M)" value="${name}" style="flex: 1; min-width: 200px;" required>
         
         <div style="display: flex; align-items: center; gap: 0.4rem;">
           <span style="font-size: 0.85rem; font-weight: 700; color: var(--accent-gold-dark);">Giá tiền (VNĐ):</span>
