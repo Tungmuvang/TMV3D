@@ -1,4 +1,4 @@
-const CURRENT_DATA_VERSION = "2026.08.10_v9";
+const CURRENT_DATA_VERSION = "2026.08.10_v10";
 
 const DEFAULT_CATEGORIES = [
   {
@@ -1521,8 +1521,126 @@ ${itemsSummaryText}
     container.appendChild(div);
   }
 
-  addAdminSizeRow() {
-    this.addAdminSizeRowUI("", 550000);
+  // --- ADMIN CMS: FEATURED PRODUCT (HERO BANNER) MANAGER ---
+  renderFeaturedProductSelectOptions() {
+    const select = document.getElementById('admin-featured-product-select');
+    const customTitleInput = document.getElementById('admin-featured-custom-title');
+    if (!select) return;
+    select.innerHTML = '';
+
+    if (!this.products || this.products.length === 0) {
+      const opt = document.createElement('option');
+      opt.value = '';
+      opt.innerText = '-- Không có sản phẩm nào --';
+      select.appendChild(opt);
+      return;
+    }
+
+    this.products.forEach(p => {
+      const opt = document.createElement('option');
+      opt.value = p.id;
+      opt.innerText = `${p.title} (${this.formatMoney(p.price || 0)})`;
+      select.appendChild(opt);
+    });
+
+    const currentFeaturedId = (this.settings && this.settings.featuredProductId) 
+      ? this.settings.featuredProductId 
+      : this.products[0].id;
+
+    select.value = currentFeaturedId;
+
+    if (customTitleInput) {
+      customTitleInput.value = (this.settings && this.settings.featuredCustomTitle) ? this.settings.featuredCustomTitle : '';
+    }
+  }
+
+  saveFeaturedProductSettings() {
+    const select = document.getElementById('admin-featured-product-select');
+    const customTitleInput = document.getElementById('admin-featured-custom-title');
+    if (!select || !select.value) return;
+
+    if (!this.settings) this.settings = {};
+    this.settings.featuredProductId = select.value;
+    if (customTitleInput) {
+      this.settings.featuredCustomTitle = customTitleInput.value.trim();
+    }
+
+    this.saveStorage('3d_store_settings', this.settings);
+    this.showToast('Đã lưu cài đặt Sản Phẩm Nổi Bật (Hero Banner) thành công!', 'success');
+    this.renderHeroFeaturedProduct();
+  }
+
+  renderHeroFeaturedProduct() {
+    const card = document.getElementById('hero-featured-card');
+    if (!card) return;
+
+    const featuredId = (this.settings && this.settings.featuredProductId) ? this.settings.featuredProductId : 'p5';
+    let product = this.products.find(p => p.id === featuredId);
+    if (!product && this.products.length > 0) {
+      product = this.products[0];
+    }
+    if (!product) return;
+
+    const linkImg = document.getElementById('hero-featured-link-img');
+    const img = document.getElementById('hero-featured-img');
+    const title = document.getElementById('hero-featured-title');
+    const linkBtn = document.getElementById('hero-featured-link-btn');
+
+    if (linkImg) linkImg.href = `product.html?id=${product.id}`;
+    if (img) {
+      const mainImgSrc = (product.images && product.images.length > 0) ? product.images[0] : (product.image || 'assets/images/sonic_30cm_hero.png');
+      img.src = mainImgSrc;
+      img.alt = product.title || '';
+    }
+    if (title) {
+      title.innerText = (this.settings && this.settings.featuredCustomTitle) ? this.settings.featuredCustomTitle : product.title;
+    }
+    if (linkBtn) linkBtn.href = `product.html?id=${product.id}`;
+  }
+
+  openNewProductForm() {
+    const crudForm = document.getElementById('product-crud-form');
+    if (crudForm) crudForm.reset();
+    const editId = document.getElementById('edit-product-id');
+    if (editId) editId.value = '';
+    this.renderAdminGalleryImages([]);
+    this.renderAdminColorRows([]);
+    this.renderAdminSizeRows([]);
+    
+    document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
+    const addTabBtn = document.querySelector('[data-tab="tab-add-product"]');
+    if (addTabBtn) addTabBtn.classList.add('active');
+
+    if (document.getElementById('tab-products')) document.getElementById('tab-products').style.display = 'none';
+    if (document.getElementById('tab-categories')) document.getElementById('tab-categories').style.display = 'none';
+    if (document.getElementById('tab-webhooks')) document.getElementById('tab-webhooks').style.display = 'none';
+    if (document.getElementById('tab-add-product')) document.getElementById('tab-add-product').style.display = 'block';
+  }
+
+  exportProductsJSCode() {
+    const jsonStr = JSON.stringify(this.products, null, 2);
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(jsonStr).then(() => {
+        this.showToast('Đã sao chép mã JSON toàn bộ sản phẩm vào Bộ Nhớ Tạm!', 'success');
+      }).catch(() => {
+        this.showToast('Sao chép mã thất bại, vui lòng kiểm tra trình duyệt.', 'error');
+      });
+    } else {
+      prompt('Mã JSON tất cả sản phẩm (Nhấn Ctrl+C để sao chép):', jsonStr);
+    }
+  }
+
+  forceRefreshSystemData() {
+    if (!confirm('Bạn có chắc chắn muốn xoá bộ nhớ tạm và nạp lại dữ liệu sản phẩm mặc định chuẩn từ hệ thống?')) return;
+    localStorage.removeItem('3d_store_products');
+    localStorage.removeItem('3d_store_categories');
+    localStorage.removeItem('3d_store_settings');
+    localStorage.removeItem('3d_store_data_version');
+    localStorage.removeItem('3d_store_cart');
+    this.showToast('Đã làm sạch bộ nhớ tạm! Trang web sẽ tự động nạp lại...', 'success');
+    setTimeout(() => {
+      location.reload();
+    }, 1000);
   }
 
   renderAdminProductTable() {
