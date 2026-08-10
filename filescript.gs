@@ -32,20 +32,22 @@ var sonicScriptProps = PropertiesService.getScriptProperties();
 // HÀM LẤY SHEET VÀ TỰ ĐỘNG KHỞI TẠO TIÊU ĐỀ 11 CỘT CHUẨN KHI SHEET TRỐNG
 // =========================================================================
 function getSonicSheet() {
+  var TARGET_ID = "15mW6V31uoKEo0NNBWXQEdYuuaSay04clNz4DLUz36UM";
   var sheet = null;
+
   try {
-    if (SONIC_SPREADSHEET_ID && SONIC_SPREADSHEET_ID.trim() !== "") {
-      var ss = SpreadsheetApp.openById(SONIC_SPREADSHEET_ID.trim());
-      if (ss) sheet = ss.getSheets()[0];
-    }
+    var ss = SpreadsheetApp.openById(TARGET_ID);
+    if (ss) sheet = ss.getSheets()[0];
   } catch (e) {
-    Logger.log("Lỗi openById Sheet: " + e.toString());
+    Logger.log("Lỗi openById target Sheet (" + TARGET_ID + "): " + e.toString());
   }
 
   if (!sheet) {
     try {
-      var ss = SpreadsheetApp.getActiveSpreadsheet();
-      if (ss) sheet = ss.getSheets()[0];
+      var activeSs = SpreadsheetApp.getActiveSpreadsheet();
+      if (activeSs && activeSs.getId() === TARGET_ID) {
+        sheet = activeSs.getSheets()[0];
+      }
     } catch (e) {}
   }
 
