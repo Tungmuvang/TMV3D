@@ -522,7 +522,7 @@ input, select, textarea {
 }
 
 .product-body {
-  padding: 1.2rem;
+  padding: 0.9rem 1rem;
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -531,21 +531,21 @@ input, select, textarea {
 .product-title {
   font-size: 1.05rem;
   font-weight: 700;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.35rem;
   color: var(--text-main);
-  line-height: 1.35;
+  line-height: 1.3;
 
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  height: 2.7rem;
+  height: auto;
 }
 
 .product-desc-short {
   font-size: 0.85rem;
   color: var(--text-muted);
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
@@ -555,8 +555,8 @@ input, select, textarea {
 .product-specs-mini {
   display: flex;
   gap: 0.5rem;
-  margin-bottom: 1rem;
-  margin-top: auto;
+  margin-top: 0.2rem;
+  margin-bottom: 0.5rem;
 }
 
 .spec-badge {
@@ -574,9 +574,9 @@ input, select, textarea {
   align-items: center;
   justify-content: space-between;
   gap: 0.5rem;
-  padding-top: 0.8rem;
+  padding-top: 0.6rem;
   border-top: 1px solid var(--border-color);
-  margin-top: 0.4rem;
+  margin-top: 0.3rem;
 }
 
 .price-box {
