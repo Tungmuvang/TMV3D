@@ -669,7 +669,8 @@ input, select, textarea {
 .main-gallery-view {
   position: relative;
   width: 100%;
-  max-height: 520px;
+  aspect-ratio: 1 / 1;
+  max-height: 440px;
   border-radius: var(--radius-md);
   overflow: hidden;
   background-color: #0f172a;
@@ -681,12 +682,12 @@ input, select, textarea {
   cursor: zoom-in;
 }
 
-/* HIỂN THỊ 2/3 ẢNH TỪ DƯỚI LÊN ĐỂ KHÔNG BỊ MẤT CHI TIẾT MÔ HÌNH BÊN DƯỚI */
+/* KHUNG ẢNH CỐ ĐỊNH CÙNG KÍCH THƯỚC KHÔNG BỊ NHẢY KHI NEXT TỪ ẢNH NGANG SANG DỌC */
 .main-gallery-view img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
-  object-position: bottom center;
+  object-fit: contain;
+  object-position: center;
   transition: opacity 0.3s ease, transform 0.3s ease;
 }
 
@@ -713,14 +714,14 @@ input, select, textarea {
 
 .thumbs-list {
   display: flex;
-  gap: 0.8rem;
+  gap: 0.6rem;
   overflow-x: auto;
   padding-bottom: 0.4rem;
 }
 
 .thumb-item {
-  width: 68px;
-  height: 90px;
+  width: 72px;
+  height: 72px;
   border-radius: var(--radius-sm);
   overflow: hidden;
   border: 2px solid var(--border-color);
@@ -739,7 +740,7 @@ input, select, textarea {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: bottom center;
+  object-position: center;
 }
 
 .product-info-section {
