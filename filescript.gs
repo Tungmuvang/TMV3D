@@ -1,69 +1,92 @@
-// =================================================================
-// HỆ THỐNG ĐẶT HÀNG & QUẢN LÝ ĐƠN AUTOMATION - SẢN PHẨM SONIC & TMV
+// =========================================================================
+// CẤU HÌNH HỆ THỐNG QUẢN LÝ ĐƠN HÀNG (TELEGRAM BOT & WEB APP GOOGLE SHEETS)
 // Bot Token: 8795810475:AAGiayX1izlJd8uUxtQAAThE-MffI_KoPKY
 // Admin Chat IDs: 7744946591, 7607846055
-// Spreadsheet ID: 15GrO9Y9hyLQ4PhjggVAqMkmZ_W-9MsDtr0r3SnvLxeo
-// =================================================================
+// Spreadsheet ID: 15mW6V31uoKEo0NNBWXQEdYuuaSay04clNz4DLUz36UM
+// =========================================================================
 
-var SONIC_TELEGRAM_TOKEN = "8795810475:AAGiayX1izlJd8uUxtQAAThE-MffI_KoPKY";
+// 1. Token Telegram Bot do @BotFather cung cấp
+var TELEGRAM_TOKEN = "8795810475:AAGiayX1izlJd8uUxtQAAThE-MffI_KoPKY";
+var SONIC_TELEGRAM_TOKEN = TELEGRAM_TOKEN;
+
+// 2. Chat ID Bảo mật (Để rỗng "" nếu cho phép tất cả mọi người nhắn bot tạo đơn)
+var ALLOWED_CHAT_ID = ""; 
 var SONIC_ADMIN_CHAT_IDS = ["7744946591", "7607846055"];
-var SONIC_SPREADSHEET_ID = "15mW6V31uoKEo0NNBWXQEdYuuaSay04clNz4DLUz36UM"; 
-var SONIC_OLD_SPREADSHEET_ID = "15GrO9Y9hyLQ4PhjggVAqMkmZ_W-9MsDtr0r3SnvLxeo";
 
-var SONIC_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxZg6wWKe_yuV9UgZv2dBquCLNPYPyTqxi0urqcquf9lYdUTNqE0DAN9N8y9g3fXJEj/exec";
-var SONIC_SHEET_URL = "https://docs.google.com/spreadsheets/d/" + SONIC_SPREADSHEET_ID + "/edit";
+// 3. Đường link & ID Google Sheets quản lý đơn hàng
+var SONIC_SPREADSHEET_ID = "15mW6V31uoKEo0NNBWXQEdYuuaSay04clNz4DLUz36UM";
+var GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/" + SONIC_SPREADSHEET_ID + "/edit?gid=0#gid=0";
+var SONIC_SHEET_URL = GOOGLE_SHEET_URL;
+
+var SONIC_OLD_SPREADSHEET_ID = "15GrO9Y9hyLQ4PhjggVAqMkmZ_W-9MsDtr0r3SnvLxeo";
 var SONIC_OLD_SHEET_URL = "https://docs.google.com/spreadsheets/d/" + SONIC_OLD_SPREADSHEET_ID + "/edit";
-var SONIC_ORDER_WEB_URL = "https://www.tungmuvang.in/p/at-hang.html";
+
+// 4. Đường link trang web đặt hàng & Web App Execution URL
+var ORDER_WEB_URL = "https://www.tungmuvang.in/p/at-hang.html";
+var SONIC_ORDER_WEB_URL = ORDER_WEB_URL;
+var SONIC_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxZg6wWKe_yuV9UgZv2dBquCLNPYPyTqxi0urqcquf9lYdUTNqE0DAN9N8y9g3fXJEj/exec";
 
 var sonicScriptProps = PropertiesService.getScriptProperties();
 
-// Hàm lấy Sheet an toàn tuyệt đối cho Sonic
+// =========================================================================
+// HÀM LẤY SHEET VÀ TỰ ĐỘNG KHỞI TẠO TIÊU ĐỀ 11 CỘT CHUẨN KHI SHEET TRỐNG
+// =========================================================================
 function getSonicSheet() {
+  var sheet = null;
   try {
     if (SONIC_SPREADSHEET_ID && SONIC_SPREADSHEET_ID.trim() !== "") {
       var ss = SpreadsheetApp.openById(SONIC_SPREADSHEET_ID.trim());
-      if (ss) return ss.getSheets()[0];
+      if (ss) sheet = ss.getSheets()[0];
     }
   } catch (e) {
-    Logger.log("Lỗi openById Sonic Sheet: " + e.toString());
+    Logger.log("Lỗi openById Sheet: " + e.toString());
   }
-  try {
-    var ss = SpreadsheetApp.getActiveSpreadsheet();
-    if (ss) return ss.getSheets()[0];
-  } catch (e) {}
-  return null;
+
+  if (!sheet) {
+    try {
+      var ss = SpreadsheetApp.getActiveSpreadsheet();
+      if (ss) sheet = ss.getSheets()[0];
+    } catch (e) {}
+  }
+
+  // Tự động kiểm tra và tạo dòng tiêu đề chuẩn 11 cột nếu Sheet chưa có dữ liệu
+  if (sheet && sheet.getLastRow() === 0) {
+    sheet.appendRow([
+      "Thời gian",          // Cột A
+      "Tên khách hàng",     // Cột B
+      "Địa chỉ người nhận", // Cột C (Thay cho Link FB/Zalo)
+      "Số điện thoại",      // Cột D
+      "Tên đơn hàng",       // Cột E
+      "Tổng tiền",          // Cột F
+      "Đã cọc",             // Cột G
+      "Còn lại",            // Cột H
+      "Lưu ý / Ghi chú",    // Cột I (Thay cho Nguồn)
+      "Trạng thái",         // Cột J
+      "Tiến độ"             // Cột K
+    ]);
+  }
+
+  return sheet;
 }
 
-// Hàm cài Webhook cho Telegram Bot Sonic
-function setupSonicTelegramWebhook() {
-  var url = "https://api.telegram.org/bot" + SONIC_TELEGRAM_TOKEN + "/setWebhook?url=" + SONIC_WEB_APP_URL;
-  var response = UrlFetchApp.fetch(url);
-  Logger.log("Kết quả cài Webhook Telegram Sonic: " + response.getContentText());
-}
-
-// Hàm cài đặt trọn gói Webhook Telegram & Trigger tự động quét mail/hủy đơn ngầm mỗi 1 phút
-function setupSonicTriggersAndWebhook() {
-  setupSonicTelegramWebhook();
-
-  var triggers = ScriptApp.getProjectTriggers();
-  for (var i = 0; i < triggers.length; i++) {
-    var fnName = triggers[i].getHandlerFunction();
-    if (fnName === "checkSonicBankDepositEmails" || fnName === "checkBankDepositEmails") {
-      ScriptApp.deleteTrigger(triggers[i]);
+// =========================================================================
+// 1. HÀM KHỞI TẠO WEB APP (doGet)
+// =========================================================================
+function doGet(e) {
+  var params = e ? e.parameter : {};
+  if (params && (params.action === "save_trial_email" || params.action === "save_spin_result")) {
+    return handleMagimirDoGetOriginal(e);
+  }
+  if (params && params.action === "check_payment_status") {
+    var code = (params.code || "").toUpperCase().trim();
+    if (code.indexOf("MGM") === 0) {
+      return handleMagimirDoGetOriginal(e);
     }
+    return doGetSonic(e);
   }
-
-  ScriptApp.newTrigger("checkSonicBankDepositEmails")
-    .timeBased()
-    .everyMinutes(1)
-    .create();
-
-  Logger.log("✅ THÀNH CÔNG: Đã cài đặt Webhook Telegram & Trigger chạy ngầm 1 phút/lần!");
+  return doGetSonic(e);
 }
 
-// =================================================================
-// 1. HÀM GET SONIC (WEBSITE CHECK TRẠNG THÁI THANH TOÁN TỰ ĐỘNG & WEB APP)
-// =================================================================
 function doGetSonic(e) {
   var params = e ? e.parameter : {};
   var callback = params.callback;
@@ -73,11 +96,8 @@ function doGetSonic(e) {
     var code = params.code;
     if (code) {
       var cleanCode = cleanSonicCodeForMatching(code);
-      
-      // Quét Gmail TỐC ĐỘ CAO (Quét mỗi 6 giây/lần)
       checkSonicBankDepositEmailsThrottled();
 
-      // Kiểm tra bộ nhớ Cloud PropertiesService hoặc Google Sheet
       var isPaid = sonicScriptProps.getProperty("PAID_STATUS_" + cleanCode);
       if (isPaid === "true" || checkSonicSheetPaidStatus(cleanCode)) {
         sonicScriptProps.setProperty("PAID_STATUS_" + cleanCode, "true");
@@ -108,21 +128,101 @@ function doGetSonic(e) {
   }
 }
 
-function checkSonicBankDepositEmailsThrottled() {
+// =========================================================================
+// 2. API LƯU ĐƠN HÀNG TỪ FORM HTML TRỰC TIẾP (saveOrderFromForm)
+// =========================================================================
+function saveOrderFromForm(data) {
   try {
-    var lastCheck = parseInt(sonicScriptProps.getProperty("LAST_GMAIL_CHECK_TIME") || "0", 10);
-    var now = new Date().getTime();
-    if (now - lastCheck < 6000) { 
-      return; 
-    }
-    sonicScriptProps.setProperty("LAST_GMAIL_CHECK_TIME", now.toString());
-    checkSonicBankDepositEmails();
-  } catch(e) {}
+    var sheet = getSonicSheet();
+    if (!sheet) return { success: false, message: "Không thể mở Google Sheet!" };
+
+    var tongTien = parseFloat(data.tongTien) || 0;
+    var daCoc = parseFloat(data.daCoc) || 0;
+    
+    // Tự động quy đổi viết tắt (ví dụ: 1000 -> 1.000.000, 800 -> 800.000)
+    if (tongTien > 0 && tongTien < 10000) tongTien *= 1000;
+    if (daCoc > 0 && daCoc < 10000) daCoc *= 1000;
+    
+    var conLai = Math.max(0, tongTien - daCoc);
+    var formatCurrency = function(val) { return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val); };
+
+    var rowData = [
+      Utilities.formatDate(new Date(), "GMT+7", "dd/MM/yyyy HH:mm:ss"), // Cột A: Thời gian
+      data.tenKhach || '',                                              // Cột B: Tên khách hàng
+      data.address || data.linkContact || '-',                           // Cột C: Địa chỉ người nhận (Thay cho Link FB/Zalo)
+      "'" + (data.sdt || ''),                                           // Cột D: Số điện thoại
+      data.tenDonHang || '',                                            // Cột E: Tên đơn hàng
+      formatCurrency(tongTien),                                         // Cột F: Tổng tiền
+      formatCurrency(daCoc),                                            // Cột G: Đã cọc
+      formatCurrency(conLai),                                           // Cột H: Còn lại
+      data.note || "Tạo từ Form Web",                                   // Cột I: Lưu ý / Ghi chú
+      "Đã xác nhận",                                                    // Cột J: Trạng thái
+      "Chưa làm"                                                        // Cột K: Tiến độ
+    ];
+    
+    sheet.appendRow(rowData);
+    return { success: true, message: "Lưu đơn hàng thành công!", conLai: formatCurrency(conLai) };
+  } catch (error) {
+    return { success: false, message: error.toString() };
+  }
 }
 
-// =================================================================
-// 2. HÀM POST SONIC
-// =================================================================
+// =========================================================================
+// 3. XỬ LÝ SỰ KIỆN POST (doPost & doPostSonic)
+// =========================================================================
+function doPost(e) {
+  try {
+    var data = {};
+    if (e && e.postData && e.postData.contents) {
+      try { data = JSON.parse(e.postData.contents); } catch(err) {}
+    }
+
+    if (data && data.action === "save_trial_email") {
+      return handleMagimirDoPostOriginal(e);
+    }
+
+    if (data && data.callback_query) {
+      var cbData = data.callback_query.data || "";
+      if (cbData.indexOf("confirm_pay_") === 0) {
+        return doPostSonic(e);
+      }
+      return handleMagimirDoPostOriginal(e);
+    }
+
+    if (data && data.message) {
+      var chatId = data.message.chat ? data.message.chat.id.toString() : "";
+      var magimirStep = PropertiesService.getUserProperties().getProperty("step_" + chatId);
+      if (magimirStep) {
+        return handleMagimirDoPostOriginal(e);
+      }
+
+      var text = (data.message.text || "").trim();
+      if (text === "/start" || text === "/help" || text.toLowerCase() === "start" || text.toLowerCase() === "menu") {
+        return doPostSonic(e);
+      }
+
+      if (data.tenKhach && data.tenDonHang) {
+        return doPostSonic(e);
+      }
+
+      if (typeof parseSonicTelegramMessage === "function" && parseSonicTelegramMessage(text)) {
+        return doPostSonic(e);
+      }
+
+      return handleMagimirDoPostOriginal(e);
+    }
+
+    if (data && (data.transferCode || data.product)) {
+      return doPostSonic(e);
+    }
+
+    return doPostSonic(e);
+  } catch(err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() }))
+                         .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
 function doPostSonic(e) {
   try {
     var data;
@@ -165,7 +265,6 @@ function doPostSonic(e) {
     var cleanCode = cleanSonicCodeForMatching(rawCode);
 
     var remainText = tinhSoTienConLai(data.price, data.deposit);
-
     sonicScriptProps.setProperty("PAID_STATUS_" + cleanCode, "false");
 
     var noteCombined = (data.note ? data.note : "");
@@ -177,7 +276,7 @@ function doPostSonic(e) {
       sheet.appendRow([
         timeStr,                  // Cột A: Thời gian
         data.name || '',          // Cột B: Tên khách hàng
-        data.address || '',       // Cột C: Địa chỉ người nhận (thay cho Link FB/Zalo)
+        data.address || '',       // Cột C: Địa chỉ người nhận (Thay cho Link FB/Zalo)
         "'" + (data.phone || ''), // Cột D: Số điện thoại
         data.product || '',       // Cột E: Tên đơn hàng
         data.price || '',         // Cột F: Tổng tiền
@@ -223,25 +322,38 @@ function doPostSonic(e) {
   }
 }
 
-// =================================================================
-// 3. XỬ LÝ LỆNH TELEGRAM SONIC
-// =================================================================
+// =========================================================================
+// 4. XỬ LÝ LỆNH VĂN BẢN TỪ TELEGRAM BOT
+// =========================================================================
 function handleSonicTelegramMessage(msgObj) {
   var text = (msgObj.text || "").trim();
   var chatId = msgObj.chat.id.toString();
   var lowerText = text.toLowerCase();
 
+  // Kiểm tra quyền hạn Chat ID nếu có cài đặt
+  if (ALLOWED_CHAT_ID && ALLOWED_CHAT_ID !== "" && chatId !== ALLOWED_CHAT_ID.toString()) {
+    sendTelegramMessage(chatId, "⚠️ Bạn không có quyền sử dụng Bot này. Chat ID của bạn: `" + chatId + "`");
+    return;
+  }
+
   if (text === "/start" || text === "/help" || lowerText === "start" || lowerText === "menu") {
     var welcomeMsg = 
       "👋 <b>CHÀO MỪNG BẠN ĐẾN VỚI BOT QUẢN LÝ ĐƠN HÀNG!</b>\n\n" +
-      "Bạn có thể gửi tin nhắn lên đơn nhanh bằng cú pháp:\n" +
-      "<code>[Tên], [SĐT], [Link FB/Zalo], [Đơn hàng], [Giá], [Cọc]</code>\n\n" +
-      "👉 <i>Ví dụ: Nguyễn Văn A, 0987654321, Zalo, Adobe 1 năm, 1000, 800</i>";
+      "Bạn có thể gửi tin nhắn lên đơn nhanh chóng bằng 2 cách:\n\n" +
+      "<b>Cách 1: Gửi 1 dòng cách nhau bằng dấu phẩy:</b>\n" +
+      "<code>[Tên], [SĐT], [Địa chỉ/Zalo], [Đơn hàng], [Giá], [Cọc]</code>\n" +
+      "👉 Ví dụ: <code>Nguyễn Văn A, 0987654321, Hà Nội, Mô Hình Sonic 30cm, 850000, 200000</code>\n\n" +
+      "<b>Cách 2: Gửi tin nhắn theo cú pháp từng dòng:</b>\n" +
+      "Tên: [Tên khách hàng]\n" +
+      "SĐT: [Số điện thoại]\n" +
+      "Địa chỉ: [Địa chỉ người nhận]\n" +
+      "Đơn: [Tên đơn hàng]\n" +
+      "Giá: [Tổng tiền]\n" +
+      "Cọc: [Đã cọc]";
 
     var menuButtons = [
-      [{ text: "📊 CHECK SHEET MỚI (SONIC)", url: SONIC_SHEET_URL }],
-      [{ text: "📂 CHECK SHEET CỦ (TMV)", url: SONIC_OLD_SHEET_URL }],
-      [{ text: "🌐 LINK ĐẶT HÀNG", url: SONIC_ORDER_WEB_URL }]
+      [{ text: "🌐 Tạo Đơn Hàng Qua Web", url: ORDER_WEB_URL }],
+      [{ text: "📊 Kiểm Tra Đơn Hàng (Sheet)", url: GOOGLE_SHEET_URL }]
     ];
 
     sendSonicTelegramRequest("sendMessage", {
@@ -253,7 +365,7 @@ function handleSonicTelegramMessage(msgObj) {
     return;
   }
 
-  var orderData = parseSonicTelegramMessage(text);
+  var orderData = parseTelegramMessage(text);
   if (orderData) {
     var sheet = getSonicSheet();
     var tongTien = parseFloat(orderData.tongTien) || 0;
@@ -269,7 +381,7 @@ function handleSonicTelegramMessage(msgObj) {
       sheet.appendRow([
         Utilities.formatDate(new Date(), "GMT+7", "dd/MM/yyyy HH:mm:ss"), // Cột A: Thời gian
         orderData.tenKhach || '',        // Cột B: Tên khách hàng
-        orderData.address || orderData.linkContact || '-', // Cột C: Địa chỉ người nhận (thay cho Link FB/Zalo)
+        orderData.address || orderData.linkContact || '-', // Cột C: Địa chỉ người nhận (Thay cho Link FB/Zalo)
         "'" + (orderData.sdt || ''),     // Cột D: Số điện thoại
         orderData.tenDonHang || '',      // Cột E: Tên đơn hàng
         formatCurrency(tongTien),        // Cột F: Tổng tiền
@@ -284,7 +396,7 @@ function handleSonicTelegramMessage(msgObj) {
     var replyMsg = 
       "✅ <b>LÊN ĐƠN HÀNG THÀNH CÔNG!</b>\n\n" +
       "👤 <b>Khách hàng:</b> " + orderData.tenKhach + "\n" +
-      "🔗 <b>Liên hệ:</b> " + orderData.linkContact + "\n" +
+      "🏠 <b>Địa chỉ:</b> " + (orderData.address || orderData.linkContact || '-') + "\n" +
       "📞 <b>Số điện thoại:</b> <code>" + orderData.sdt + "</code>\n" +
       "📦 <b>Đơn hàng:</b> " + orderData.tenDonHang + "\n" +
       "💰 <b>Tổng tiền:</b> " + formatCurrency(tongTien) + "\n" +
@@ -294,8 +406,7 @@ function handleSonicTelegramMessage(msgObj) {
 
     var sheetKeyboard = { 
       inline_keyboard: [
-        [{ text: "📊 CHECK SHEET MỚI (SONIC)", url: SONIC_SHEET_URL }],
-        [{ text: "📂 CHECK SHEET CỦ (TMV)", url: SONIC_OLD_SHEET_URL }]
+        [{ text: "📊 CHECK SHEET ĐƠN HÀNG", url: GOOGLE_SHEET_URL }]
       ] 
     };
 
@@ -311,9 +422,8 @@ function handleSonicTelegramMessage(msgObj) {
       "Hãy gửi tin nhắn chứa ít nhất trường <b>Tên</b> và <b>Đơn</b> theo cú pháp. Hoặc nhấn vào nút bên dưới để lên đơn qua giao diện Web.";
 
     var failButtons = [
-      [{ text: "📊 CHECK SHEET MỚI (SONIC)", url: SONIC_SHEET_URL }],
-      [{ text: "📂 CHECK SHEET CỦ (TMV)", url: SONIC_OLD_SHEET_URL }],
-      [{ text: "🌐 LINK ĐẶT HÀNG", url: SONIC_ORDER_WEB_URL }]
+      [{ text: "🌐 Tạo Đơn Hàng Qua Web", url: ORDER_WEB_URL }],
+      [{ text: "📊 Kiểm Tra Đơn Hàng (Sheet)", url: GOOGLE_SHEET_URL }]
     ];
 
     sendSonicTelegramRequest("sendMessage", {
@@ -325,21 +435,27 @@ function handleSonicTelegramMessage(msgObj) {
   }
 }
 
-function parseSonicTelegramMessage(text) {
+// =========================================================================
+// 5. CÁC HÀM PHÂN TÍCH TIN NHẮN VĂN BẢN & LÀM SẠCH SỐ (PARSER)
+// =========================================================================
+function parseTelegramMessage(text) {
   if (!text) return null;
   var data = {};
   
+  // 1. KIỂM TRA ĐỊNH DẠNG SHORTHAND (Cách nhau bởi dấu phẩy, chấm phẩy hoặc gạch đứng)
   var cleanTextForCheck = text.replace(/https?:\/\//gi, '');
   if (!cleanTextForCheck.includes(':')) {
     var parts = text.split(/[,\;|]/).map(function(item) { return item.trim(); });
     if (parts.length >= 4) {
       data.tenKhach = parts[0];
       data.sdt = parts[1];
+      data.address = parts[2];
       data.linkContact = parts[2];
       data.tenDonHang = parts[3];
-      if (parts.length >= 5) data.tongTien = cleanSonicNumber(parts[4]);
-      if (parts.length >= 6) data.daCoc = cleanSonicNumber(parts[5]);
+      if (parts.length >= 5) data.tongTien = cleanNumber(parts[4]);
+      if (parts.length >= 6) data.daCoc = cleanNumber(parts[5]);
       
+      if (!data.address) data.address = "-";
       if (!data.linkContact) data.linkContact = "-";
       if (!data.sdt) data.sdt = "-";
       if (data.tongTien === undefined) data.tongTien = 0;
@@ -348,6 +464,7 @@ function parseSonicTelegramMessage(text) {
     }
   }
   
+  // 2. ĐỊNH DẠNG TRUYỀN THỐNG (Cú pháp Tên: ... SĐT: ... Địa chỉ: ...)
   var lines = text.split('\n');
   var hasInfo = false;
   
@@ -360,7 +477,8 @@ function parseSonicTelegramMessage(text) {
       if (key.includes('tên') || key.includes('ten') || key.includes('khách') || key.includes('khach')) {
         data.tenKhach = val;
         hasInfo = true;
-      } else if (key.includes('link') || key.includes('contact') || key.includes('fb') || key.includes('zalo')) {
+      } else if (key.includes('địa chỉ') || key.includes('dia chi') || key.includes('đc') || key.includes('dc') || key.includes('link') || key.includes('contact') || key.includes('fb') || key.includes('zalo')) {
+        data.address = val;
         data.linkContact = val;
       } else if (key.includes('sđt') || key.includes('sdt') || key.includes('thoại') || key.includes('thoi')) {
         data.sdt = val;
@@ -368,14 +486,15 @@ function parseSonicTelegramMessage(text) {
         data.tenDonHang = val;
         hasInfo = true;
       } else if (key.includes('giá') || key.includes('gia') || key.includes('tiền') || key.includes('tien') || key.includes('tổng') || key.includes('tong')) {
-        data.tongTien = cleanSonicNumber(val);
+        data.tongTien = cleanNumber(val);
       } else if (key.includes('cọc') || key.includes('coc')) {
-        data.daCoc = cleanSonicNumber(val);
+        data.daCoc = cleanNumber(val);
       }
     }
   });
   
   if (hasInfo && data.tenKhach && data.tenDonHang) {
+    if (!data.address) data.address = "-";
     if (!data.linkContact) data.linkContact = "-";
     if (!data.sdt) data.sdt = "-";
     if (data.tongTien === undefined) data.tongTien = 0;
@@ -386,50 +505,57 @@ function parseSonicTelegramMessage(text) {
   return null;
 }
 
-function cleanSonicNumber(str) {
+function parseSonicTelegramMessage(text) {
+  return parseTelegramMessage(text);
+}
+
+function cleanNumber(str) {
   if (!str) return 0;
   var cleaned = str.toString().replace(/[^\d]/g, '');
   return parseFloat(cleaned) || 0;
 }
 
-function handleSonicFormWebPost(data) {
-  try {
-    var sheet = getSonicSheet();
-    var tongTien = parseFloat(data.tongTien) || 0;
-    var daCoc = parseFloat(data.daCoc) || 0;
-    
-    if (tongTien > 0 && tongTien < 10000) tongTien *= 1000;
-    if (daCoc > 0 && daCoc < 10000) daCoc *= 1000;
-    
-    var conLai = Math.max(0, tongTien - daCoc);
-    var formatCurrency = function(val) { return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val); };
-
-    if (sheet) {
-      sheet.appendRow([
-        Utilities.formatDate(new Date(), "GMT+7", "dd/MM/yyyy HH:mm:ss"), // Cột A: Thời gian
-        data.tenKhach || '',      // Cột B: Tên khách hàng
-        data.address || data.linkContact || '-', // Cột C: Địa chỉ người nhận (thay cho Link FB/Zalo)
-        "'" + (data.sdt || ''),   // Cột D: Số điện thoại
-        data.tenDonHang || '',    // Cột E: Tên đơn hàng
-        formatCurrency(tongTien), // Cột F: Tổng tiền
-        formatCurrency(daCoc),    // Cột G: Đã cọc
-        formatCurrency(conLai),   // Cột H: Còn lại
-        data.note || 'Tạo từ Web TMV', // Cột I: Lưu ý / Ghi chú
-        "Đã xác nhận",            // Cột J: Trạng thái
-        "Chưa làm"                // Cột K: Tiến độ
-      ]);
-    }
-    return ContentService.createTextOutput(JSON.stringify({ success: true, conLai: formatCurrency(conLai) }))
-                         .setMimeType(ContentService.MimeType.JSON);
-  } catch(err) {
-    return ContentService.createTextOutput(JSON.stringify({ success: false, message: err.toString() }))
-                         .setMimeType(ContentService.MimeType.JSON);
-  }
+function cleanSonicNumber(str) {
+  return cleanNumber(str);
 }
 
-// =================================================================
-// 4. QUÉT GMAIL TỐC ĐỘ CAO CHO SONIC
-// =================================================================
+// =========================================================================
+// 6. GỬI TIN NHẮN VÀ BUTTONS QUA TELEGRAM BOT
+// =========================================================================
+function sendTelegramMessage(chatId, text) {
+  sendSonicTelegramRequest("sendMessage", {
+    chat_id: chatId,
+    text: text,
+    parse_mode: "HTML"
+  });
+}
+
+function sendTelegramMessageWithButtons(chatId, text, buttons) {
+  var keyboard = buttons.map(function(btn) {
+    return [{ text: btn.text, url: btn.url }];
+  });
+  
+  sendSonicTelegramRequest("sendMessage", {
+    chat_id: chatId,
+    text: text,
+    parse_mode: "HTML",
+    reply_markup: JSON.stringify({ inline_keyboard: keyboard })
+  });
+}
+
+// =========================================================================
+// 7. QUÉT GMAIL TỐC ĐỘ CAO VÀ XÁC NHẬN CỌC TIMO TỰ ĐỘNG
+// =========================================================================
+function checkSonicBankDepositEmailsThrottled() {
+  try {
+    var lastCheck = parseInt(sonicScriptProps.getProperty("LAST_GMAIL_CHECK_TIME") || "0", 10);
+    var now = new Date().getTime();
+    if (now - lastCheck < 6000) return; 
+    sonicScriptProps.setProperty("LAST_GMAIL_CHECK_TIME", now.toString());
+    checkSonicBankDepositEmails();
+  } catch(e) {}
+}
+
 function checkSonicBankDepositEmails() {
   try {
     var sheet = getSonicSheet();
@@ -508,14 +634,10 @@ function checkSonicBankDepositEmails() {
   }
 }
 
-// Alias tương thích ngược cho Trigger cũ trên Google Apps Script
 function checkBankDepositEmails() {
   checkSonicBankDepositEmails();
 }
 
-// =================================================================
-// 5. HÀM HỦY & XÓA ĐƠN CHỜ QUÁ 5 PHÚT KHỎI SHEET SONIC
-// =================================================================
 function cleanupSonicExpiredPendingOrders(sheet) {
   try {
     var values = sheet.getDataRange().getValues();
@@ -544,13 +666,13 @@ function cleanupSonicExpiredPendingOrders(sheet) {
             var cancelMsg = 
               "🗑️ <b>TỰ ĐỘNG HỦY ĐƠN (QUÁ 5 PHÚT CHƯA CỌC)</b>\n" +
               "━━━━━━━━━━━━━━━━━━\n" +
-              "👤 <b>Khách hàng:</b> " + (row[1] || 'Vô danh') + " (<code>" + (row[2] || '') + "</code>)\n" +
+              "👤 <b>Khách hàng:</b> " + (row[1] || 'Vô danh') + " (<code>" + (row[3] || '') + "</code>)\n" +
               "🏷️ <b>Mã CK:</b> <code>" + codeInfo.raw + "</code>\n" +
               "⏰ <b>Lý do:</b> Quá 5 phút không cọc (Đã xóa khỏi Sheet).";
             
             var sheetKeyboard = {
               inline_keyboard: [
-                [{ text: "📊 CHECK SHEET MỚI (SONIC)", url: SONIC_SHEET_URL }]
+                [{ text: "📊 CHECK SHEET MỚI", url: GOOGLE_SHEET_URL }]
               ]
             };
 
@@ -564,9 +686,6 @@ function cleanupSonicExpiredPendingOrders(sheet) {
   }
 }
 
-// =================================================================
-// 6. XỬ LÝ NÚT BẤM CALLBACK TRÊN TELEGRAM BOT MENU SONIC
-// =================================================================
 function handleSonicTelegramCallback(callbackQuery) {
   var data = callbackQuery.data;
   var chatId = callbackQuery.message.chat.id.toString();
@@ -585,8 +704,7 @@ function handleSonicTelegramCallback(callbackQuery) {
 
     var sheetKeyboard = {
       inline_keyboard: [
-        [{ text: "📊 CHECK SHEET MỚI (SONIC)", url: SONIC_SHEET_URL }],
-        [{ text: "📂 CHECK SHEET CỦ (TMV)", url: SONIC_OLD_SHEET_URL }]
+        [{ text: "📊 CHECK SHEET MỚI", url: GOOGLE_SHEET_URL }]
       ]
     };
 
@@ -599,12 +717,11 @@ function handleSonicTelegramCallback(callbackQuery) {
   }
 }
 
-// =================================================================
-// 7. CÁC HÀM PHỤ TRỢ SONIC
-// =================================================================
+// =========================================================================
+// 8. CÁC HÀM TIỆN ÍCH QUẢN LÝ ROW GS & ĐIỀU HƯỚNG BẢO MẬT
+// =========================================================================
 function findSonicCodeInRow(row) {
   if (!row || !row.length) return null;
-  // Check column I (Index 8: Mã CK) first for precision
   if (row[8]) {
     var rawCol8 = (row[8] || "").toString().trim();
     var cleanCol8 = cleanSonicCodeForMatching(rawCol8);
@@ -612,7 +729,6 @@ function findSonicCodeInRow(row) {
       return { code: cleanCol8, raw: rawCol8, colIdx: 8 };
     }
   }
-  // Fallback to checking all columns
   for (var c = 0; c < row.length; c++) {
     var raw = (row[c] || "").toString().trim();
     var clean = cleanSonicCodeForMatching(raw);
@@ -727,42 +843,42 @@ function sendSonicTelegramRequest(method, payload) {
   UrlFetchApp.fetch(url, { method: "post", contentType: "application/json", payload: JSON.stringify(payload), muteHttpExceptions: true });
 }
 
-// =================================================================
-// BỘ ĐIỀU HƯỚNG TỔNG DO GET / DO POST (CHỐNG XUNG ĐỘT KHI ĐỂ CHUNG PROJECT)
-// Chạy hàm gốc của Magimir khi nhận request Magimir
-// =================================================================
+// =========================================================================
+// CÀI ĐẶT WEBHOOK VÀ TRIGGER TỰ ĐỘNG QUÉT MAIL 1 PHÚT/LẦN
+// =========================================================================
+function setWebhook() {
+  var url = "https://api.telegram.org/bot" + TELEGRAM_TOKEN + "/setWebhook?url=" + SONIC_WEB_APP_URL;
+  var response = UrlFetchApp.fetch(url);
+  Logger.log("Kết quả setWebhook Telegram: " + response.getContentText());
+}
+
+function setupSonicTelegramWebhook() {
+  setWebhook();
+}
+
+function setupSonicTriggersAndWebhook() {
+  setWebhook();
+
+  var triggers = ScriptApp.getProjectTriggers();
+  for (var i = 0; i < triggers.length; i++) {
+    var fnName = triggers[i].getHandlerFunction();
+    if (fnName === "checkSonicBankDepositEmails" || fnName === "checkBankDepositEmails") {
+      ScriptApp.deleteTrigger(triggers[i]);
+    }
+  }
+
+  ScriptApp.newTrigger("checkSonicBankDepositEmails")
+    .timeBased()
+    .everyMinutes(1)
+    .create();
+
+  Logger.log("✅ ĐÃ CÀI ĐẶT THÀNH CÔNG TELEGRAM WEBHOOK VÀ TRIGGER TỰ ĐỘNG QUÉT MAIL 1 PHÚT/LẦN!");
+}
+
 function handleMagimirDoGetOriginal(e) {
   var params = e ? e.parameter : {};
   var result = {};
-  
-  if (params && params.action === "save_trial_email") {
-    var email = params.email;
-    var code = params.code;
-    var price = params.price;
-    var prize = params.prize;
-    if (email && code) {
-      var regexEmail = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-      if (email.trim().toLowerCase() !== "dùng chung (manual)" && !regexEmail.test(email.trim().toLowerCase())) {
-        result = { status: "error", message: "Invalid email format or domain" };
-      } else {
-        var sp = PropertiesService.getScriptProperties();
-        var cleanCode = code.toUpperCase().replace(/\s+/g, '');
-        sp.setProperty("EMAIL_FOR_CODE_" + cleanCode, email.trim());
-        if (price !== undefined && price !== "") {
-          sp.setProperty("PRICE_FOR_CODE_" + cleanCode, price.toString().trim());
-          sp.setProperty("PRICE_FOR_EMAIL_" + email.trim().toLowerCase(), price.toString().trim());
-        }
-        if (prize !== undefined && prize !== "") {
-          sp.setProperty("PRIZE_FOR_CODE_" + cleanCode, prize.trim());
-          sp.setProperty("PRIZE_FOR_EMAIL_" + email.trim().toLowerCase(), prize.trim());
-        }
-        result = { status: "success", email: email, code: cleanCode };
-      }
-    } else {
-      result = { status: "error", message: "Missing parameters" };
-    }
-  } 
-  else if (params && params.action === "check_payment_status") {
+  if (params && params.action === "check_payment_status") {
     var code = params.code;
     if (code) {
       var sp = PropertiesService.getScriptProperties();
@@ -776,139 +892,16 @@ function handleMagimirDoGetOriginal(e) {
     } else {
       result = { status: "error", message: "Missing code parameter" };
     }
-  } 
-  else if (params && params.action === "save_spin_result") {
-    var code = params.code;
-    var email = params.email || "";
-    var prize = params.prize;
-    if (code && prize) {
-      var cleanCode = code.toUpperCase().replace(/\s+/g, '');
-      if (typeof saveSpinResult === "function") {
-        result = saveSpinResult(cleanCode, email, prize);
-      } else {
-        result = { status: "error", message: "saveSpinResult function not available" };
-      }
-    } else {
-      result = { status: "error", message: "Missing code or prize parameters" };
-    }
-  }
-  else {
+  } else {
     result = { status: "error", message: "Invalid action" };
   }
-  
-  return ContentService.createTextOutput(JSON.stringify(result))
-                       .setMimeType(ContentService.MimeType.JSON);
+  return ContentService.createTextOutput(JSON.stringify(result)).setMimeType(ContentService.MimeType.JSON);
 }
 
 function handleMagimirDoPostOriginal(e) {
   var data;
   try { data = JSON.parse(e.postData.contents); } catch (err) { return; }
-
-  if (data && data.action === "save_trial_email") {
-    var email = data.email;
-    var code = data.code;
-    var price = data.price;
-    var prize = data.prize;
-    if (email && code) {
-      var regexEmail = /^[a-zA-Z0-9._%+-]+@gmail\.com$/;
-      if (email.trim().toLowerCase() !== "dùng chung (manual)" && !regexEmail.test(email.trim().toLowerCase())) {
-         return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "Invalid email format or domain" }))
-                              .setMimeType(ContentService.MimeType.JSON);
-      }
-      var sp = PropertiesService.getScriptProperties();
-      var cleanCode = code.toUpperCase().replace(/\s+/g, '');
-      sp.setProperty("EMAIL_FOR_CODE_" + cleanCode, email.trim());
-      if (price !== undefined && price !== "") {
-        sp.setProperty("PRICE_FOR_CODE_" + cleanCode, price.toString().trim());
-        sp.setProperty("PRICE_FOR_EMAIL_" + email.trim().toLowerCase(), price.toString().trim());
-      }
-      if (prize !== undefined && prize !== "") {
-        sp.setProperty("PRIZE_FOR_CODE_" + cleanCode, prize.trim());
-        sp.setProperty("PRIZE_FOR_EMAIL_" + email.trim().toLowerCase(), prize.trim());
-      }
-      
-      return ContentService.createTextOutput(JSON.stringify({ status: "success" }))
-                           .setMimeType(ContentService.MimeType.JSON);
-    }
-    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "Missing params" }))
-                         .setMimeType(ContentService.MimeType.JSON);
-  }
-
-  var message = data.message;
-  var callbackQuery = data.callback_query;
-
-  if (callbackQuery && typeof handleCallback === "function") {
-    handleCallback(callbackQuery);
-  }
-  else if (message && typeof handleMessage === "function") {
-    handleMessage(message);
-  }
-}
-
-function doGet(e) {
-  var params = e ? e.parameter : {};
-  if (params && (params.action === "save_trial_email" || params.action === "save_spin_result")) {
-    return handleMagimirDoGetOriginal(e);
-  }
-  if (params && params.action === "check_payment_status") {
-    var code = (params.code || "").toUpperCase().trim();
-    if (code.indexOf("MGM") === 0) {
-      return handleMagimirDoGetOriginal(e);
-    }
-    return doGetSonic(e);
-  }
-  return doGetSonic(e);
-}
-
-function doPost(e) {
-  try {
-    var data = {};
-    if (e && e.postData && e.postData.contents) {
-      try { data = JSON.parse(e.postData.contents); } catch(err) {}
-    }
-
-    if (data && data.action === "save_trial_email") {
-      return handleMagimirDoPostOriginal(e);
-    }
-
-    if (data && data.callback_query) {
-      var cbData = data.callback_query.data || "";
-      if (cbData.indexOf("confirm_pay_") === 0) {
-        return doPostSonic(e);
-      }
-      return handleMagimirDoPostOriginal(e);
-    }
-
-    if (data && data.message) {
-      var chatId = data.message.chat ? data.message.chat.id.toString() : "";
-      var magimirStep = PropertiesService.getUserProperties().getProperty("step_" + chatId);
-      if (magimirStep) {
-        return handleMagimirDoPostOriginal(e);
-      }
-
-      var text = (data.message.text || "").trim();
-      if (text === "/start" || text === "/help" || text.toLowerCase() === "start" || text.toLowerCase() === "menu") {
-        return doPostSonic(e);
-      }
-
-      if (data.tenKhach && data.tenDonHang) {
-        return doPostSonic(e);
-      }
-
-      if (typeof parseSonicTelegramMessage === "function" && parseSonicTelegramMessage(text)) {
-        return doPostSonic(e);
-      }
-
-      return handleMagimirDoPostOriginal(e);
-    }
-
-    if (data && (data.transferCode || data.product)) {
-      return doPostSonic(e);
-    }
-
-    return doPostSonic(e);
-  } catch(err) {
-    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() }))
-                         .setMimeType(ContentService.MimeType.JSON);
+  if (data && data.message) {
+    handleSonicTelegramMessage(data.message);
   }
 }
