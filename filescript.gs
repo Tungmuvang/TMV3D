@@ -7,8 +7,8 @@
 
 var SONIC_TELEGRAM_TOKEN = "8795810475:AAGiayX1izlJd8uUxtQAAThE-MffI_KoPKY";
 var SONIC_ADMIN_CHAT_IDS = ["7744946591", "7607846055"];
-var SONIC_SPREADSHEET_ID = "15GrO9Y9hyLQ4PhjggVAqMkmZ_W-9MsDtr0r3SnvLxeo"; 
-var SONIC_OLD_SPREADSHEET_ID = "15mW6V31uoKEo0NNBWXQEdYuuaSay04clNz4DLUz36UM";
+var SONIC_SPREADSHEET_ID = "15mW6V31uoKEo0NNBWXQEdYuuaSay04clNz4DLUz36UM"; 
+var SONIC_OLD_SPREADSHEET_ID = "15GrO9Y9hyLQ4PhjggVAqMkmZ_W-9MsDtr0r3SnvLxeo";
 
 var SONIC_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxZg6wWKe_yuV9UgZv2dBquCLNPYPyTqxi0urqcquf9lYdUTNqE0DAN9N8y9g3fXJEj/exec";
 var SONIC_SHEET_URL = "https://docs.google.com/spreadsheets/d/" + SONIC_SPREADSHEET_ID + "/edit";
@@ -168,19 +168,24 @@ function doPostSonic(e) {
 
     sonicScriptProps.setProperty("PAID_STATUS_" + cleanCode, "false");
 
+    var noteCombined = (data.note ? data.note : "");
+    if (rawCode) {
+      noteCombined = noteCombined ? noteCombined + " | Mã CK: " + rawCode : "Mã CK: " + rawCode;
+    }
+
     if (sheet) {
       sheet.appendRow([
-        timeStr,
-        data.name || '',
-        "'" + (data.phone || ''),
-        data.address || '',
-        data.product || '',
-        data.price || '',
-        data.deposit || '',
-        remainText,        // CỘT H: SỐ TIỀN CÒN LẠI
-        rawCode,           // CỘT I: MÃ CK
-        'Chờ cọc ⏳',       // CỘT J: TRẠNG THÁI
-        data.note || ''    // CỘT K: GHI CHÚ
+        timeStr,                  // Cột A: Thời gian
+        data.name || '',          // Cột B: Tên khách hàng
+        data.address || '',       // Cột C: Địa chỉ người nhận (thay cho Link FB/Zalo)
+        "'" + (data.phone || ''), // Cột D: Số điện thoại
+        data.product || '',       // Cột E: Tên đơn hàng
+        data.price || '',         // Cột F: Tổng tiền
+        data.deposit || '',       // Cột G: Đã cọc
+        remainText,               // Cột H: Còn lại
+        noteCombined,             // Cột I: Lưu ý / Ghi chú
+        'Chờ cọc ⏳',              // Cột J: Trạng thái
+        'Chưa làm'                // Cột K: Tiến độ
       ]);
     }
 
@@ -262,17 +267,17 @@ function handleSonicTelegramMessage(msgObj) {
 
     if (sheet) {
       sheet.appendRow([
-        Utilities.formatDate(new Date(), "GMT+7", "dd/MM/yyyy HH:mm:ss"),
-        orderData.tenKhach || '',
-        "'" + (orderData.sdt || ''),
-        orderData.linkContact || '-',
-        orderData.tenDonHang || '',
-        formatCurrency(tongTien),
-        formatCurrency(daCoc),
-        formatCurrency(conLai),
-        "Tạo từ Telegram Bot",
-        "Đã xác nhận",
-        ""
+        Utilities.formatDate(new Date(), "GMT+7", "dd/MM/yyyy HH:mm:ss"), // Cột A: Thời gian
+        orderData.tenKhach || '',        // Cột B: Tên khách hàng
+        orderData.address || orderData.linkContact || '-', // Cột C: Địa chỉ người nhận (thay cho Link FB/Zalo)
+        "'" + (orderData.sdt || ''),     // Cột D: Số điện thoại
+        orderData.tenDonHang || '',      // Cột E: Tên đơn hàng
+        formatCurrency(tongTien),        // Cột F: Tổng tiền
+        formatCurrency(daCoc),          // Cột G: Đã cọc
+        formatCurrency(conLai),         // Cột H: Còn lại
+        "Tạo từ Telegram Bot",          // Cột I: Lưu ý / Ghi chú
+        "Đã xác nhận",                  // Cột J: Trạng thái
+        "Chưa làm"                      // Cột K: Tiến độ
       ]);
     }
 
@@ -401,17 +406,17 @@ function handleSonicFormWebPost(data) {
 
     if (sheet) {
       sheet.appendRow([
-        Utilities.formatDate(new Date(), "GMT+7", "dd/MM/yyyy HH:mm:ss"),
-        data.tenKhach || '',
-        "'" + (data.sdt || ''),
-        data.linkContact || '-',
-        data.tenDonHang || '',
-        formatCurrency(tongTien),
-        formatCurrency(daCoc),
-        formatCurrency(conLai),
-        "WEB TMV",
-        "Đã xác nhận",
-        data.note || ''
+        Utilities.formatDate(new Date(), "GMT+7", "dd/MM/yyyy HH:mm:ss"), // Cột A: Thời gian
+        data.tenKhach || '',      // Cột B: Tên khách hàng
+        data.address || data.linkContact || '-', // Cột C: Địa chỉ người nhận (thay cho Link FB/Zalo)
+        "'" + (data.sdt || ''),   // Cột D: Số điện thoại
+        data.tenDonHang || '',    // Cột E: Tên đơn hàng
+        formatCurrency(tongTien), // Cột F: Tổng tiền
+        formatCurrency(daCoc),    // Cột G: Đã cọc
+        formatCurrency(conLai),   // Cột H: Còn lại
+        data.note || 'Tạo từ Web TMV', // Cột I: Lưu ý / Ghi chú
+        "Đã xác nhận",            // Cột J: Trạng thái
+        "Chưa làm"                // Cột K: Tiến độ
       ]);
     }
     return ContentService.createTextOutput(JSON.stringify({ success: true, conLai: formatCurrency(conLai) }))
@@ -464,13 +469,13 @@ function checkSonicBankDepositEmails() {
                       "🎉 <b>XÁC NHẬN TIỀN CỌC TIMO THÀNH CÔNG!</b>\n" +
                       "━━━━━━━━━━━━━━━━━━\n" +
                       "👤 <b>Khách hàng:</b> " + row[1] + "\n" +
-                      "📞 <b>SĐT:</b> <code>" + row[2] + "</code>\n" +
-                      "🏠 <b>Địa chỉ:</b> " + row[3] + "\n" +
+                      "🏠 <b>Địa chỉ:</b> " + (row[2] || 'Chưa ghi') + "\n" +
+                      "📞 <b>SĐT:</b> <code>" + row[3] + "</code>\n" +
                       "📦 <b>Sản phẩm:</b> " + row[4] + "\n" +
                       "💰 <b>Đã nhận cọc:</b> <b>" + row[6] + "</b>\n" +
                       "💵 <b>Còn lại thu COD:</b> <b>" + (row[7] || '0đ') + "</b>\n" +
                       "🏷️ <b>Mã CK:</b> <code>" + rawCode + "</code>\n" +
-                      "📝 <b>Ghi chú:</b> " + (row[10] || 'Không có') + "\n" +
+                      "📝 <b>Lưu ý/Ghi chú:</b> " + (row[8] || 'Không có') + "\n" +
                       "✅ <b>Trạng thái mới:</b> ĐÃ CỌC ✅";
                       
                     var sheetKeyboard = {
