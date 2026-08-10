@@ -168,6 +168,19 @@ class App {
       this.saveStorage('3d_store_products', this.products);
     }
 
+    // Tự động cập nhật ảnh đại diện chuẩn 30cm Sonic (TMV01526.jpg) cho sản phẩm p5
+    const sonicItem = this.products.find(p => p.id === 'p5');
+    if (sonicItem) {
+      const sonic30cmUrl = "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjsj7vktaG7aCblrH1o6f22-ZBr8z5ayXN4x0PhYfYQvwBYJ8aZrW8g41UCZCqtY9fxHyKuocoKJpr6nJOuklbape8oGncqlUhsHb7ueUSjdttTvLFBmsJrQ68ko6MaITFdp_yW_dDBu_1sP7Am_H1rsONUYzegi4khJXxP5k8iGAO_JFUaQkbSLluf_2EL/s1600/TMV01526.jpg";
+      sonicItem.image = sonic30cmUrl;
+      if (sonicItem.images && sonicItem.images.length > 0) {
+        sonicItem.images = [sonic30cmUrl, ...sonicItem.images.filter(img => img !== sonic30cmUrl)];
+      } else {
+        sonicItem.images = [sonic30cmUrl];
+      }
+      this.saveStorage('3d_store_products', this.products);
+    }
+
     this.cart = this.loadStorage('3d_store_cart', []);
     this.orders = this.loadStorage('3d_store_orders', []);
     
