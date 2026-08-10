@@ -303,7 +303,7 @@ function doPostSonic(e) {
       "🏷️ <b>Mã CK:</b> <code>" + rawCode + "</code>\n" +
       "📝 <b>Ghi chú:</b> " + (data.note || 'Không có') + "\n" +
       "⏳ <b>Trạng thái:</b> Chờ cọc ⏳\n" +
-      "⏱️ <i>Đơn sẽ tự động hủy nếu không cọc trong 5 phút!</i>";
+      "⏱️ <i>Đơn sẽ tự động hủy nếu không cọc trong 15 phút!</i>";
 
     var keyboard = {
       inline_keyboard: [
@@ -642,39 +642,53 @@ function checkBankDepositEmails() {
 
 function cleanupSonicExpiredPendingOrders(sheet) {
   try {
+    if (!sheet) sheet = getSonicSheet();
+    if (!sheet) return;
+
     var values = sheet.getDataRange().getValues();
     if (!values || values.length <= 1) return;
 
     var now = new Date().getTime();
-    var FIVE_MINUTES_MS = 5 * 60 * 1000;
+    var FIFTEEN_MINUTES_MS = 15 * 60 * 1000; // 15 phút
 
     for (var i = values.length - 1; i >= 1; i--) {
       var row = values[i];
-      if (!row || row.length < 5) continue;
+      if (!row || row.length < 3) continue;
 
       var dateStr = row[0];
       var codeInfo = findSonicCodeInRow(row);
-      var status = getSonicRowStatus(row);
+      var status = (row[9] || getSonicRowStatus(row) || "").toString();
 
-      if (codeInfo && (status.includes('Chờ') || status === "")) {
-        var cleanCode = codeInfo.code;
+      // Hủy mọi đơn hàng ở trạng thái 'Chờ' (ví dụ: Chờ cọc ⏳) hoặc chưa có trạng thái
+      if (status.indexOf('Chờ') !== -1 || status.trim() === "") {
         var orderDate = parseVietDateTime(dateStr);
         if (orderDate && !isNaN(orderDate.getTime())) {
           var ageMs = now - orderDate.getTime();
-          if (ageMs > FIVE_MINUTES_MS) {
-            sonicScriptProps.deleteProperty("PAID_STATUS_" + cleanCode);
+          if (ageMs >= FIFTEEN_MINUTES_MS) {
+            if (codeInfo && codeInfo.code) {
+              sonicScriptProps.deleteProperty("PAID_STATUS_" + codeInfo.code);
+            }
+
+            var customerName = row[1] || 'Khách lẻ';
+            var customerPhone = row[3] || row[2] || '';
+            var productName = row[4] || '';
+            var rawCode = codeInfo ? codeInfo.raw : (row[8] || 'Không có');
+
+            // Xóa dòng đơn hàng quá 15 phút khỏi Sheet
             sheet.deleteRow(i + 1);
 
             var cancelMsg = 
-              "🗑️ <b>TỰ ĐỘNG HỦY ĐƠN (QUÁ 5 PHÚT CHƯA CỌC)</b>\n" +
+              "🗑️ <b>TỰ ĐỘNG HỦY ĐƠN (QUÁ 15 PHÚT CHƯA CỌC)</b>\n" +
               "━━━━━━━━━━━━━━━━━━\n" +
-              "👤 <b>Khách hàng:</b> " + (row[1] || 'Vô danh') + " (<code>" + (row[3] || '') + "</code>)\n" +
-              "🏷️ <b>Mã CK:</b> <code>" + codeInfo.raw + "</code>\n" +
-              "⏰ <b>Lý do:</b> Quá 5 phút không cọc (Đã xóa khỏi Sheet).";
+              "👤 <b>Khách hàng:</b> " + customerName + "\n" +
+              "📞 <b>SĐT:</b> <code>" + customerPhone + "</code>\n" +
+              "📦 <b>Sản phẩm:</b> " + productName + "\n" +
+              "🏷️ <b>Mã CK / Ghi chú:</b> <code>" + rawCode + "</code>\n" +
+              "⏰ <b>Lý do:</b> Quá 15 phút không cọc (Đã tự động xóa khỏi Sheet).";
             
             var sheetKeyboard = {
               inline_keyboard: [
-                [{ text: "📊 CHECK SHEET MỚI", url: GOOGLE_SHEET_URL }]
+                [{ text: "📊 CHECK SHEET ĐƠN HÀNG", url: GOOGLE_SHEET_URL }]
               ]
             };
 
@@ -783,17 +797,36 @@ function tinhSoTienConLai(priceStr, depositStr) {
   return new Intl.NumberFormat('de-DE').format(remain) + 'đ';
 }
 
-function parseVietDateTime(dateStr) {
-  if (dateStr instanceof Date) return dateStr;
-  if (!dateStr) return null;
+function parseVietDateTime(dateVal) {
+  if (dateVal instanceof Date) return dateVal;
+  if (!dateVal) return null;
   try {
-    var parts = dateStr.toString().trim().split(" ");
-    if (parts.length < 2) return new Date(dateStr);
-    var dParts = parts[0].split("/");
-    var tParts = parts[1].split(":");
-    return new Date(dParts[2], dParts[1] - 1, dParts[0], tParts[0], tParts[1], tParts[2] || 0);
-  } catch(e) {
-    return null;
+    var str = dateVal.toString().trim();
+    var parts = str.split(" ");
+    if (parts.length >= 2 && parts[0].indexOf("/") !== -1) {
+      var dParts = parts[0].split("/");
+      var tParts = parts[1].split(":");
+      if (dParts.length === 3) {
+        var day = parseInt(dParts[0], 10);
+        var month = parseInt(dParts[1], 10) - 1;
+        var year = parseInt(dParts[2], 10);
+        var hour = parseInt(tParts[0], 10) || 0;
+        var min = parseInt(tParts[1], 10) || 0;
+        var sec = parseInt(tParts[2], 10) || 0;
+        return new Date(year, month, day, hour, min, sec);
+      }
+    }
+    var parsed = new Date(str);
+    if (!isNaN(parsed.getTime())) return parsed;
+  } catch(e) {}
+  return null;
+}
+
+function runAutoCancelCheck() {
+  var sheet = getSonicSheet();
+  if (sheet) {
+    cleanupSonicExpiredPendingOrders(sheet);
+    Logger.log("✅ Đã chạy kiểm tra tự động hủy đơn quá 15 phút!");
   }
 }
 
