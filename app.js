@@ -1,4 +1,4 @@
-const CURRENT_DATA_VERSION = "2026.08.10_v10";
+const CURRENT_DATA_VERSION = "2026.08.10_v11";
 
 const DEFAULT_CATEGORIES = [
   {
@@ -1606,7 +1606,12 @@ ${itemsSummaryText}
     this.renderAdminGalleryImages([]);
     this.renderAdminColorRows([]);
     this.renderAdminSizeRows([]);
-    
+
+    const formTitle = document.getElementById('admin-form-title');
+    if (formTitle) {
+      formTitle.innerHTML = `<i class="fa-solid fa-plus-circle"></i> Thêm Sản Phẩm Mô Hình Mới`;
+    }
+
     document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
     const addTabBtn = document.querySelector('[data-tab="tab-add-product"]');
     if (addTabBtn) addTabBtn.classList.add('active');
@@ -1615,6 +1620,8 @@ ${itemsSummaryText}
     if (document.getElementById('tab-categories')) document.getElementById('tab-categories').style.display = 'none';
     if (document.getElementById('tab-webhooks')) document.getElementById('tab-webhooks').style.display = 'none';
     if (document.getElementById('tab-add-product')) document.getElementById('tab-add-product').style.display = 'block';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   exportProductsJSCode() {
@@ -1712,6 +1719,11 @@ ${itemsSummaryText}
     this.renderAdminColorRows(p.colors || []);
     this.renderAdminSizeRows(p.sizes || []);
 
+    const formTitle = document.getElementById('admin-form-title');
+    if (formTitle) {
+      formTitle.innerHTML = `<i class="fa-solid fa-pen-to-square"></i> Chỉnh Sửa Sản Phẩm: <span style="color: var(--text-main); font-weight: 800;">${p.title}</span>`;
+    }
+
     document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
     const addTabBtn = document.querySelector('[data-tab="tab-add-product"]');
     if (addTabBtn) addTabBtn.classList.add('active');
@@ -1720,6 +1732,8 @@ ${itemsSummaryText}
     if (document.getElementById('tab-categories')) document.getElementById('tab-categories').style.display = 'none';
     if (document.getElementById('tab-webhooks')) document.getElementById('tab-webhooks').style.display = 'none';
     if (document.getElementById('tab-add-product')) document.getElementById('tab-add-product').style.display = 'block';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   deleteProduct(id) {

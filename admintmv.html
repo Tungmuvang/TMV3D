@@ -12,7 +12,7 @@
   <meta http-equiv="Expires" content="0">
   
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css?v=20260810_v10">
+  <link rel="stylesheet" href="styles.css?v=20260810_v11">
 </head>
 <body style="background: var(--bg-body); color: var(--text-main); min-height: 100vh;">
 
@@ -122,6 +122,8 @@
         <button class="admin-tab-btn" data-tab="tab-webhooks"><i class="fa-solid fa-gear"></i> Tài Khoản & Tích Hợp</button>
       </div>
 
+      <!-- TAB 1: DANH SÁCH SẢN PHẨM -->
+      <div class="admin-tab-content active" id="tab-products">
         <!-- QUẢN LÝ SẢN PHẨM NỔI BẬT (HERO BANNER) -->
         <div style="background: var(--bg-surface); padding: 1.2rem; border-radius: var(--radius-md); border: 1px solid var(--border-gold); margin-bottom: 1.5rem; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
           <h4 style="font-size: 1.05rem; font-weight: 700; color: var(--accent-gold-dark); margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;">
@@ -177,6 +179,15 @@
 
       <!-- TAB 2: THÊM / SỬA SẢN PHẨM -->
       <div class="admin-tab-content" id="tab-add-product" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 0.8rem; background: var(--bg-surface); padding: 1rem 1.2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+          <h3 id="admin-form-title" style="font-size: 1.2rem; font-weight: 700; color: var(--accent-gold-dark); margin: 0; display: flex; align-items: center; gap: 0.5rem;">
+            <i class="fa-solid fa-pen-to-square"></i> Thêm / Chỉnh Sửa Sản Phẩm Mô Hình
+          </h3>
+          <button type="button" class="btn-secondary" style="padding: 0.45rem 1rem; font-size: 0.85rem; background: #ffffff;" onclick="document.querySelector('[data-tab=\'tab-products\']').click()">
+            <i class="fa-solid fa-arrow-left"></i> Quay Lại Danh Sách Sản Phẩm
+          </button>
+        </div>
+
         <form id="product-crud-form">
           <input type="hidden" id="edit-product-id">
 
@@ -344,6 +355,6 @@
   </main>
 
   <div class="toast-container" id="toast-container"></div>
-  <script src="app.js?v=20260810_v10"></script>
+  <script src="app.js?v=20260810_v11"></script>
 </body>
 </html>
