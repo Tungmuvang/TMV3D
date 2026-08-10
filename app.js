@@ -1,4 +1,4 @@
-const CURRENT_DATA_VERSION = "2026.08.10_v6";
+const CURRENT_DATA_VERSION = "2026.08.10_v7";
 
 const DEFAULT_CATEGORIES = [
   {
@@ -339,25 +339,28 @@ class App {
   }
 
   syncDefaultProducts(existingList = []) {
+    const sampleIds = ['p1', 'p2', 'p3', 'p4'];
     if (!Array.isArray(existingList) || existingList.length === 0) {
-      return DEFAULT_PRODUCTS;
+      return DEFAULT_PRODUCTS.filter(p => !sampleIds.includes(p.id));
     }
     
-    // Giữ lại các sản phẩm tùy chỉnh do Admin tạo thêm
-    const customAdminProducts = existingList.filter(item => !DEFAULT_PRODUCTS.some(def => def.id === item.id));
+    // Giữ lại các sản phẩm tùy chỉnh từ Admin (LOẠI BỎ HOÀN TOÀN MẪU CỦ p1, p2, p3, p4)
+    const customAdminProducts = existingList.filter(item => 
+      !sampleIds.includes(item.id) && !DEFAULT_PRODUCTS.some(def => def.id === item.id)
+    );
     
-    // Cập nhật danh sách mặc định mới nhất kết hợp sản phẩm tự tạo từ Admin
-    return [...DEFAULT_PRODUCTS, ...customAdminProducts];
+    return [...DEFAULT_PRODUCTS.filter(p => !sampleIds.includes(p.id)), ...customAdminProducts];
   }
 
   forceRefreshSystemData() {
+    const sampleIds = ['p1', 'p2', 'p3', 'p4'];
     localStorage.removeItem('3d_store_products');
     localStorage.removeItem('3d_store_categories');
     localStorage.removeItem('3d_store_app_version');
     localStorage.setItem('3d_store_app_version', CURRENT_DATA_VERSION);
-    this.products = DEFAULT_PRODUCTS;
+    this.products = DEFAULT_PRODUCTS.filter(p => !sampleIds.includes(p.id));
     this.saveStorage('3d_store_products', this.products);
-    this.showToast('✅ Đã xóa cache và làm mới dữ liệu mới nhất!', 'success');
+    this.showToast('✅ Đã xóa sạch sản phẩm mẫu cũ và làm mới dữ liệu mới nhất!', 'success');
     setTimeout(() => location.reload(true), 800);
   }
 
