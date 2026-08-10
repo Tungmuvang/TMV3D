@@ -339,7 +339,7 @@ input, select, textarea {
 
 .hero-img-box {
   width: 100%;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: 1 / 1;
   max-height: 380px;
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -351,7 +351,7 @@ input, select, textarea {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: bottom center;
+  object-position: center;
 }
 
 .hero-badge-float {
@@ -489,7 +489,7 @@ input, select, textarea {
 .product-img-wrapper {
   position: relative;
   width: 100%;
-  aspect-ratio: 9 / 16;
+  aspect-ratio: 1 / 1;
   max-height: 380px;
   background-color: #0f172a;
   overflow: hidden;
@@ -499,7 +499,7 @@ input, select, textarea {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  object-position: bottom center; /* Căn 2/3 ảnh từ dưới lên */
+  object-position: center;
   transition: transform 0.5s ease;
 }
 
