@@ -28,7 +28,7 @@ const DEFAULT_PRODUCTS = [
         name: "Xanh Dương (Sonic Blue)", 
         extra: 0, 
         hex: "#0052ff", 
-        image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjem5q7x4CcXGrq565HKUc_YPtzrsi3KhpUwUAnk1b23h1Zmt7XUYFgT_VtjRlndcIBHEhyphenhyphen1nrZBdQOOKHsyEQAXvZINt7ZW-LJohP7fcy0eK1wKWS4OwOFbOA3RN2c1bg5MXghuCxsXWSLt-1iDwzSVjROqTzb7j2IX_o9TtlpXlO7a9SenBoN2iCD34tc/s1600/TMV01520.jpg" 
+        image: "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjsj7vktaG7aCblrH1o6f22-ZBr8z5ayXN4x0PhYfYQvwBYJ8aZrW8g41UCZCqtY9fxHyKuocoKJpr6nJOuklbape8oGncqlUhsHb7ueUSjdttTvLFBmsJrQ68ko6MaITFdp_yW_dDBu_1sP7Am_H1rsONUYzegi4khJXxP5k8iGAO_JFUaQkbSLluf_2EL/s1600/TMV01526.jpg" 
       },
       { 
         name: "Vàng (Super Sonic Gold)", 
@@ -177,6 +177,9 @@ class App {
         sonicItem.images = [sonic30cmUrl, ...sonicItem.images.filter(img => img !== sonic30cmUrl)];
       } else {
         sonicItem.images = [sonic30cmUrl];
+      }
+      if (sonicItem.colors && sonicItem.colors.length > 0) {
+        sonicItem.colors[0].image = sonic30cmUrl;
       }
       this.saveStorage('3d_store_products', this.products);
     }
