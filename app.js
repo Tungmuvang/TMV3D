@@ -599,6 +599,16 @@ class App {
         ? this.formatMoney(minP) 
         : `${this.formatMoney(minP)} - ${this.formatMoney(maxP)}`;
 
+      let heightBadgeText = "Tiêu chuẩn";
+      if (p.sizes && p.sizes.length > 0) {
+        const cleanSizes = p.sizes.map(s => (s.name || s.scale || '').replace(/Cao\s*/gi, '').trim()).filter(Boolean);
+        if (cleanSizes.length === 1) {
+          heightBadgeText = `Cao ${cleanSizes[0]}`;
+        } else if (cleanSizes.length > 1) {
+          heightBadgeText = `${cleanSizes[0]} - ${cleanSizes[cleanSizes.length - 1]}`;
+        }
+      }
+
       const mainImgSrc = (p.images && p.images.length > 0) ? p.images[0] : p.image;
 
       const card = document.createElement('a');
@@ -613,7 +623,7 @@ class App {
           <h3 class="product-title">${p.title}</h3>
           <div class="product-specs-mini">
             <span class="spec-badge"><i class="fa-solid fa-palette"></i> ${p.colors ? p.colors.length : 1} Màu</span>
-            <span class="spec-badge"><i class="fa-solid fa-coins"></i> Cọc: ${this.formatMoney(p.deposit || 200000)}</span>
+            <span class="spec-badge"><i class="fa-solid fa-ruler-vertical"></i> ${heightBadgeText}</span>
           </div>
           <div class="product-footer">
             <div class="price-box">
