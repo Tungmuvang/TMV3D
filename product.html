@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chi Tiết Sản Phẩm | TMV IN3D</title>
+  <meta name="description" content="Chi tiết mô hình in 3D cao cấp TMV IN3D với tùy chọn màu sắc Silk Rainbow và kích thước linh hoạt.">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="container">
+      <div class="nav-wrapper">
+        <a href="index.html" class="logo">
+          <div class="logo-icon"><i class="fa-solid fa-cube"></i></div>
+          <span>TMV <span class="gradient-text-gold">IN3D</span></span>
+        </a>
+
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link"><i class="fa-solid fa-arrow-left"></i> Quay Lại Cửa Hàng</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <button class="btn-icon" id="cart-toggle-btn" title="Giỏ hàng">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span class="badge-count" id="cart-count">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- PRODUCT DETAIL CONTAINER -->
+  <div class="container product-page-container">
+    <div class="product-detail-grid">
+      <!-- LEFT: MAIN GALLERY VIEW & THUMBS -->
+      <div class="gallery-section">
+        <div class="main-gallery-view" id="main-gallery-click-area" onclick="app.openLightbox(document.getElementById('detail-main-img').src)">
+          <img id="detail-main-img" src="" alt="Mô hình 3D" loading="eager">
+          <div class="zoom-hint-badge">
+            <i class="fa-solid fa-expand"></i> Bấm Phóng To Full Màn Hình
+          </div>
+        </div>
+
+        <div class="thumbs-list" id="detail-thumbs-list"></div>
+      </div>
+
+      <!-- RIGHT: PRODUCT OPTIONS & DETAILS -->
+      <div class="product-info-section">
+        <div>
+          <span class="category-tag" id="detail-category" style="position: static; display: inline-block; margin-bottom: 0.6rem;">Danh mục</span>
+          <h1 class="detail-title" id="detail-title">Tên Mô Hình 3D</h1>
+        </div>
+
+        <!-- Calculated Price Box -->
+        <div class="detail-price-wrapper">
+          <div>
+            <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;">Giá thanh toán tổng cộng</div>
+            <div class="calculated-price" id="detail-calculated-price">0đ</div>
+          </div>
+        </div>
+
+        <!-- Product Description Paragraph -->
+        <p style="font-size: 0.95rem; color: var(--text-muted); line-height: 1.6;" id="detail-desc">
+          Mô tả chi tiết sản phẩm...
+        </p>
+
+        <!-- Color Options -->
+        <div>
+          <div class="option-group-title">
+            <span>1. Chọn Màu Sắc Filament:</span>
+            <span class="selected-option-value" id="detail-selected-color-name">Silk Rainbow</span>
+          </div>
+          <div class="color-options-grid" id="detail-color-container"></div>
+        </div>
+
+        <!-- Size Options -->
+        <div>
+          <div class="option-group-title">
+            <span>2. Chọn Kích Thước In:</span>
+            <span class="selected-option-value" id="detail-selected-size-name">Tiêu Chuẩn (100%)</span>
+          </div>
+          <div class="size-options-grid" id="detail-size-container"></div>
+        </div>
+
+        <!-- Quantity & Add to Cart Action -->
+        <div style="display: flex; gap: 1rem; align-items: center; margin-top: 1rem;">
+          <div class="qty-stepper">
+            <button class="qty-btn" id="detail-qty-minus"><i class="fa-solid fa-minus"></i></button>
+            <span class="qty-number" id="detail-qty">1</span>
+            <button class="qty-btn" id="detail-qty-plus"><i class="fa-solid fa-plus"></i></button>
+          </div>
+
+          <button class="btn-primary" style="flex: 1; padding: 0.9rem; font-size: 1rem; justify-content: center;" id="detail-add-cart-btn">
+            <i class="fa-solid fa-cart-plus"></i> Thêm Vào Giỏ Hàng
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FULLSCREEN IMAGE LIGHTBOX MODAL -->
+  <div class="modal-overlay lightbox-overlay" id="image-lightbox-modal">
+    <button class="lightbox-close-btn" id="lightbox-close-btn" onclick="app.closeLightbox()" title="Đóng full màn hình"><i class="fa-solid fa-xmark"></i></button>
+    
+    <button class="lightbox-nav-btn prev" id="lightbox-prev-btn" onclick="app.navigateLightbox(-1)" title="Ảnh trước"><i class="fa-solid fa-chevron-left"></i></button>
+    <button class="lightbox-nav-btn next" id="lightbox-next-btn" onclick="app.navigateLightbox(1)" title="Ảnh tiếp theo"><i class="fa-solid fa-chevron-right"></i></button>
+
+    <div class="lightbox-content">
+      <img id="lightbox-img" src="" alt="Xem ảnh full màn hình">
+      <div class="lightbox-caption" id="lightbox-caption">
+        <span id="lightbox-counter">1 / 3</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- CENTERED CHECKOUT MODAL -->
+  <div class="cart-drawer" id="cart-drawer">
+    <div class="cart-drawer-box">
+      <div class="cart-header">
+        <div class="cart-title">
+          <i class="fa-solid fa-credit-card" style="color: var(--accent-gold-dark);"></i> Đơn Hàng & Thanh Toán TMV IN3D
+        </div>
+        <button class="modal-close" id="cart-drawer-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="cart-items-list" id="cart-items-list"></div>
+
+      <div class="cart-footer">
+        <div class="cart-total-row">
+          <span>Tổng tiền đơn hàng:</span>
+          <span class="gradient-text-gold" id="cart-total-price">0đ</span>
+        </div>
+
+        <form id="checkout-form" style="display: flex; flex-direction: column; gap: 0.8rem; margin-top: 0.5rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+            <input type="text" id="cust-name" class="form-control" placeholder="Họ và tên người nhận *" required>
+            <input type="tel" id="cust-phone" class="form-control" placeholder="Số điện thoại liên hệ *" required>
+          </div>
+          <textarea id="cust-address" class="form-control" placeholder="Địa chỉ giao hàng chi tiết *" required style="height: 70px;"></textarea>
+          <input type="text" id="cust-note" class="form-control" placeholder="Ghi chú thêm (Nếu có)">
+
+          <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 0.95rem; font-size: 1rem; margin-top: 0.5rem;" id="submit-order-btn">
+            <i class="fa-solid fa-paper-plane"></i> XÁC NHẬN ĐẶT HÀNG & THANH TOÁN
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD TO CART CHOICE MODAL -->
+  <div class="modal-overlay" id="cart-choice-modal">
+    <div class="modal-container" style="max-width: 480px; padding: 2.2rem; text-align: center;">
+      <button class="modal-close" onclick="app.closeModal('cart-choice-modal')"><i class="fa-solid fa-xmark"></i></button>
+      
+      <div style="font-size: 3rem; color: #10b981; margin-bottom: 0.8rem;">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 0.4rem;">Đã Thêm Vào Giỏ Hàng!</h3>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;" id="choice-modal-msg">
+        Bạn có muốn chọn thêm mô hình khác hay chuyển sang thanh toán luôn?
+      </p>
+
+      <div style="display: flex; gap: 1rem; flex-direction: column;">
+        <button class="btn-primary" style="justify-content: center; padding: 0.95rem; font-size: 1rem;" onclick="app.proceedToCheckoutDirectly()">
+          <i class="fa-solid fa-credit-card"></i> THANH TOÁN LUÔN
+        </button>
+        <button class="btn-secondary" style="justify-content: center; padding: 0.85rem;" onclick="app.closeModal('cart-choice-modal')">
+          <i class="fa-solid fa-store"></i> Tiếp Tục Mua Sắm
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEPOSIT PAYMENT & VIETQR MODAL (BV BANK) -->
+  <div class="modal-overlay" id="deposit-payment-modal">
+    <div class="modal-container" style="max-width: 600px; padding: 2rem;">
+      <button class="modal-close" onclick="app.closeModal('deposit-payment-modal')"><i class="fa-solid fa-xmark"></i></button>
+
+      <div style="text-align: center; margin-bottom: 1.2rem;">
+        <span style="background: var(--accent-gold-light); color: var(--accent-gold-dark); font-weight: 800; font-size: 0.8rem; padding: 0.3rem 0.8rem; border-radius: var(--radius-full); border: 1px solid var(--border-gold);">
+          ⚡ XÁC NHẬN CHUYỂN CỌC ĐƠN HÀNG TMV IN3D
+        </span>
+        <h2 style="font-size: 1.6rem; font-weight: 800; margin-top: 0.5rem; color: var(--text-main);">
+          BẢNG THÔNG TIN ĐẶT CỌC (<span id="dep-amount-display" style="color: var(--accent-gold-dark);">200.000đ</span>)
+        </h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Mã đơn hàng: <strong id="dep-order-id" style="color: var(--accent-gold-dark);">#TMV-123456</strong> • Tổng tiền: <strong id="dep-total-price">350.000đ</strong>
+        </p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 0.85fr; gap: 1.2rem; background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.2rem; margin-bottom: 1.2rem;">
+        <div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 0.4rem;">NGÂN HÀNG THỤ HƯỞNG</div>
+          <div style="font-weight: 800; font-size: 1.1rem; color: #0284c7; margin-bottom: 0.6rem;">TIMO BANK (BV BANK)</div>
+
+          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;">CHỦ TÀI KHOẢN</div>
+          <div style="font-weight: 800; font-size: 0.95rem; margin-bottom: 0.6rem;">NGUYEN THI NHUNG</div>
+
+          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;">SỐ TÀI KHOẢN (STK)</div>
+          <div style="display: flex; align-items: center; justify-content: space-between; background: #ffffff; padding: 0.4rem 0.7rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); margin-bottom: 0.6rem;">
+            <strong style="font-family: monospace; font-size: 1rem; color: var(--accent-gold-dark);" id="dep-stk">9021186623244</strong>
+            <button type="button" class="btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="app.copyText('9021186623244')">Copy</button>
+          </div>
+
+          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;">NỘI DUNG CHUYỂN KHOẢN (MÃ CK)</div>
+          <div style="display: flex; align-items: center; justify-content: space-between; background: #ffffff; padding: 0.4rem 0.7rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+            <strong style="font-family: monospace; font-size: 1rem; color: #0284c7;" id="dep-transfer-code">TMV3D 1234</strong>
+            <button type="button" class="btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="app.copyTransferCode()">Copy</button>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+          <div style="background: #ffffff; border: 2px solid var(--accent-gold-bright); border-radius: var(--radius-md); padding: 0.5rem; width: 140px; height: 140px; margin-bottom: 0.5rem;">
+            <img id="dep-qr-img" src="" alt="VietQR TMV IN3D" style="width: 100%; height: 100%; object-fit: contain;">
+          </div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Mở app Ngân hàng quét QR</span>
+        </div>
+      </div>
+
+      <div style="background: #fef3c7; border: 1px solid var(--border-gold); border-radius: var(--radius-md); padding: 1rem; text-align: center; margin-bottom: 1.2rem;">
+        <div style="font-weight: 800; color: var(--accent-gold-dark); font-size: 0.9rem; margin-bottom: 0.2rem;">
+          <i class="fa-solid fa-spinner fa-spin"></i> ĐANG QUÉT TIỀN CỌC TỰ ĐỘNG TỪ GMAIL...
+        </div>
+        <p style="font-size: 0.8rem; color: #92400e;">
+          Chuyển cọc thành công hệ thống sẽ tự động gửi thông báo Telegram đến Shop & chốt đơn giao hàng.
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 0.8rem;">
+        <a href="https://zalo.me/0969730105" target="_blank" class="btn-primary" style="flex: 1; justify-content: center; background: #0284c7;">
+          <i class="fa-solid fa-comment-dots"></i> ZALO: 0969730105
+        </a>
+        <a href="https://www.facebook.com/TungMuVang" target="_blank" class="btn-primary" style="flex: 1; justify-content: center; background: #1877f2;">
+          <i class="fa-brands fa-facebook"></i> FB: TÙNG NGUYỄN
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+  <script src="app.js"></script>
+</body>
+</html>

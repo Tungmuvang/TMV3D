@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trang Quản Trị Cửa Hàng | TMV IN3D Admin</title>
+  <meta name="robots" content="noindex, nofollow">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body style="background: var(--bg-body); color: var(--text-main); min-height: 100vh;">
+
+  <!-- ADMIN HEADER BAR -->
+  <header class="header">
+    <div class="container">
+      <div class="nav-wrapper">
+        <a href="admintmv.html" class="logo">
+          <div class="logo-icon"><i class="fa-solid fa-sliders"></i></div>
+          <span>TMV <span class="gradient-text-gold">ADMIN CMS</span></span>
+        </a>
+
+        <div style="display: flex; gap: 1rem; align-items: center;">
+          <a href="index.html" class="btn-secondary" style="font-size: 0.85rem; padding: 0.45rem 0.9rem;" target="_blank">
+            <i class="fa-solid fa-store"></i> Xem Cửa Hàng Trang Chủ
+          </a>
+          <button class="btn-secondary" id="admin-page-logout-btn" style="font-size: 0.85rem; color: #ef4444; border-color: #fca5a5; display: none;">
+            <i class="fa-solid fa-right-from-bracket"></i> Đăng Xuất Admin
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ADMIN LOGIN MODAL -->
+  <div id="admin-login-wrapper" style="display: flex; align-items: center; justify-content: center; min-height: calc(100vh - 80px); padding: 2rem;">
+    <div class="modal-container" style="max-width: 420px; width: 100%; padding: 2.5rem; text-align: center; background: #ffffff; border: 1px solid var(--border-color); box-shadow: var(--shadow-xl);">
+      <div style="width: 70px; height: 70px; background: var(--accent-gold-light); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.2rem; border: 1px solid var(--border-gold);">
+        <i class="fa-solid fa-user-shield" style="font-size: 2.2rem; color: var(--accent-gold-dark);"></i>
+      </div>
+
+      <h2 style="font-size: 1.6rem; font-weight: 800; margin-bottom: 0.4rem;" class="gradient-text-gold">Đăng Nhập Quản Trị Shop</h2>
+      <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.8rem;">
+        Vui lòng nhập Tài Khoản & Mật Khẩu Admin để vào hệ thống quản lý sản phẩm TMV IN3D.
+      </p>
+
+      <form id="admin-page-login-form" style="display: flex; flex-direction: column; gap: 1.2rem;">
+        <div style="text-align: left;">
+          <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 0.4rem;">
+            TÀI KHOẢN ADMIN:
+          </label>
+          <div style="position: relative;">
+            <i class="fa-solid fa-user" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-dim);"></i>
+            <input type="text" id="admin-user-input" class="form-control" placeholder="Tài khoản (Mặc định: admin)" required style="padding-left: 2.8rem;">
+          </div>
+        </div>
+
+        <div style="text-align: left;">
+          <label style="font-size: 0.8rem; font-weight: 700; color: var(--text-main); display: block; margin-bottom: 0.4rem;">
+            MẬT KHẨU ADMIN:
+          </label>
+          <div style="position: relative;">
+            <i class="fa-solid fa-lock" style="position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--text-dim);"></i>
+            <input type="password" id="admin-pass-input" class="form-control" placeholder="Mật khẩu (Mặc định: 123456)" required style="padding-left: 2.8rem;">
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 0.9rem; font-size: 1rem; margin-top: 0.5rem;">
+          <i class="fa-solid fa-right-to-bracket"></i> ĐĂNG NHẬP ADMIN
+        </button>
+      </form>
+
+      <div style="margin-top: 1.5rem; font-size: 0.78rem; color: var(--text-muted); border-top: 1px dashed var(--border-color); padding-top: 1rem;">
+        🔑 Tài khoản mặc định: <strong style="color: var(--accent-gold-dark);">admin</strong> • Mật khẩu: <strong style="color: var(--accent-gold-dark);">123456</strong>
+        <br><span style="font-size: 0.72rem; color: var(--text-dim);">(Bạn có thể đổi tài khoản & mật khẩu trong cài đặt Admin)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN ADMIN DASHBOARD CONTENT -->
+  <main id="admin-main-dashboard" class="container" style="display: none; padding: 2.5rem 1rem 5rem;">
+    <div style="background: #ffffff; border-radius: var(--radius-lg); border: 1px solid var(--border-color); padding: 2rem; box-shadow: var(--shadow-lg);">
+      
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;">
+        <div>
+          <h1 style="font-size: 1.8rem; font-weight: 800;" class="gradient-text-gold">
+            <i class="fa-solid fa-boxes-stacked"></i> Bảng Quản Trị Hệ Thống TMV IN3D
+          </h1>
+          <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">
+            Tài khoản Admin đang đăng nhập: <strong id="admin-account-display" style="color: var(--accent-gold-dark);">admin</strong>
+          </p>
+        </div>
+
+        <div style="display: flex; gap: 0.6rem; flex-wrap: wrap;">
+          <button class="btn-secondary" id="export-backup-btn" style="font-size: 0.85rem; background: #ffffff;" title="Tải file dữ liệu JSON về lưu trữ">
+            <i class="fa-solid fa-download"></i> Xuất Backup JSON
+          </button>
+          <button class="btn-secondary" id="import-backup-btn" style="font-size: 0.85rem; background: #ffffff;" title="Nạp file dữ liệu JSON đã lưu trước đó">
+            <i class="fa-solid fa-upload"></i> Nhập Backup JSON
+          </button>
+          <input type="file" id="import-file-input" accept=".json" style="display: none;">
+
+          <button class="btn-secondary" id="reset-demo-btn" style="font-size: 0.85rem;">
+            <i class="fa-solid fa-rotate-left"></i> Khôi Phục Dữ Liệu Ban Đầu
+          </button>
+        </div>
+      </div>
+
+      <!-- TABS BANNER -->
+      <div class="admin-tabs" style="margin-bottom: 2rem;">
+        <button class="admin-tab-btn active" data-tab="tab-products"><i class="fa-solid fa-boxes-stacked"></i> Danh Sách Sản Phẩm</button>
+        <button class="admin-tab-btn" data-tab="tab-add-product"><i class="fa-solid fa-plus-circle"></i> Thêm/Sửa Sản Phẩm</button>
+        <button class="admin-tab-btn" data-tab="tab-categories"><i class="fa-solid fa-tags"></i> Quản Lý Danh Mục</button>
+        <button class="admin-tab-btn" data-tab="tab-webhooks"><i class="fa-solid fa-gear"></i> Tài Khoản & Tích Hợp</button>
+      </div>
+
+      <!-- TAB 1: DANH SÁCH SẢN PHẨM -->
+      <div class="admin-tab-content" id="tab-products">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3 style="font-size: 1.2rem; font-weight: 700;">Sản Phẩm Trong Cửa Hàng (<span id="admin-product-count" style="color: var(--accent-gold-dark);">0</span>)</h3>
+          <button class="btn-primary" style="padding: 0.5rem 1rem; font-size: 0.85rem;" onclick="document.querySelector('[data-tab=\\'tab-add-product\\']').click()">
+            <i class="fa-solid fa-plus"></i> Thêm Sản Phẩm Mới
+          </button>
+        </div>
+
+        <div style="overflow-x: auto;">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Hình ảnh</th>
+                <th>Tên sản phẩm</th>
+                <th>Danh mục</th>
+                <th>Khoảng giá</th>
+                <th>Tiền cọc y/cầu</th>
+                <th>Thao tác</th>
+              </tr>
+            </thead>
+            <tbody id="admin-product-table-body"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- TAB 2: THÊM / SỬA SẢN PHẨM -->
+      <div class="admin-tab-content" id="tab-add-product" style="display: none;">
+        <form id="product-crud-form">
+          <input type="hidden" id="edit-product-id">
+
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label">Tên sản phẩm mô hình *</label>
+              <input type="text" id="p-title" class="form-control" placeholder="Ví dụ: Rồng Linh Hoạt Silk PLA" required>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Danh mục sản phẩm *</label>
+              <select id="p-category" class="form-control" required></select>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Số tiền Cọc Yêu Cầu Cho Đơn Hàng (VNĐ) * <small style="color: var(--accent-gold-dark); font-weight: normal;">(Ví dụ: 200.000đ - Admin tự ghi)</small></label>
+            <input type="text" id="p-deposit" class="form-control" placeholder="200.000" required>
+          </div>
+
+          <!-- BỘ BẬT/TẮT QUẢN LÝ NHIỀU HÌNH ẢNH SẢN PHẨM (MULTIPLE IMAGES GALLERY) -->
+          <div class="form-group" style="background: var(--bg-surface); padding: 1.2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; flex-wrap: wrap; gap: 0.5rem;">
+              <label class="form-label" style="margin-bottom: 0; color: var(--accent-gold-dark);">
+                🖼️ Bộ Bộ Ảnh Mô Hình (Có thể thêm nhiều ảnh từ máy tính hoặc link URL) *
+              </label>
+              <div style="display: flex; gap: 0.5rem;">
+                <label class="btn-secondary" style="padding: 0.35rem 0.8rem; font-size: 0.8rem; background: #ffffff; margin-bottom: 0; cursor: pointer;">
+                  <i class="fa-solid fa-file-image"></i> Tải Nhiều Ảnh Máy Tính
+                  <input type="file" id="p-gallery-file-input" accept="image/*" multiple style="display: none;">
+                </label>
+                <button type="button" class="btn-secondary" style="padding: 0.35rem 0.8rem; font-size: 0.8rem; background: #ffffff;" onclick="app.addGalleryUrlRow()">
+                  <i class="fa-solid fa-link"></i> Thêm Link Ảnh URL
+                </button>
+              </div>
+            </div>
+
+            <!-- CHỈ DẪN -->
+            <p style="font-size: 0.78rem; color: var(--text-muted); margin-bottom: 0.8rem;">
+              💡 <em>Ảnh đầu tiên sẽ tự động làm <strong>Ảnh Bìa Chính</strong> cho sản phẩm. Khách hàng có thể bấm xem toàn bộ bộ ảnh dạng slide full màn hình.</em>
+            </p>
+
+            <!-- LƯỚI DANH SÁCH CÁC ẢNH SẢN PHẨM -->
+            <div id="admin-gallery-images-container" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: flex-start; min-height: 90px; padding: 0.5rem; background: #ffffff; border-radius: var(--radius-sm); border: 1px dashed var(--border-color);">
+            </div>
+          </div>
+
+          <!-- CẤU HÌNH MÀU SẮC & ẢNH TRONG ADMIN CMS -->
+          <div class="form-group" style="background: var(--bg-surface); padding: 1.2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+              <label class="form-label" style="margin-bottom: 0; color: var(--accent-gold-dark);">
+                🎨 Danh Sách Màu Sắc & Ảnh Minh Họa Tương Ứng (Tự chuyển ảnh khi chọn màu)
+              </label>
+              <button type="button" class="btn-secondary" style="padding: 0.35rem 0.8rem; font-size: 0.8rem; background: #ffffff;" onclick="app.addAdminColorRow()">
+                <i class="fa-solid fa-plus"></i> Thêm Màu Mới
+              </button>
+            </div>
+            
+            <div id="admin-color-rows-container" style="display: flex; flex-direction: column; gap: 0.8rem;"></div>
+          </div>
+
+          <!-- CẤU HÌNH CÁC KÍCH THƯỚC & CHIỀU CAO SẢN PHẨM TRONG ADMIN CMS -->
+          <div class="form-group" style="background: var(--bg-surface); padding: 1.2rem; border-radius: var(--radius-md); border: 1px solid var(--border-color);">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem;">
+              <label class="form-label" style="margin-bottom: 0; color: var(--accent-gold-dark);">
+                📏 Danh Sách Kích Thước In & Giá Tiền Tương Ứng *
+              </label>
+              <button type="button" class="btn-secondary" style="padding: 0.35rem 0.8rem; font-size: 0.8rem; background: #ffffff;" onclick="app.addAdminSizeRow()">
+                <i class="fa-solid fa-plus"></i> Thêm Kích Thước & Giá Mới
+              </button>
+            </div>
+            
+            <div id="admin-size-rows-container" style="display: flex; flex-direction: column; gap: 0.8rem;"></div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Mô tả sản phẩm *</label>
+            <textarea id="p-desc" class="form-control" placeholder="Nhập mô tả chi tiết..." required style="height: 100px;"></textarea>
+          </div>
+
+          <div style="display: flex; gap: 1rem; justify-content: flex-end; margin-top: 1rem;">
+            <button type="button" class="btn-secondary" id="cancel-edit-btn">Hủy bỏ</button>
+            <button type="submit" class="btn-primary" id="save-product-btn">
+              <i class="fa-solid fa-floppy-disk"></i> Lưu Sản Phẩm
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- TAB 3: QUẢN LÝ DANH MỤC -->
+      <div class="admin-tab-content" id="tab-categories" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+          <div>
+            <h3 style="font-size: 1.2rem; font-weight: 800;">Quản Lý Danh Mục Cửa Hàng</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Thêm bớt danh mục mô hình in 3D theo ý muốn của bạn.</p>
+          </div>
+        </div>
+
+        <form id="add-category-form" style="display: flex; gap: 0.8rem; margin-bottom: 1.5rem;">
+          <input type="text" id="new-cat-name" class="form-control" placeholder="Nhập tên danh mục mới..." required style="flex: 1;">
+          <button type="submit" class="btn-primary" style="white-space: nowrap;">
+            <i class="fa-solid fa-plus"></i> Thêm Danh Mục
+          </button>
+        </form>
+
+        <div id="category-admin-list"></div>
+      </div>
+
+      <!-- TAB 4: THÀNH PHẦN CÀI ĐẶT & WEBHOOKS -->
+      <div class="admin-tab-content" id="tab-webhooks" style="display: none;">
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+          <div>
+            <h3 style="font-size: 1.2rem; color: var(--accent-gold-dark);" class="form-group">
+              <i class="fa-solid fa-user-gear"></i> Cấu Hình Tài Khoản & Mật Khẩu Đăng Nhập Admin
+            </h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Tài Khoản Đăng Nhập Admin</label>
+                <input type="text" id="setting-admin-account" class="form-control" placeholder="admin">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Mật Khẩu Đăng Nhập Admin</label>
+                <input type="text" id="setting-admin-password" class="form-control" placeholder="123456">
+              </div>
+            </div>
+          </div>
+
+          <hr style="border-color: var(--border-color);">
+
+          <div>
+            <h3 style="font-size: 1.2rem; color: var(--accent-gold-dark);" class="form-group">
+              <i class="fa-brands fa-telegram"></i> Cấu Hình Telegram Bot Thông Báo Đơn Hàng
+            </h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label class="form-label">Telegram Bot Token</label>
+                <input type="text" id="setting-tg-token" class="form-control" placeholder="8795810475:AAGiayX1izlJd8uUxtQAAThE-MffI_KoPKY">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Telegram Chat ID (Phân cách bởi dấu phẩy)</label>
+                <input type="text" id="setting-tg-chatid" class="form-control" placeholder="7744946591, 7607846055">
+              </div>
+            </div>
+          </div>
+
+          <hr style="border-color: var(--border-color);">
+
+          <div>
+            <h3 style="font-size: 1.2rem; color: var(--accent-green);" class="form-group">
+              <i class="fa-solid fa-file-excel"></i> Cấu Hình Google Sheets Webhook
+            </h3>
+            <div class="form-group">
+              <label class="form-label">Google Apps Script WebApp URL Endpoint</label>
+              <input type="url" id="setting-sheet-url" class="form-control" placeholder="https://script.google.com/macros/s/AKfycbxZg6wWKe_yuV9UgZv2dBquCLNPYPyTqxi0urqcquf9lYdUTNqE0DAN9N8y9g3fXJEj/exec">
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 1rem; justify-content: flex-end;">
+            <button class="btn-secondary" id="test-webhook-btn"><i class="fa-solid fa-vial"></i> Gửi Thử Thông Báo Mẫu</button>
+            <button class="btn-primary" id="save-settings-btn"><i class="fa-solid fa-check"></i> Lưu Cấu Hình Tùy Chỉnh</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <div class="toast-container" id="toast-container"></div>
+  <script src="app.js"></script>
+</body>
+</html>

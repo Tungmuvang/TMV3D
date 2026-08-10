@@ -1,0 +1,1501 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mô hình in3d trang trí TMV</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            important: true,
+            theme: {
+                extend: {
+                    colors: {
+                        sonic: {
+                            blue: '#0052ff',
+                            darkblue: '#003eb3',
+                            light: '#0284c7',
+                            yellow: '#f59e0b',
+                            gold: '#d97706',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icon CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Font Be Vietnam Pro -->
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <!-- Swiper JS & Fancybox CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.css" />
+
+    <style>
+        /* ==========================================
+           CSS RESET ĐẶC TRỊ LỖI KHOẢNG CÁCH BLOGSPOT
+           ========================================== */
+        :where(#landing-page-root, [id*="modal"]) :where(div, p, h1, h2, h3, h4, h5, h6, ul, li, label, span, a, button, input, textarea) {
+            font-family: 'Be Vietnam Pro', sans-serif !important;
+            box-sizing: border-box !important;
+        }
+
+        :where(#landing-page-root, [id*="modal"]) :where(p, h1, h2, h3, h4, h5, h6, ul, li, label) {
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            line-height: normal !important;
+        }
+
+        :where(#landing-page-root, [id*="modal"]) :where(div, span) {
+            margin-top: 0 !important;
+            margin-bottom: 0 !important;
+        }
+
+        :where(#landing-page-root, [id*="modal"]) br {
+            display: none !important;
+        }
+
+        .blogspot-anti-break br {
+            display: none !important;
+        }
+
+        .blogspot-anti-break p,
+        .blogspot-anti-break h3 {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .blogspot-anti-break span,
+        .blogspot-anti-break div,
+        .blogspot-anti-break h3 {
+            line-height: 1.4 !important;
+        }
+
+        html,
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #f8fafc;
+        }
+
+        #landing-page-root {
+            position: fixed;
+            inset: 0;
+            z-index: 2147483640;
+            background-color: #f8fafc;
+            color: #0f172a;
+            overflow-y: auto;
+            overflow-x: hidden;
+            font-family: 'Be Vietnam Pro', sans-serif;
+            line-height: 1.5;
+            scroll-behavior: smooth;
+        }
+
+        /* Custom Scrollbar */
+        #landing-page-root::-webkit-scrollbar,
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        #landing-page-root::-webkit-scrollbar-track,
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #e2e8f0;
+        }
+
+        #landing-page-root::-webkit-scrollbar-thumb,
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #0052ff;
+            border-radius: 4px;
+        }
+
+        /* Gradient Text */
+        .text-gradient-sonic {
+            background: linear-gradient(135deg, #0052ff 0%, #0284c7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Swiper Carousel Styling */
+        .heroSwiper {
+            width: 100%;
+            border-radius: 1rem;
+            background: #0f172a;
+        }
+
+        .heroSwiper .swiper-slide {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #0f172a;
+            overflow: hidden;
+        }
+
+        .heroSwiper .swiper-slide img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain !important;
+            transition: transform 0.4s ease;
+        }
+
+        .heroSwiper .swiper-slide:hover img {
+            transform: scale(1.03);
+        }
+
+        .swiper-button-next,
+        .swiper-button-prev {
+            color: #0052ff !important;
+            background: rgba(255, 255, 255, 0.95);
+            width: 38px !important;
+            height: 38px !important;
+            border-radius: 50%;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.25);
+        }
+
+        .swiper-button-next::after,
+        .swiper-button-prev::after {
+            font-size: 16px !important;
+            font-weight: bold;
+        }
+
+        .swiper-pagination-bullet-active {
+            background: #0052ff !important;
+            width: 24px !important;
+            border-radius: 4px !important;
+        }
+
+        .fancybox__container {
+            z-index: 2147483649 !important;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 2147483648;
+            background: rgba(15, 23, 42, 0.75);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.hien-len {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-card {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 82, 255, 0.25);
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.hien-len .modal-card {
+            transform: scale(1);
+        }
+
+        /* Notification Toast */
+        #purchase-notification-container {
+            position: fixed;
+            bottom: 80px;
+            left: 16px;
+            z-index: 2147483630;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .purchase-toast {
+            background: rgba(255, 255, 255, 0.98);
+            border: 1px solid #bfdbfe;
+            backdrop-filter: blur(12px);
+            border-radius: 14px;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 30px rgba(0, 82, 255, 0.15);
+            animation: toastIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), toastOut 0.4s ease 4.6s forwards;
+            max-width: 320px;
+        }
+
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.9);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        @keyframes toastOut {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+
+            to {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- TOÀN BỘ LANDING PAGE TRONG NÀY ĐỂ TRÁNH BUG BLOGSPOT -->
+    <div id="landing-page-root">
+
+        <!-- HEADER TOP NAVIGATION -->
+        <header class="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200/80 px-4 py-3 shadow-sm">
+            <div class="max-w-6xl mx-auto flex items-center justify-between">
+                <a href="#" class="flex items-center gap-2.5 text-slate-900 decoration-none">
+                    <div
+                        class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-500 flex items-center justify-center font-black text-xl text-white shadow-md">
+                        TMV
+                    </div>
+                    <div>
+                        <div
+                            class="font-extrabold text-base sm:text-lg text-blue-700 tracking-wider uppercase leading-none">
+                            MÔ HÌNH IN3D TRANG TRÍ TMV</div>
+                        <div class="text-[10px] text-slate-500 font-bold tracking-widest uppercase mt-0.5">Mô Hình In 3D
+                            & Decor Cao Cấp</div>
+                    </div>
+                </a>
+
+                <nav class="hidden md:flex items-center gap-6 text-sm font-bold text-slate-600">
+                    <a href="#gioi-thieu" class="hover:text-blue-600 transition">Giới Thiệu</a>
+                    <a href="#bang-gia" class="hover:text-blue-600 transition">Kích Thước & Giá</a>
+                    <a href="#dac-diem" class="hover:text-blue-600 transition">Đặc Điểm</a>
+                    <a href="#faq" class="hover:text-blue-600 transition">Hỏi Đáp</a>
+                </nav>
+
+                <a href="#bang-gia"
+                    class="bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-700 hover:to-blue-600 text-white font-extrabold px-4 py-2 rounded-xl text-xs sm:text-sm uppercase tracking-wide transition shadow-md flex items-center gap-1.5 cursor-pointer">
+                    <i class="fa-solid fa-cart-shopping"></i> Đặt Hàng Ngay
+                </a>
+            </div>
+        </header>
+
+        <!-- MAIN HERO SECTION VỚI SLIDE TRỌN BỘ 6 ẢNH THẬT BÊN TRÁI -->
+        <section id="gioi-thieu" class="relative pt-6 pb-12 px-4 overflow-hidden bg-slate-50">
+            <div class="max-w-6xl mx-auto relative z-10">
+                <!-- Badges Row -->
+                <div class="flex flex-wrap items-center justify-center gap-3 mb-6">
+                    <span
+                        class="inline-flex items-center gap-1.5 bg-blue-50 border border-blue-200 text-blue-700 text-xs sm:text-sm font-extrabold px-3.5 py-1.5 rounded-full shadow-sm">
+                        <i class="fa-solid fa-bolt text-amber-500"></i> SIÊU PHẨM HOT 2026
+                    </span>
+                    <span
+                        class="inline-flex items-center gap-1.5 bg-amber-50 border border-amber-200 text-amber-800 text-xs sm:text-sm font-extrabold px-3.5 py-1.5 rounded-full shadow-sm">
+                        <i class="fa-solid fa-shield-halved text-amber-500"></i> NHỰA NGUYÊN SINH AN TOÀN
+                    </span>
+                </div>
+
+                <!-- Main Title -->
+                <div class="text-center max-w-4xl mx-auto mb-8">
+                    <h1
+                        class="text-2xl sm:text-4xl md:text-5xl font-black uppercase tracking-tight text-slate-900 leading-tight mb-3">
+                        MÔ HÌNH IN3D <span class="text-gradient-sonic">TRANG TRÍ TMV</span>
+                    </h1>
+                    <div
+                        class="inline-block bg-gradient-to-r from-amber-400 to-yellow-400 text-slate-950 font-black text-base sm:text-xl px-6 py-2 rounded-2xl uppercase tracking-widest shadow-lg transform -rotate-1">
+                        IN 3D CAO CẤP - SẮC NÉT TỪNG CHI TIẾT
+                    </div>
+                </div>
+
+                <!-- Hero Visual Banner Grid (Full Width 3 Images + Text Underneath) -->
+                <div class="bg-white border border-slate-200 rounded-3xl p-4 sm:p-6 shadow-xl relative">
+
+                    <!-- Top: Full-Width Swiper Carousel (Hiển thị 3 ảnh dọc song song trên PC) -->
+                    <div class="w-full relative">
+                        <div class="rounded-2xl border border-slate-200 shadow-lg bg-slate-900 p-2 sm:p-3">
+                            <div class="swiper heroSwiper h-[420px] sm:h-[500px] md:h-[560px] w-full">
+                                <div class="swiper-wrapper">
+                                    <!-- 7 Ảnh Mới Cung Cấp Cho Lên Đầu -->
+                                    <div class="swiper-slide p-1.5 h-full">
+                                        <a data-fancybox="sonic-gallery"
+                                            href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjem5q7x4CcXGrq565HKUc_YPtzrsi3KhpUwUAnk1b23h1Zmt7XUYFgT_VtjRlndcIBHEhyphenhyphen1nrZBdQOOKHsyEQAXvZINt7ZW-LJohP7fcy0eK1wKWS4OwOFbOA3RN2c1bg5MXghuCxsXWSLt-1iDwzSVjROqTzb7j2IX_o9TtlpXlO7a9SenBoN2iCD34tc/s1600/TMV01520.jpg"
+                                            class="block w-full h-full cursor-zoom-in flex items-center justify-center">
+                                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjem5q7x4CcXGrq565HKUc_YPtzrsi3KhpUwUAnk1b23h1Zmt7XUYFgT_VtjRlndcIBHEhyphenhyphen1nrZBdQOOKHsyEQAXvZINt7ZW-LJohP7fcy0eK1wKWS4OwOFbOA3RN2c1bg5MXghuCxsXWSLt-1iDwzSVjROqTzb7j2IX_o9TtlpXlO7a9SenBoN2iCD34tc/s1600/TMV01520.jpg"
+                                                alt="Mô hình Sonic 1" class="h-full w-full object-cover rounded-xl">
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide p-1.5 h-full">
+                                        <a data-fancybox="sonic-gallery"
+                                            href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjsj7vktaG7aCblrH1o6f22-ZBr8z5ayXN4x0PhYfYQvwBYJ8aZrW8g41UCZCqtY9fxHyKuocoKJpr6nJOuklbape8oGncqlUhsHb7ueUSjdttTvLFBmsJrQ68ko6MaITFdp_yW_dDBu_1sP7Am_H1rsONUYzegi4khJXxP5k8iGAO_JFUaQkbSLluf_2EL/s1600/TMV01526.jpg"
+                                            class="block w-full h-full cursor-zoom-in flex items-center justify-center">
+                                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjsj7vktaG7aCblrH1o6f22-ZBr8z5ayXN4x0PhYfYQvwBYJ8aZrW8g41UCZCqtY9fxHyKuocoKJpr6nJOuklbape8oGncqlUhsHb7ueUSjdttTvLFBmsJrQ68ko6MaITFdp_yW_dDBu_1sP7Am_H1rsONUYzegi4khJXxP5k8iGAO_JFUaQkbSLluf_2EL/s1600/TMV01526.jpg"
+                                                alt="Mô hình Sonic 2" class="h-full w-full object-cover rounded-xl">
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide p-1.5 h-full">
+                                        <a data-fancybox="sonic-gallery"
+                                            href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjFVRe45nloN6-cDN0UhFyRkmugANQFfmoGnFj9ZCakH2nyc5eyIC5IV5ZefeGLCbs_Dh3qRW6BSpeVFbZPzBSflLc_6j3pj9Z84Awj08yaFXsE934bBO6pLlPdnTuZ1k7t-g234j07jPf0THvTjM291j9jjECuYr9SXCvq2iMFRpCu4y4wt1n377djKrPz/s1600/TMV01527.jpg"
+                                            class="block w-full h-full cursor-zoom-in flex items-center justify-center">
+                                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjFVRe45nloN6-cDN0UhFyRkmugANQFfmoGnFj9ZCakH2nyc5eyIC5IV5ZefeGLCbs_Dh3qRW6BSpeVFbZPzBSflLc_6j3pj9Z84Awj08yaFXsE934bBO6pLlPdnTuZ1k7t-g234j07jPf0THvTjM291j9jjECuYr9SXCvq2iMFRpCu4y4wt1n377djKrPz/s1600/TMV01527.jpg"
+                                                alt="Mô hình Sonic 3" class="h-full w-full object-cover rounded-xl">
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide p-1.5 h-full">
+                                        <a data-fancybox="sonic-gallery"
+                                            href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhmuNKlhx5uXy2FjQJZdb0pP0MBLPmkuH6MDGROeaZ1-8wBaEpJR4IpDX5IyF9rHdmA6f3hPv3X7Gk_DKJuTqpDNABErfZ0XdBfQkZzmbfcfRkrKPsgnjG_u2XIqY50UcU6IB_nJ0M3cCITU50d7tDmMl5mlggwU1nVXwt5CG3TxgHJ4WdVQhyphenhyphenNw65otcZo/s1600/TMV01528.jpg"
+                                            class="block w-full h-full cursor-zoom-in flex items-center justify-center">
+                                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhmuNKlhx5uXy2FjQJZdb0pP0MBLPmkuH6MDGROeaZ1-8wBaEpJR4IpDX5IyF9rHdmA6f3hPv3X7Gk_DKJuTqpDNABErfZ0XdBfQkZzmbfcfRkrKPsgnjG_u2XIqY50UcU6IB_nJ0M3cCITU50d7tDmMl5mlggwU1nVXwt5CG3TxgHJ4WdVQhyphenhyphenNw65otcZo/s1600/TMV01528.jpg"
+                                                alt="Mô hình Sonic 4" class="h-full w-full object-cover rounded-xl">
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide p-1.5 h-full">
+                                        <a data-fancybox="sonic-gallery"
+                                            href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEha60bHqulbljigSLQ4o1xh0X8a48ImE_P73ca9QPWIGXRaW6KEcdpeZ0AZIwmrmd8rj7x6y2PYRYCaLi-ZBwL8DsntAeWMkzPEu6ciln7NkqBjG94xUINA1io6W632Q7pJoGKhApdc-9L_Pt8vXxAa423wcpgDPv6Q8XV1CJbtfyy19wbQwONT61o-C-sJ/s1600/TMV01529.jpg"
+                                            class="block w-full h-full cursor-zoom-in flex items-center justify-center">
+                                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEha60bHqulbljigSLQ4o1xh0X8a48ImE_P73ca9QPWIGXRaW6KEcdpeZ0AZIwmrmd8rj7x6y2PYRYCaLi-ZBwL8DsntAeWMkzPEu6ciln7NkqBjG94xUINA1io6W632Q7pJoGKhApdc-9L_Pt8vXxAa423wcpgDPv6Q8XV1CJbtfyy19wbQwONT61o-C-sJ/s1600/TMV01529.jpg"
+                                                alt="Mô hình Sonic 5" class="h-full w-full object-cover rounded-xl">
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide p-1.5 h-full">
+                                        <a data-fancybox="sonic-gallery"
+                                            href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi2iZ78ndDwnNGARWaFNRUuMHVavjd4eiQPTifutInvFQufkMuG5Cu7McVbRsFTEy6Yr3bIfJY8g6-q72WvUdsIHD29Na2RBo2C4RJnmjgI7vS8KFLQG7783_ufnoLMEjp2kBEX-TbiHHfyBkMWyePG7UkOEoJ6kKvMMBj8OrK8GkCBF0uMJqLNF0Rpmh1-/s1600/TMV01543.jpg"
+                                            class="block w-full h-full cursor-zoom-in flex items-center justify-center">
+                                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEi2iZ78ndDwnNGARWaFNRUuMHVavjd4eiQPTifutInvFQufkMuG5Cu7McVbRsFTEy6Yr3bIfJY8g6-q72WvUdsIHD29Na2RBo2C4RJnmjgI7vS8KFLQG7783_ufnoLMEjp2kBEX-TbiHHfyBkMWyePG7UkOEoJ6kKvMMBj8OrK8GkCBF0uMJqLNF0Rpmh1-/s1600/TMV01543.jpg"
+                                                alt="Mô hình Sonic 6" class="h-full w-full object-cover rounded-xl">
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide p-1.5 h-full">
+                                        <a data-fancybox="sonic-gallery"
+                                            href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiwSGRWlnXDmqKaUWbsem0AOudUxORs2sqDK4zNLbO6YsFkR_MfjPPaLaNDDFCp1x8vS_hJqdrYHeD1we1qDHTMsD2Tx_SyR782mxmlco37vnlGZjHRg8vH1kvkwq3qmEHDFvWVwW2MbVFjkNZ5YS2o0fdea1nBpfYAyj4KuX5DEgCZ9Bz5X4QwYfVjaDfv/s1600/TMV01544.jpg"
+                                            class="block w-full h-full cursor-zoom-in flex items-center justify-center">
+                                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiwSGRWlnXDmqKaUWbsem0AOudUxORs2sqDK4zNLbO6YsFkR_MfjPPaLaNDDFCp1x8vS_hJqdrYHeD1we1qDHTMsD2Tx_SyR782mxmlco37vnlGZjHRg8vH1kvkwq3qmEHDFvWVwW2MbVFjkNZ5YS2o0fdea1nBpfYAyj4KuX5DEgCZ9Bz5X4QwYfVjaDfv/s1600/TMV01544.jpg"
+                                                alt="Mô hình Sonic 7" class="h-full w-full object-cover rounded-xl">
+                                        </a>
+                                    </div>
+
+                                    <!-- Các Slide Cũ Tiếp Theo -->
+                                    <div class="swiper-slide p-1.5 h-full">
+                                        <a data-fancybox="sonic-gallery"
+                                            href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjwVixgq_5uRU2Wn18ohYTfrEDeORkpCilk3xiVlDkg_wShvyOgwdagaw31rWPTf-YXLppc5DlVuWDm7khtnYpOaxSBBCXAI1kIgYiPLcthcE1Sm8cUVgmJZq22WAxShQKByhQlffYqTvcyEGRJh05dv4kBZc3kV0-Un9Hs0-JpKI6IBjj0TjxU4wZ2vTKS/s1600/ChatGPT%20Image%2009_44_47%2020%20thg%207,%202026.png"
+                                            class="block w-full h-full cursor-zoom-in flex items-center justify-center">
+                                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjwVixgq_5uRU2Wn18ohYTfrEDeORkpCilk3xiVlDkg_wShvyOgwdagaw31rWPTf-YXLppc5DlVuWDm7khtnYpOaxSBBCXAI1kIgYiPLcthcE1Sm8cUVgmJZq22WAxShQKByhQlffYqTvcyEGRJh05dv4kBZc3kV0-Un9Hs0-JpKI6IBjj0TjxU4wZ2vTKS/s1600/ChatGPT%20Image%2009_44_47%2020%20thg%207,%202026.png"
+                                                alt="Sonic Photo 2" class="h-full w-full object-cover rounded-xl">
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide p-1.5 h-full">
+                                        <a data-fancybox="sonic-gallery"
+                                            href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgdn5SiqY8I7vrwWCrZDyErW480wjW9kCsAcwE33DB9wfquqeIAKSGmY7uaYBOGl_MPKlZFyAaN65UN3PzvmzOxFgEq3kNmJKCMIpbZ2vD0U6Ou5uN9LptsUUglwpRrdRqfcPsHRJlYJoX-d36TtXF5VDiMXrZWNBqk1-QSpTwnf2jmgi51vlbyNA7ZfiSl/s1600/ChatGPT%20Image%2017_15_54%2019%20thg%207,%202026.png"
+                                            class="block w-full h-full cursor-zoom-in flex items-center justify-center">
+                                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgdn5SiqY8I7vrwWCrZDyErW480wjW9kCsAcwE33DB9wfquqeIAKSGmY7uaYBOGl_MPKlZFyAaN65UN3PzvmzOxFgEq3kNmJKCMIpbZ2vD0U6Ou5uN9LptsUUglwpRrdRqfcPsHRJlYJoX-d36TtXF5VDiMXrZWNBqk1-QSpTwnf2jmgi51vlbyNA7ZfiSl/s1600/ChatGPT%20Image%2017_15_54%2019%20thg%207,%202026.png"
+                                                alt="Sonic Con To 45cm" class="h-full w-full object-cover rounded-xl">
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide p-1.5 h-full">
+                                        <a data-fancybox="sonic-gallery"
+                                            href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNiVnnxuoeLriAwSPU9p8oZnw48ksY1LQLa_kO6yWJp-fQ_lVZnPS5omaSBmb0Cnlu0rM4vrjTG8UZK36_VPhyphenhyphenCbFcRKjNnRKFTWlaLevFGla55oNbb9ESJ1xe1zCmVnvGH9ixiQTlBLgv__drNuf9n3oF0Srn1wtQO3B7r73LdJVsOwCzcElLGgm7PVyV/s1600/TMV00546.jpg"
+                                            class="block w-full h-full cursor-zoom-in flex items-center justify-center">
+                                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNiVnnxuoeLriAwSPU9p8oZnw48ksY1LQLa_kO6yWJp-fQ_lVZnPS5omaSBmb0Cnlu0rM4vrjTG8UZK36_VPhyphenhyphenCbFcRKjNnRKFTWlaLevFGla55oNbb9ESJ1xe1zCmVnvGH9ixiQTlBLgv__drNuf9n3oF0Srn1wtQO3B7r73LdJVsOwCzcElLGgm7PVyV/s1600/TMV00546.jpg"
+                                                alt="Sonic Con Nho 22.5cm"
+                                                class="h-full w-full object-cover rounded-xl">
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide p-1.5 h-full">
+                                        <a data-fancybox="sonic-gallery"
+                                            href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQEBE5TRQG5nmpDY03Q-jMBi3RW-I2PTpRADmHimJUP0EzU2Y9HRvQwmD-z17IU3A0D8eJ5Rlp5DdttRfftjtgXsyFwRtWc_4Qv4Kt2fsBLmGr62sRXrYSEQM_ZzQ3Q4-GOG_NRoxkv3OQm-eRBg4skZCfWBK0EQWBQYQuSqpeM70v8Y-fDx5wbzFWYzJ2/s1600/file_00000000693881f7b5bdbae9d1e2687e.png"
+                                            class="block w-full h-full cursor-zoom-in flex items-center justify-center">
+                                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiQEBE5TRQG5nmpDY03Q-jMBi3RW-I2PTpRADmHimJUP0EzU2Y9HRvQwmD-z17IU3A0D8eJ5Rlp5DdttRfftjtgXsyFwRtWc_4Qv4Kt2fsBLmGr62sRXrYSEQM_ZzQ3Q4-GOG_NRoxkv3OQm-eRBg4skZCfWBK0EQWBQYQuSqpeM70v8Y-fDx5wbzFWYzJ2/s1600/file_00000000693881f7b5bdbae9d1e2687e.png"
+                                                alt="Sonic Photo 5" class="h-full w-full object-cover rounded-xl">
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide p-1.5 h-full">
+                                        <a data-fancybox="sonic-gallery"
+                                            href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiTqSr0xmX-zXeG4XI8ljXXTvM3jlaS-er3ZvriFjNGZCD710_INM4pNUsbLp3m9p8VrqM6WfQnfYTUkN3LdCcoSLXm7-2Ntral2xVsifls2i1oz8kccr9Ih4SHOi6RgTUwRtV4VllX5-vn3KUJK8EoRvuLrj8027oQtLZ7dT8_MVrafyVyTWx_D43mgtmt/s1600/0718.jpg"
+                                            class="block w-full h-full cursor-zoom-in flex items-center justify-center">
+                                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiTqSr0xmX-zXeG4XI8ljXXTvM3jlaS-er3ZvriFjNGZCD710_INM4pNUsbLp3m9p8VrqM6WfQnfYTUkN3LdCcoSLXm7-2Ntral2xVsifls2i1oz8kccr9Ih4SHOi6RgTUwRtV4VllX5-vn3KUJK8EoRvuLrj8027oQtLZ7dT8_MVrafyVyTWx_D43mgtmt/s1600/0718.jpg"
+                                                alt="Sonic Photo 6" class="h-full w-full object-cover rounded-xl">
+                                        </a>
+                                    </div>
+                                    <div class="swiper-slide p-1.5 h-full">
+                                        <a data-fancybox="sonic-gallery"
+                                            href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgNvdD4IFTTl4EiaXF-rlsYVkcYkK80X2dLhz7slCSdBx4V92Eh_1qr1RK4RqIWxzCCQ6CZb8xHiDFpKCNY-bx6miRkhxXalyjbUlKAmSS9FWE2yLKbPb-JJfkA8QoPTWhGmoRb4UNht-pF5leNflL6ehkZ0tYLRDDaS-xjKBFubs-uq_5_f52NOKilmJeF/s1600/TMV01509.jpg"
+                                            class="block w-full h-full cursor-zoom-in flex items-center justify-center">
+                                            <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgNvdD4IFTTl4EiaXF-rlsYVkcYkK80X2dLhz7slCSdBx4V92Eh_1qr1RK4RqIWxzCCQ6CZb8xHiDFpKCNY-bx6miRkhxXalyjbUlKAmSS9FWE2yLKbPb-JJfkA8QoPTWhGmoRb4UNht-pF5leNflL6ehkZ0tYLRDDaS-xjKBFubs-uq_5_f52NOKilmJeF/s1600/TMV01509.jpg"
+                                                alt="Mô Hình Goku Super Saiyan"
+                                                class="h-full w-full object-cover rounded-xl">
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="swiper-button-next"></div>
+                                <div class="swiper-button-prev"></div>
+                                <div class="swiper-pagination"></div>
+                            </div>
+
+                            <div
+                                class="mt-3 w-full bg-white/95 backdrop-blur-md p-3 rounded-xl border border-slate-200 flex items-center justify-between">
+                                <div class="flex items-center gap-2.5">
+                                    <div
+                                        class="w-9 h-9 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 text-base font-bold shrink-0">
+                                        <i class="fa-solid fa-images"></i>
+                                    </div>
+                                    <div>
+                                        <div class="text-[11px] text-slate-500 font-semibold">Vuốt sang để xem 13 góc
+                                            ảnh chụp thật</div>
+                                        <div class="text-xs font-bold text-slate-900">Bấm ảnh để <span
+                                                class="text-blue-600">Phóng To Full Màn Hình & Xem Ảnh Tiếp</span></div>
+                                    </div>
+                                </div>
+                                <a href="#bang-gia"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs px-3.5 py-2 rounded-lg transition whitespace-nowrap shadow flex items-center gap-1">
+                                    Xem Bảng Giá <i class="fa-solid fa-arrow-down ml-0.5"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bottom: Key Highlights & Shipping Box (Đặt Nằm Ngang Bên Dưới 3 Ảnh) -->
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                        <!-- Box 1: Điểm nổi bật sản phẩm -->
+                        <div
+                            class="bg-blue-50/60 border border-blue-100 p-5 rounded-2xl shadow-sm flex flex-col justify-between">
+                            <div>
+                                <h3
+                                    class="text-base sm:text-lg font-black text-blue-800 uppercase tracking-wide mb-3 flex items-center gap-2">
+                                    <i class="fa-solid fa-star text-amber-500"></i> ĐIỂM NỔI BẬT SẢN PHẨM
+                                </h3>
+                                <ul class="space-y-2.5 text-xs sm:text-sm text-slate-700">
+                                    <li class="flex items-start gap-2.5">
+                                        <i class="fa-solid fa-circle-check text-blue-600 mt-1 shrink-0"></i>
+                                        <span><strong>Nhựa nguyên sinh an toàn:</strong> Thân thiện môi trường, bề mặt
+                                            sơn láng mịn, độ bền cao.</span>
+                                    </li>
+                                    <li class="flex items-start gap-2.5">
+                                        <i class="fa-solid fa-circle-check text-blue-600 mt-1 shrink-0"></i>
+                                        <span><strong>Phong cách Street Style:</strong> Áo khoác metallic, tai nghe
+                                            gaming & giày sneaker Nike năng động.</span>
+                                    </li>
+                                    <li class="flex items-start gap-2.5">
+                                        <i class="fa-solid fa-circle-check text-blue-600 mt-1 shrink-0"></i>
+                                        <span><strong>Trang trí đa không gian:</strong> Điểm nhấn ấn tượng cho bàn làm
+                                            việc, kệ sách, phòng khách, studio.</span>
+                                    </li>
+                                    <li class="flex items-start gap-2.5">
+                                        <i class="fa-solid fa-truck-fast text-amber-600 mt-1 shrink-0"></i>
+                                        <span><strong>Thời gian giao hàng:</strong> Đặt hàng sản xuất & đóng gói tỉ mỉ
+                                            có sau <strong>7 - 15 ngày</strong>.</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <!-- Box 2: Thông tin Phí Vận Chuyển & Nút Đặt Hàng -->
+                        <div
+                            class="bg-gradient-to-br from-slate-900 to-blue-950 text-white p-5 rounded-2xl shadow-md border border-slate-800 flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-2">
+                                    <span
+                                        class="text-xs font-black uppercase text-amber-400 tracking-wider flex items-center gap-1.5">
+                                        <i class="fa-solid fa-truck-fast"></i> LƯU Ý PHÍ VẬN CHUYỂN
+                                    </span>
+                                </div>
+                                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-4">
+                                    Giá sản phẩm <strong>(550k / 850k)</strong> chưa bao gồm phí ship. Phí vận chuyển do
+                                    đơn vị ship (Viettel Post / GHTK) thu khi bạn nhận hàng.
+                                </p>
+                            </div>
+
+                            <button onclick="luotXuongSanPham()"
+                                class="w-full py-3.5 bg-gradient-to-r from-blue-600 to-blue-500 hover:from-blue-500 hover:to-blue-600 text-white font-black text-xs sm:text-sm uppercase rounded-xl transition shadow-lg flex items-center justify-center gap-2 cursor-pointer group">
+                                <i
+                                    class="fa-solid fa-cart-shopping text-amber-300 text-base group-hover:scale-110 transition"></i>
+                                <span>CHỌN MÔ HÌNH & ĐẶT MUA NGAY</span>
+                                <i class="fa-solid fa-arrow-down text-xs group-hover:translate-y-0.5 transition"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRICING & CLASSIFICATION SECTION -->
+        <section id="bang-gia" class="py-12 px-4 bg-slate-50 border-b border-slate-200">
+            <div class="max-w-6xl mx-auto">
+                <div class="text-center mb-10">
+                    <h2 class="text-2xl sm:text-4xl font-black text-slate-900 uppercase tracking-wide">
+                        CHỌN PHÂN LOẠI <span class="text-gradient-sonic">MÔ HÌNH NỔI BẬT</span>
+                    </h2>
+                    <p class="text-slate-500 text-sm mt-2 max-w-xl mx-auto">
+                        Các mô hình chuẩn đẹp, độ nét cao, đóng gói chống sốc an toàn 100%.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Option 1: Con Nhỏ -->
+                    <div
+                        class="bg-white border-2 border-blue-200 rounded-3xl p-5 flex flex-col justify-between hover:border-blue-500 transition duration-300 shadow-md group relative">
+                        <div>
+                            <div class="text-center mb-3">
+                                <span
+                                    class="bg-blue-100 text-blue-800 text-[11px] font-extrabold px-3 py-1 rounded-full border border-blue-200 inline-block">
+                                    SONIC NHỎ
+                                </span>
+                                <h3 class="text-xl font-black text-slate-900 mt-2 uppercase">CON NHỎ (22.5 CM)</h3>
+                            </div>
+
+                            <div
+                                class="w-full h-64 sm:h-72 rounded-2xl overflow-hidden mb-4 border border-slate-200 bg-slate-900 flex items-center justify-center p-2">
+                                <a data-fancybox="sonic-gallery"
+                                    href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiTqSr0xmX-zXeG4XI8ljXXTvM3jlaS-er3ZvriFjNGZCD710_INM4pNUsbLp3m9p8VrqM6WfQnfYTUkN3LdCcoSLXm7-2Ntral2xVsifls2i1oz8kccr9Ih4SHOi6RgTUwRtV4VllX5-vn3KUJK8EoRvuLrj8027oQtLZ7dT8_MVrafyVyTWx_D43mgtmt/s1600/0718.jpg"
+                                    class="block w-full h-full cursor-zoom-in flex items-center justify-center">
+                                    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiTqSr0xmX-zXeG4XI8ljXXTvM3jlaS-er3ZvriFjNGZCD710_INM4pNUsbLp3m9p8VrqM6WfQnfYTUkN3LdCcoSLXm7-2Ntral2xVsifls2i1oz8kccr9Ih4SHOi6RgTUwRtV4VllX5-vn3KUJK8EoRvuLrj8027oQtLZ7dT8_MVrafyVyTWx_D43mgtmt/s1600/0718.jpg"
+                                        alt="Sonic Con Nho Doc 22.5cm" class="h-full w-auto object-contain rounded-lg">
+                                </a>
+                            </div>
+
+                            <div class="space-y-2 my-3 text-xs sm:text-sm text-slate-700">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-shirt text-blue-600"></i>
+                                    <span>Trang phục: Áo khoác Street Style Vàng</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-headphones text-blue-600"></i>
+                                    <span>Phụ kiện: Tai nghe Gaming Vàng - Đen</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-shoe-prints text-blue-600"></i>
+                                    <span>Giày: Sneaker thể thao Nike cổ cao</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-cube text-blue-600"></i>
+                                    <span>Chất liệu: Nhựa nguyên sinh an toàn</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="moModalOrder('nho')"
+                            class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-xs uppercase rounded-2xl transition shadow-lg flex items-center justify-center gap-2 cursor-pointer mt-3">
+                            <i class="fa-solid fa-cart-arrow-down text-base"></i> MUA CON NHỎ (550.000đ)
+                        </button>
+                    </div>
+
+                    <!-- Option 2: Con To -->
+                    <div
+                        class="bg-amber-50/50 border-2 border-amber-400 rounded-3xl p-5 flex flex-col justify-between hover:border-amber-500 transition duration-300 shadow-xl relative group">
+                        <div
+                            class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-amber-400 text-slate-950 text-[11px] font-black uppercase px-3.5 py-0.5 rounded-full shadow-md">
+                            🔥 BÁN CHẠY
+                        </div>
+
+                        <div>
+                            <div class="text-center mb-3 mt-1">
+                                <span
+                                    class="bg-amber-100 text-amber-900 text-[11px] font-extrabold px-3 py-1 rounded-full border border-amber-300 inline-block">
+                                    SONIC TO
+                                </span>
+                                <h3 class="text-xl font-black text-slate-900 mt-2 uppercase">CON TO (45 CM)</h3>
+                            </div>
+
+                            <div
+                                class="w-full h-64 sm:h-72 rounded-2xl overflow-hidden mb-4 border border-amber-300 bg-slate-900 flex items-center justify-center p-2">
+                                <a data-fancybox="sonic-gallery"
+                                    href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNiVnnxuoeLriAwSPU9p8oZnw48ksY1LQLa_kO6yWJp-fQ_lVZnPS5omaSBmb0Cnlu0rM4vrjTG8UZK36_VPhyphenhyphenCbFcRKjNnRKFTWlaLevFGla55oNbb9ESJ1xe1zCmVnvGH9ixiQTlBLgv__drNuf9n3oF0Srn1wtQO3B7r73LdJVsOwCzcElLGgm7PVyV/s1600/TMV00546.jpg"
+                                    class="block w-full h-full cursor-zoom-in flex items-center justify-center">
+                                    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjNiVnnxuoeLriAwSPU9p8oZnw48ksY1LQLa_kO6yWJp-fQ_lVZnPS5omaSBmb0Cnlu0rM4vrjTG8UZK36_VPhyphenhyphenCbFcRKjNnRKFTWlaLevFGla55oNbb9ESJ1xe1zCmVnvGH9ixiQTlBLgv__drNuf9n3oF0Srn1wtQO3B7r73LdJVsOwCzcElLGgm7PVyV/s1600/TMV00546.jpg"
+                                        alt="Sonic Con To Doc 45cm" class="h-full w-auto object-contain rounded-lg">
+                                </a>
+                            </div>
+
+                            <div class="space-y-2 my-3 text-xs sm:text-sm text-slate-700">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-shirt text-amber-600"></i>
+                                    <span>Trang phục: Áo khoác Metallic Xám Bạc</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-headphones text-amber-600"></i>
+                                    <span>Phụ kiện: Tai nghe Gaming Đỏ - Đen</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-shoe-prints text-amber-600"></i>
+                                    <span>Giày: Sneaker Nike cổ cao sắc nét</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-cube text-amber-600"></i>
+                                    <span>Chất liệu: Nhựa nguyên sinh chịu lực</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="moModalOrder('to')"
+                            class="w-full py-3 bg-gradient-to-r from-amber-500 to-yellow-500 hover:from-amber-600 hover:to-yellow-600 text-slate-950 font-black text-xs uppercase rounded-2xl transition shadow-xl flex items-center justify-center gap-2 cursor-pointer mt-3">
+                            <i class="fa-solid fa-cart-arrow-down text-base"></i> MUA CON TO (850.000đ)
+                        </button>
+                    </div>
+
+                    <!-- Option 3: Mô Hình Goku -->
+                    <div
+                        class="bg-orange-50/50 border-2 border-orange-400 rounded-3xl p-5 flex flex-col justify-between hover:border-orange-500 transition duration-300 shadow-xl relative group">
+                        <div
+                            class="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-orange-500 text-white text-[11px] font-black uppercase px-3.5 py-0.5 rounded-full shadow-md">
+                            ⚡ SẢN PHẨM MỚI
+                        </div>
+
+                        <div>
+                            <div class="text-center mb-3 mt-1">
+                                <span
+                                    class="bg-orange-100 text-orange-900 text-[11px] font-extrabold px-3 py-1 rounded-full border border-orange-300 inline-block">
+                                    DRAGON BALL
+                                </span>
+                                <h3 class="text-xl font-black text-slate-900 mt-2 uppercase">MÔ HÌNH GOKU</h3>
+                            </div>
+
+                            <div
+                                class="w-full h-64 sm:h-72 rounded-2xl overflow-hidden mb-4 border border-orange-300 bg-slate-900 flex items-center justify-center p-2">
+                                <a data-fancybox="sonic-gallery"
+                                    href="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgNvdD4IFTTl4EiaXF-rlsYVkcYkK80X2dLhz7slCSdBx4V92Eh_1qr1RK4RqIWxzCCQ6CZb8xHiDFpKCNY-bx6miRkhxXalyjbUlKAmSS9FWE2yLKbPb-JJfkA8QoPTWhGmoRb4UNht-pF5leNflL6ehkZ0tYLRDDaS-xjKBFubs-uq_5_f52NOKilmJeF/s1600/TMV01509.jpg"
+                                    class="block w-full h-full cursor-zoom-in flex items-center justify-center">
+                                    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgNvdD4IFTTl4EiaXF-rlsYVkcYkK80X2dLhz7slCSdBx4V92Eh_1qr1RK4RqIWxzCCQ6CZb8xHiDFpKCNY-bx6miRkhxXalyjbUlKAmSS9FWE2yLKbPb-JJfkA8QoPTWhGmoRb4UNht-pF5leNflL6ehkZ0tYLRDDaS-xjKBFubs-uq_5_f52NOKilmJeF/s1600/TMV01509.jpg"
+                                        alt="Mô Hình Goku Super Saiyan" class="h-full w-auto object-contain rounded-lg">
+                                </a>
+                            </div>
+
+                            <div class="space-y-2 my-3 text-xs sm:text-sm text-slate-700">
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-fire text-orange-600"></i>
+                                    <span>Tạo hình: Goku Super Saiyan cực ngầu</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-paintbrush text-orange-600"></i>
+                                    <span>Sơn phủ: Màu sắc tươi sáng, bền bỉ</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-dragon text-orange-600"></i>
+                                    <span>Phong cách: Chuẩn Anime Bảy Viên Ngọc Rồng</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <i class="fa-solid fa-cube text-orange-600"></i>
+                                    <span>Chất liệu: Nhựa cao cấp độ chi tiết nét</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <button onclick="moModalOrder('goku')"
+                            class="w-full py-3 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-xs uppercase rounded-2xl transition shadow-xl flex items-center justify-center gap-2 cursor-pointer mt-3">
+                            <i class="fa-solid fa-cart-arrow-down text-base"></i> MUA MÔ HÌNH GOKU (600.000đ)
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PRODUCT FEATURES -->
+        <section id="dac-diem" class="py-12 px-4 bg-white">
+            <div class="max-w-5xl mx-auto">
+                <div class="text-center mb-10">
+                    <h2 class="text-2xl sm:text-4xl font-black text-slate-900 uppercase tracking-wide">
+                        VÌ SAO NÊN SỞ HỮU <span class="text-gradient-sonic">SONIC STREET STYLE</span>?
+                    </h2>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div
+                        class="bg-slate-50 border border-slate-200 p-5 rounded-2xl text-center flex flex-col items-center shadow-sm">
+                        <div
+                            class="w-14 h-14 bg-blue-100 text-blue-600 rounded-2xl flex items-center justify-center text-2xl mb-4 border border-blue-200">
+                            <i class="fa-solid fa-shield-heart"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base mb-2">Chất Liệu An Toàn</h4>
+                        <p class="text-xs text-slate-500">100% nhựa nguyên sinh cao cấp, không độc hại, thân thiện môi
+                            trường.</p>
+                    </div>
+
+                    <div
+                        class="bg-slate-50 border border-slate-200 p-5 rounded-2xl text-center flex flex-col items-center shadow-sm">
+                        <div
+                            class="w-14 h-14 bg-amber-100 text-amber-600 rounded-2xl flex items-center justify-center text-2xl mb-4 border border-amber-200">
+                            <i class="fa-solid fa-wand-magic-sparkles"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base mb-2">Tỉ Mỉ Đến Chi Tiết</h4>
+                        <p class="text-xs text-slate-500">Chi tiết chỉ áo, logo "S", dây tai nghe & sneaker gia công sắc
+                            nét.</p>
+                    </div>
+
+                    <div
+                        class="bg-slate-50 border border-slate-200 p-5 rounded-2xl text-center flex flex-col items-center shadow-sm">
+                        <div
+                            class="w-14 h-14 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center text-2xl mb-4 border border-purple-200">
+                            <i class="fa-solid fa-couch"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base mb-2">Trang Trí Đa Năng</h4>
+                        <p class="text-xs text-slate-500">Tạo điểm nhấn đẳng cấp cho phòng khách, bàn làm việc, góc
+                            gaming.</p>
+                    </div>
+
+                    <div
+                        class="bg-slate-50 border border-slate-200 p-5 rounded-2xl text-center flex flex-col items-center shadow-sm">
+                        <div
+                            class="w-14 h-14 bg-emerald-100 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl mb-4 border border-emerald-200">
+                            <i class="fa-solid fa-box-open"></i>
+                        </div>
+                        <h4 class="font-bold text-slate-900 text-base mb-2">Giao Hàng An Toàn</h4>
+                        <p class="text-xs text-slate-500">Hàng order chỉn chu 7-15 ngày, đóng gói bọt khí chống va đập.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ SECTION -->
+        <section id="faq" class="py-12 px-4 bg-slate-50 border-t border-slate-200">
+            <div class="max-w-3xl mx-auto">
+                <div class="text-center mb-8">
+                    <h2 class="text-2xl sm:text-3xl font-black text-slate-900 uppercase">CÂU HỎI THƯỜNG GẶP</h2>
+                    <p class="text-slate-500 text-xs mt-1">Giải đáp thắc mắc đơn hàng & vận chuyển</p>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+                        <div class="font-bold text-blue-700 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-circle-question"></i> 1. Thời gian nhận hàng là bao lâu?
+                        </div>
+                        <p class="text-xs text-slate-600 mt-2 pl-6 leading-relaxed">
+                            Mô hình được sản xuất tỉ mỉ chọn lọc, thời gian nhận hàng tận tay từ <strong>7 đến 15
+                                ngày</strong>.
+                        </p>
+                    </div>
+
+                    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+                        <div class="font-bold text-blue-700 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-circle-question"></i> 2. Phí vận chuyển tính như thế nào?
+                        </div>
+                        <p class="text-xs text-slate-600 mt-2 pl-6 leading-relaxed">
+                            Giá sản phẩm (600k / 1000k) chưa bao gồm phí ship. Phí vận chuyển do đơn vị ship (Viettel
+                            Post/GHTK) thu khi bạn nhận hàng.
+                        </p>
+                    </div>
+
+                    <div class="bg-white border border-slate-200 rounded-2xl p-4 shadow-sm">
+                        <div class="font-bold text-blue-700 text-sm flex items-center gap-2">
+                            <i class="fa-solid fa-circle-question"></i> 3. Quét QR xong liên hệ ai để chốt đơn?
+                        </div>
+                        <p class="text-xs text-slate-600 mt-2 pl-6 leading-relaxed">
+                            Sau khi chuyển khoản thành công, bạn bấm "ĐÃ CHUYỂN KHOẢN XONG" để gửi bill qua Zalo <strong
+                                class="text-blue-700">0969730105</strong> hoặc Facebook <strong
+                                class="text-blue-700">Tùng Nguyễn</strong> để shop chốt đơn ngay!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="py-8 px-4 border-t border-slate-200 text-center text-xs text-slate-500 mb-16 md:mb-0 bg-white">
+            <div class="max-w-5xl mx-auto space-y-2">
+                <div class="font-bold text-slate-700 uppercase">MÔ HÌNH SONIC STREET STYLE - LANDING PAGE OFFICIAL</div>
+                <div>Liên hệ Shop: Zalo 0969730105 | FB Tùng Nguyễn</div>
+                <div class="text-[10px] text-slate-400 mt-3">© 2026 Sonic Store. Optimized for Blogspot Light Theme.
+                </div>
+            </div>
+        </footer>
+
+        <!-- MOBILE STICKY BOTTOM BUY BAR -->
+        <div
+            class="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-lg border-t border-slate-200 p-3 flex items-center justify-between shadow-2xl">
+            <div>
+                <div class="text-[10px] text-slate-500 uppercase font-semibold">Sonic Store</div>
+                <div class="text-sm font-black text-blue-700">550.000đ - 850.000đ</div>
+            </div>
+            <a href="#bang-gia"
+                class="bg-gradient-to-r from-blue-600 to-blue-500 text-white font-black text-xs px-5 py-2.5 rounded-xl uppercase tracking-wider shadow-md flex items-center gap-1">
+                <i class="fa-solid fa-cart-shopping"></i> MUA NGAY
+            </a>
+        </div>
+
+    </div>
+
+    <!-- =========================================================================
+         MODAL ĐẶT HÀNG & CHUYỂN CỌC TỰ ĐỘNG
+         ========================================================================= -->
+    <div id="sonic-modal" class="modal-overlay">
+        <div
+            class="modal-card relative p-5 sm:p-6 w-[94%] max-w-lg max-h-[92vh] overflow-y-auto custom-scrollbar blogspot-anti-break">
+            <!-- Nút đóng Modal -->
+            <button onclick="dongModal()"
+                class="absolute top-3.5 right-3.5 text-slate-400 hover:text-slate-700 transition w-8 h-8 flex items-center justify-center rounded-full bg-slate-100 hover:bg-slate-200 z-10 cursor-pointer">
+                <i class="fa-solid fa-xmark text-base"></i>
+            </button>
+
+            <!-- BƯỚC 1: BẢNG ĐIỀN THÔNG TIN KHÁCH HÀNG & CHỌN PHÂN LOẠI -->
+            <div id="order-step-1" class="flex flex-col w-full">
+                <div class="text-center mb-4">
+                    <span
+                        class="bg-blue-100 text-blue-800 text-[10px] sm:text-xs font-black uppercase px-3 py-1 rounded-full border border-blue-200 inline-block mb-1">
+                        BƯỚC 1 / 2: THÔNG TIN KHÁCH HÀNG
+                    </span>
+                    <h3 class="text-lg sm:text-xl font-black text-center text-blue-700 uppercase tracking-wide">
+                        ĐIỀN THÔNG TIN ĐẶT HÀNG
+                    </h3>
+                    <p class="text-slate-500 text-xs mt-0.5">Vui lòng nhập thông tin chính xác để shop liên hệ & giao
+                        hàng</p>
+                </div>
+
+                <form onsubmit="event.preventDefault(); sangBuoc2ChuyenCoc();" class="space-y-3.5 w-full">
+                    <!-- Họ và Tên -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">
+                            Họ và Tên Khách Hàng <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <i
+                                class="fa-solid fa-user absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                            <input type="text" id="khach-ten" required placeholder="Ví dụ: Nguyễn Văn An"
+                                class="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white transition">
+                        </div>
+                    </div>
+
+                    <!-- Số Điện Thoại -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">
+                            Số Điện Thoại Nhận Hàng <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <i
+                                class="fa-solid fa-phone absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                            <input type="tel" id="khach-sdt" required placeholder="Ví dụ: 0912345678"
+                                class="w-full pl-10 pr-3 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white transition">
+                        </div>
+                    </div>
+
+                    <!-- Địa Chỉ Nhận Hàng -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">
+                            Địa Chỉ Nhận Hàng Chi Tiết <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <i class="fa-solid fa-location-dot absolute left-3.5 top-3 text-slate-400 text-sm"></i>
+                            <textarea id="khach-diachi" required rows="2"
+                                placeholder="Số nhà, Tên đường, Phường/Xã, Quận/Huyện, Tỉnh/TP"
+                                class="w-full pl-10 pr-3 py-2 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm font-semibold text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white transition resize-none"></textarea>
+                        </div>
+                    </div>
+
+                    <!-- Chọn Phân Loại Sản Phẩm -->
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">
+                            Chọn Mô Hình <span class="text-red-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <i
+                                class="fa-solid fa-box-open absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                            <select id="opt-sonic-select" onchange="chonLoaiSonic(this.value)"
+                                class="w-full pl-10 pr-8 py-2.5 bg-slate-50 border border-slate-300 rounded-xl text-xs sm:text-sm font-extrabold text-slate-900 focus:outline-none focus:border-blue-600 focus:bg-white transition cursor-pointer appearance-none">
+                                <option value="nho">Sonic Con Nhỏ - 550.000đ (Cọc 200.000đ)</option>
+                                <option value="to">Sonic Con To - 850.000đ (Cọc 300.000đ)</option>
+                                <option value="goku">Mô Hình Goku - 600.000đ (Cọc 200.000đ)</option>
+                            </select>
+                            <i
+                                class="fa-solid fa-chevron-down absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs pointer-events-none"></i>
+                        </div>
+                    </div>
+
+                    <!-- Ghi Chú Tùy Chọn -->
+                    <div>
+                        <label class="block text-[11px] font-semibold text-slate-500 uppercase mb-1">
+                            Ghi Chú Đơn Hàng (Không bắt buộc)
+                        </label>
+                        <input type="text" id="khach-ghichu"
+                            placeholder="Ví dụ: Giao giờ hành chính, gọi trước khi giao..."
+                            class="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs text-slate-800 focus:outline-none focus:border-blue-500 transition">
+                    </div>
+
+                    <button type="submit"
+                        class="w-full py-3.5 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-extrabold text-xs sm:text-sm uppercase rounded-xl transition shadow-lg shadow-blue-600/30 flex items-center justify-center gap-2 cursor-pointer mt-2">
+                        <span>TIẾP TỤC CHUYỂN CỌC & QUÉT QR</span>
+                        <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </form>
+            </div>
+
+            <!-- BƯỚC 2: QUÉT MÃ QR CỌC & XÁC NHẬN GỬI SHEET -->
+            <div id="order-step-2" class="hidden flex-col items-center w-full">
+                <div class="text-center mb-3">
+                    <span
+                        class="bg-emerald-100 text-emerald-800 text-[10px] sm:text-xs font-black uppercase px-3 py-1 rounded-full border border-emerald-200 inline-block mb-1">
+                        BƯỚC 2 / 2: QUÉT MÃ CỌC
+                    </span>
+                    <h3 class="text-lg sm:text-xl font-black text-center text-blue-700 uppercase tracking-wide">
+                        THANH TOÁN TIỀN CỌC
+                    </h3>
+                    <p class="text-slate-500 text-xs mt-0.5">Vui lòng quét mã QR hoặc sao chép thông tin để cọc đơn</p>
+                </div>
+
+                <!-- Tóm tắt đơn khách vừa điền -->
+                <div
+                    class="bg-blue-50/80 rounded-xl p-3 border border-blue-200 w-full mb-3 text-xs text-slate-700 flex flex-col gap-1">
+                    <div class="flex justify-between border-b border-blue-200/60 pb-1">
+                        <span class="text-slate-500">Khách hàng:</span>
+                        <strong class="text-slate-900" id="summary-ten-khach">...</strong>
+                    </div>
+                    <div class="flex justify-between border-b border-blue-200/60 pb-1 pt-1">
+                        <span class="text-slate-500">Số điện thoại:</span>
+                        <strong class="text-slate-900 font-mono" id="summary-sdt-khach">...</strong>
+                    </div>
+                    <div class="flex justify-between pt-1">
+                        <span class="text-slate-500">Phân loại đã chọn:</span>
+                        <strong class="text-blue-700 font-bold" id="summary-san-pham">...</strong>
+                    </div>
+                </div>
+
+                <!-- KHUNG THÔNG TIN STK & MÃ QR -->
+                <div
+                    class="flex flex-row bg-slate-50 rounded-2xl border border-slate-200 p-3 sm:p-4 gap-3 sm:gap-4 mb-3 items-center w-full shadow-inner">
+                    <!-- Cột Trái: Thông tin chuyển khoản -->
+                    <div class="flex-1 min-w-0 flex flex-col gap-2">
+                        <div class="flex flex-col gap-0.5">
+                            <span class="text-[9px] sm:text-[10px] text-slate-500 uppercase font-semibold">Ngân hàng &
+                                Số TK</span>
+                            <div class="flex items-center gap-1.5">
+                                <span
+                                    class="font-bold text-[12px] sm:text-[14px] text-slate-900 font-mono truncate">9021186623244</span>
+                                <button type="button" onclick="copyText('9021186623244')"
+                                    class="shrink-0 bg-blue-100 text-blue-700 hover:bg-blue-200 px-1.5 py-0.5 rounded text-[9px] font-bold border border-blue-300 uppercase cursor-pointer">Copy</button>
+                            </div>
+                            <span class="text-[9px] text-blue-600 font-semibold">(TIMO - TVBANK)</span>
+                        </div>
+
+                        <div class="flex flex-col gap-0.5">
+                            <span class="text-[9px] sm:text-[10px] text-slate-500 uppercase font-semibold">Chủ Tài
+                                Khoản</span>
+                            <span class="font-bold text-slate-900 text-[11px] sm:text-[12px] uppercase truncate">NGUYEN
+                                THI NHUNG</span>
+                        </div>
+
+                        <div class="flex flex-col gap-0.5">
+                            <span class="text-[9px] sm:text-[10px] text-slate-500 uppercase font-semibold">Tiền Cọc Bắt
+                                Buộc</span>
+                            <div class="flex items-center gap-1.5">
+                                <span class="font-black text-amber-600 text-[15px] sm:text-[17px]"
+                                    id="so-tien-coc-modal">200.000đ</span>
+                                <button type="button" onclick="copySoTienCoc()"
+                                    class="shrink-0 bg-amber-100 text-amber-700 hover:bg-amber-200 px-1.5 py-0.5 rounded text-[9px] font-bold border border-amber-300 uppercase cursor-pointer">Copy</button>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-col gap-1 pt-1 border-t border-slate-200">
+                            <span class="text-[9px] sm:text-[10px] text-slate-500 uppercase font-semibold">Nội dung CK
+                                <span class="text-amber-600">(Bắt buộc)</span></span>
+                            <div
+                                class="flex items-center justify-between bg-white px-2 py-1 rounded border border-slate-300 shadow-sm">
+                                <span class="font-bold text-blue-700 text-[11px] sm:text-[12px] font-mono truncate"
+                                    id="noi-dung-ck">...</span>
+                                <button type="button" onclick="copyNoiDung()"
+                                    class="shrink-0 bg-blue-100 text-blue-700 hover:bg-blue-200 px-1.5 py-0.5 rounded text-[9px] font-bold uppercase border border-blue-300 ml-1 cursor-pointer">Copy</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cột Phải: Mã QR VietQR -->
+                    <div class="shrink-0 w-[105px] sm:w-[125px] flex flex-col items-center justify-center">
+                        <div
+                            class="bg-white rounded-xl shadow w-full h-[105px] sm:h-[125px] relative mb-1.5 flex items-center justify-center p-1.5 border-2 border-blue-400">
+                            <img id="anh-qr" src="" alt="Mã QR Thanh Toán Cọc"
+                                class="max-w-full max-h-full object-contain rounded-lg">
+                        </div>
+                        <button type="button" onclick="taiAnhQR('anh-qr')"
+                            class="w-full py-1 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg text-[9px] font-bold border border-blue-300 transition flex items-center justify-center gap-1 cursor-pointer shadow-sm">
+                            <i class="fa-solid fa-download text-[9px]"></i> TẢI MÃ QR
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KHUNG ĐANG CHỜ TỰ ĐỘNG XÁC NHẬN TIỀN CỌC VỀ EMAIL -->
+                <div class="w-full mt-1 flex flex-col items-center">
+                    <div
+                        class="w-full py-3 px-3.5 bg-amber-50/90 border-2 border-amber-300 rounded-2xl flex items-center justify-between shadow-sm animate-pulse">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <div
+                                class="w-8 h-8 rounded-full bg-amber-200 text-amber-700 flex items-center justify-center shrink-0">
+                                <i class="fa-solid fa-circle-notch animate-spin text-base"></i>
+                            </div>
+                            <div class="text-left min-w-0">
+                                <div class="font-black text-xs text-amber-900 uppercase truncate">ĐANG QUÉT TIỀN CỌC TỰ
+                                    ĐỘNG...</div>
+                                <div class="text-[10px] text-amber-700 font-semibold truncate">Chuyển tiền xong hệ thống
+                                    sẽ tự động chốt đơn ngay</div>
+                            </div>
+                        </div>
+                        <span
+                            class="text-[9px] bg-amber-200 text-amber-900 font-black px-2 py-1 rounded-lg uppercase shrink-0 ml-1">Chờ
+                            tiền về</span>
+                    </div>
+
+                    <button type="button" onclick="quayLaiBuoc1()"
+                        class="text-slate-400 hover:text-slate-600 text-xs font-medium transition underline mt-2.5 cursor-pointer">
+                        <i class="fa-solid fa-chevron-left mr-1"></i> Quay lại sửa thông tin
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- =========================================================================
+         MODAL SUCCESS XÁC NHẬN ĐƠN HÀNG VỚI ZALO (0969730105) & FB (TÙNG NGUYỄN)
+         ========================================================================= -->
+    <div id="success-modal" class="modal-overlay">
+        <div
+            class="modal-card text-center flex flex-col items-center max-w-[480px] w-[92%] gap-3 p-5 sm:p-6 bg-white border border-slate-200 shadow-2xl relative blogspot-anti-break">
+
+            <div
+                class="w-14 h-14 bg-emerald-100 rounded-full flex items-center justify-center animate-pulse shadow-[0_0_25px_rgba(16,185,129,0.2)] shrink-0 border border-emerald-300">
+                <i class="fa-solid fa-check text-2xl text-emerald-600"></i>
+            </div>
+
+            <h3 class="text-base sm:text-lg font-black uppercase tracking-wider text-emerald-600">
+                ĐƠN HÀNG ĐÃ ĐƯỢC GHI NHẬN!
+            </h3>
+
+            <div class="flex flex-col gap-2 w-full text-left">
+                <!-- Tóm tắt đơn đã gửi thành công -->
+                <div
+                    class="bg-emerald-50 rounded-xl p-3 border border-emerald-200 text-xs text-slate-700 flex flex-col gap-1">
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Khách hàng:</span>
+                        <strong class="text-slate-900" id="success-ten-khach">...</strong>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Số điện thoại:</span>
+                        <strong class="text-slate-900 font-mono" id="success-sdt-khach">...</strong>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Sản phẩm:</span>
+                        <strong class="text-blue-700" id="success-san-pham">...</strong>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Tiền Cọc:</span>
+                        <strong class="text-amber-600 font-bold" id="success-tien-coc">...</strong>
+                    </div>
+                    <div class="flex justify-between">
+                        <span class="text-slate-500">Mã CK:</span>
+                        <strong class="text-blue-700 font-mono" id="success-ma-ck">...</strong>
+                    </div>
+                </div>
+
+                <div
+                    class="bg-blue-50 rounded-xl p-3 border border-blue-200 flex flex-col gap-1.5 text-xs text-slate-700 leading-relaxed">
+                    <span class="text-amber-700 font-bold flex items-center gap-1.5">
+                        <i class="fa-solid fa-triangle-exclamation text-amber-600"></i> XÁC NHẬN CỌC TỰ ĐỘNG & THỦ CÔNG:
+                    </span>
+                    <span>Hệ thống tự động quét email ngân hàng để ghi nhận cọc. Bạn cũng có thể gửi <strong>Bill màn
+                            hình chuyển khoản</strong> qua Zalo hoặc Facebook cho <strong>Tùng Nguyễn</strong> để shop
+                        chốt đơn giao ngay!</span>
+                </div>
+
+                <div
+                    class="bg-slate-50 rounded-xl p-2 border border-slate-200 text-xs text-slate-600 flex items-center gap-2">
+                    <i class="fa-solid fa-clock text-blue-600 text-base shrink-0"></i>
+                    <span>Thời gian xác nhận đơn thông thường từ <strong>5 - 15 phút</strong>.</span>
+                </div>
+            </div>
+
+            <!-- 2 Nút Zalo & Facebook hiển thị ngay -->
+            <div class="flex flex-col gap-2 w-full mt-1">
+                <div id="active-contact-buttons" class="flex flex-col sm:flex-row gap-2.5 w-full">
+                    <a href="https://zalo.me/0969730105" target="_blank"
+                        class="flex-1 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-extrabold text-xs uppercase tracking-wide flex items-center justify-center gap-1.5 shadow-md decoration-none">
+                        <i class="fa-solid fa-comment-dots text-sm"></i> ZALO: 0969730105
+                    </a>
+                    <a href="https://www.facebook.com/TungMuVang" target="_blank"
+                        class="flex-1 py-3 bg-[#1877F2] hover:bg-[#166fe5] text-white rounded-xl font-extrabold text-xs uppercase tracking-wide flex items-center justify-center gap-1.5 shadow-md decoration-none">
+                        <i class="fa-brands fa-facebook text-sm"></i> FB: TÙNG NGUYỄN
+                    </a>
+                </div>
+            </div>
+
+            <button onclick="dongSuccessModal()"
+                class="text-slate-400 hover:text-slate-700 text-xs font-medium transition underline mt-1 cursor-pointer">
+                Đóng lại
+            </button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LIB & LOGIC -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui@5.0/dist/fancybox/fancybox.umd.js"></script>
+
+    <script>
+        // CẤU HÌNH GOOGLE APPS SCRIPT URL (Dán URL Web App của bạn vào đây)
+        const GOOGLE_SHEET_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxZg6wWKe_yuV9UgZv2dBquCLNPYPyTqxi0urqcquf9lYdUTNqE0DAN9N8y9g3fXJEj/exec";
+
+        const THONG_TIN_NGAN_HANG = {
+            BANK_ID: "TIMO",
+            ACCOUNT_NO: "9021186623244",
+            ACCOUNT_NAME: "NGUYEN THI NHUNG"
+        };
+
+        // =========================================================================
+        // DANH SÁCH SẢN PHẨM (KHI THÊM SẢN PHẨM MỚI CHỈ CẦN THÊM 1 DÒNG VÀO ĐÂY)
+        // =========================================================================
+        const DANH_SACH_SAN_PHAM = {
+            nho: {
+                id: "nho",
+                codePrefix: "SONIC22",
+                name: "Mô Hình Sonic Street Style - Con Nhỏ (22.5cm)",
+                shortName: "Sonic Con Nhỏ",
+                price: "550.000đ",
+                depositAmount: 200000,
+                depositText: "200.000đ"
+            },
+            to: {
+                id: "to",
+                codePrefix: "SONIC45",
+                name: "Mô Hình Sonic Street Style - Con To (45cm)",
+                shortName: "Sonic Con To",
+                price: "850.000đ",
+                depositAmount: 300000,
+                depositText: "300.000đ"
+            },
+            goku: {
+                id: "goku",
+                codePrefix: "GOKU60",
+                name: "Mô Hình Goku Super Saiyan",
+                shortName: "Mô Hình Goku",
+                price: "600.000đ",
+                depositAmount: 200000,
+                depositText: "200.000đ"
+            }
+        };
+
+        let currentOrder = {
+            productType: "nho",
+            productName: "Mô Hình Sonic Street Style - Con Nhỏ (22.5cm)",
+            price: "550.000đ",
+            depositAmount: 200000,
+            depositText: "200.000đ",
+            transferCode: "",
+            customerName: "",
+            customerPhone: "",
+            customerAddress: "",
+            customerNote: ""
+        };
+
+        function luotXuongSanPham() {
+            const el = document.getElementById('bang-gia');
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function khoiTaoSelectOptionSanPham() {
+            const selectEl = document.getElementById('opt-sonic-select');
+            if (!selectEl) return;
+            selectEl.innerHTML = Object.values(DANH_SACH_SAN_PHAM).map(p =>
+                `<option value="${p.id}">${p.shortName} - ${p.price} (Cọc ${p.depositText})</option>`
+            ).join('');
+        }
+
+        function moModalOrder(type = "nho") {
+            currentOrder.productType = type;
+            capNhatGiaoDienChonLoai(type);
+
+            document.getElementById('order-step-1').classList.remove('hidden');
+            document.getElementById('order-step-2').classList.add('hidden');
+            document.getElementById('sonic-modal').classList.add('hien-len');
+        }
+
+        function chonLoaiSonic(type) {
+            currentOrder.productType = type;
+            capNhatGiaoDienChonLoai(type);
+        }
+
+        function capNhatGiaoDienChonLoai(type) {
+            const product = DANH_SACH_SAN_PHAM[type] || Object.values(DANH_SACH_SAN_PHAM)[0];
+            const selectEl = document.getElementById('opt-sonic-select');
+            if (selectEl) selectEl.value = product.id;
+
+            currentOrder.productType = product.id;
+            currentOrder.productName = product.name;
+            currentOrder.price = product.price;
+            currentOrder.depositAmount = product.depositAmount;
+            currentOrder.depositText = product.depositText;
+        }
+
+        function sangBuoc2ChuyenCoc() {
+            const ten = document.getElementById('khach-ten').value.trim();
+            const sdt = document.getElementById('khach-sdt').value.trim();
+            const diachi = document.getElementById('khach-diachi').value.trim();
+            const ghichu = document.getElementById('khach-ghichu').value.trim();
+
+            if (!ten) {
+                alert("Vui lòng nhập Họ và tên của bạn!");
+                document.getElementById('khach-ten').focus();
+                return;
+            }
+
+            const phoneRegex = /(84|0[35789])\d{8}\b/;
+            if (!sdt || !phoneRegex.test(sdt)) {
+                alert("Vui lòng nhập số điện thoại hợp lệ (10 chữ số)!");
+                document.getElementById('khach-sdt').focus();
+                return;
+            }
+
+            if (!diachi) {
+                alert("Vui lòng nhập đầy đủ địa chỉ nhận hàng!");
+                document.getElementById('khach-diachi').focus();
+                return;
+            }
+
+            currentOrder.customerName = ten;
+            currentOrder.customerPhone = sdt;
+            currentOrder.customerAddress = diachi;
+            currentOrder.customerNote = ghichu;
+
+            // Tạo mã chuyển khoản độc nhất tự động từ codePrefix của sản phẩm
+            const product = DANH_SACH_SAN_PHAM[currentOrder.productType] || Object.values(DANH_SACH_SAN_PHAM)[0];
+            const randomNum = Math.floor(1000 + Math.random() * 9000);
+            const prefix = product.codePrefix || "SONIC";
+            currentOrder.transferCode = `${prefix} ${randomNum}`;
+
+            // Cập nhật UI bước 2
+            document.getElementById('summary-ten-khach').innerText = ten;
+            document.getElementById('summary-sdt-khach').innerText = sdt;
+            document.getElementById('summary-san-pham').innerText = currentOrder.productName;
+            document.getElementById('so-tien-coc-modal').innerText = currentOrder.depositText;
+            document.getElementById('noi-dung-ck').innerText = currentOrder.transferCode;
+
+            // Tạo mã VietQR chuẩn với đúng số tiền cọc (200k / 400k)
+            const qrUrl = `https://img.vietqr.io/image/${THONG_TIN_NGAN_HANG.BANK_ID}-${THONG_TIN_NGAN_HANG.ACCOUNT_NO}-qr_only.jpg?amount=${currentOrder.depositAmount}&addInfo=${encodeURIComponent(currentOrder.transferCode)}&accountName=${encodeURIComponent(THONG_TIN_NGAN_HANG.ACCOUNT_NAME)}`;
+            document.getElementById('anh-qr').src = qrUrl;
+
+            document.getElementById('order-step-1').classList.add('hidden');
+            document.getElementById('order-step-2').classList.remove('hidden');
+            document.getElementById('order-step-2').classList.add('flex');
+
+            // Gửi dữ liệu về Google Sheet ngay lập tức khi chuyển sang bước 2
+            guiDonHangToGoogleSheet();
+
+            // Bắt đầu quét tự động xem tiền cọc đã về chưa
+            batDauQuetTrangThaiCoc(currentOrder.transferCode);
+        }
+
+        let pollingInterval = null;
+
+        function quayLaiBuoc1() {
+            if (pollingInterval) clearInterval(pollingInterval);
+            document.getElementById('order-step-2').classList.add('hidden');
+            document.getElementById('order-step-2').classList.remove('flex');
+            document.getElementById('order-step-1').classList.remove('hidden');
+        }
+
+        function guiDonHangToGoogleSheet() {
+            const payload = {
+                name: currentOrder.customerName,
+                phone: currentOrder.customerPhone,
+                address: currentOrder.customerAddress,
+                product: currentOrder.productName,
+                price: currentOrder.price,
+                deposit: currentOrder.depositText,
+                transferCode: currentOrder.transferCode,
+                note: currentOrder.customerNote
+            };
+
+            if (GOOGLE_SHEET_SCRIPT_URL && !GOOGLE_SHEET_SCRIPT_URL.includes("YOUR_GOOGLE_APPS_SCRIPT_URL")) {
+                fetch(GOOGLE_SHEET_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                }).catch(err => {
+                    console.error("Lỗi gửi sheet:", err);
+                });
+            }
+        }
+
+        function batDauQuetTrangThaiCoc(code) {
+            if (pollingInterval) clearInterval(pollingInterval);
+
+            const cleanCode = code.toUpperCase().replace(/\s+/g, '');
+
+            window.onPaymentStatusCheck = function (data) {
+                if (data && (data.status === "paid" || data.status === "PAID")) {
+                    if (pollingInterval) clearInterval(pollingInterval);
+                    const oldScript = document.getElementById('jsonp-check-script');
+                    if (oldScript) oldScript.remove();
+                    hienThongBaoHoanTat();
+                }
+            };
+
+            pollingInterval = setInterval(() => {
+                if (!GOOGLE_SHEET_SCRIPT_URL || GOOGLE_SHEET_SCRIPT_URL.includes("YOUR_GOOGLE_APPS_SCRIPT_URL")) return;
+
+                const oldScript = document.getElementById('jsonp-check-script');
+                if (oldScript) oldScript.remove();
+
+                const script = document.createElement('script');
+                script.id = 'jsonp-check-script';
+                script.src = `${GOOGLE_SHEET_SCRIPT_URL}?action=check_payment_status&code=${encodeURIComponent(cleanCode)}&callback=onPaymentStatusCheck&t=${Date.now()}`;
+                document.body.appendChild(script);
+            }, 3000);
+        }
+
+        function dongModal() {
+            document.getElementById('sonic-modal').classList.remove('hien-len');
+        }
+
+        function dongSuccessModal() {
+            document.getElementById('success-modal').classList.remove('hien-len');
+        }
+
+        function copyText(str) {
+            const el = document.createElement('textarea');
+            el.value = str;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            alert("Đã sao chép: " + str);
+        }
+
+        function copySoTienCoc() {
+            copyText(currentOrder.depositAmount.toString());
+        }
+
+        function copyNoiDung() {
+            const nd = document.getElementById('noi-dung-ck').innerText;
+            copyText(nd);
+        }
+
+        function taiAnhQR(imgId) {
+            const imgEl = document.getElementById(imgId);
+            if (!imgEl || !imgEl.src) return;
+
+            const imgUrl = imgEl.src;
+            const nd = document.getElementById('noi-dung-ck').innerText || 'MOHINHSONIC';
+            const tenFile = `VietQR_${nd}.jpg`;
+
+            fetch(imgUrl)
+                .then(res => res.blob())
+                .then(blob => {
+                    const blobUrl = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none';
+                    a.href = blobUrl;
+                    a.download = tenFile;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(blobUrl);
+                    document.body.removeChild(a);
+                })
+                .catch(() => {
+                    window.open(imgUrl, '_blank');
+                });
+        }
+
+        function hienThongBaoHoanTat() {
+            document.getElementById('sonic-modal').classList.remove('hien-len');
+
+            document.getElementById('success-ten-khach').innerText = currentOrder.customerName || "...";
+            document.getElementById('success-sdt-khach').innerText = currentOrder.customerPhone || "...";
+            document.getElementById('success-san-pham').innerText = currentOrder.productName || "...";
+            document.getElementById('success-tien-coc').innerText = currentOrder.depositText || "...";
+            document.getElementById('success-ma-ck').innerText = currentOrder.transferCode || "...";
+
+            document.getElementById('success-modal').classList.add('hien-len');
+        }
+
+        function khoiTaoThongBaoAo() {
+            const container = document.createElement('div');
+            container.id = 'purchase-notification-container';
+            document.body.appendChild(container);
+
+            const names = ["Văn Tuấn", "Thanh Linh", "Minh Hoàng", "Hải Đăng", "Bảo An", "Quốc Anh", "Thế Vinh", "Đức Nam", "Anh Khoa", "Khánh Huyền", "Hoàng Yến", "Nhật Minh"];
+            const locations = ["Hà Nội", "TP. Hồ Chí Minh", "Đà Nẵng", "Hải Phòng", "Cần Thơ", "Bình Dương", "Đồng Nai", "Quảng Ninh", "Bắc Ninh", "Vũng Tàu"];
+            const products = [
+                "vừa đặt 1x <strong class='text-orange-600'>Mô Hình Goku (600k)</strong>",
+                "vừa đặt 1x <strong class='text-blue-700'>Sonic Con To (850k)</strong>",
+                "vừa đặt 1x <strong class='text-amber-600'>Sonic Con Nhỏ (550k)</strong>",
+                "vừa cọc đơn <strong class='text-orange-600'>Mô Hình Goku Super Saiyan</strong>",
+                "vừa cọc đơn <strong class='text-blue-700'>Sonic Con To 45cm</strong>"
+            ];
+
+            function showToast() {
+                const name = names[Math.floor(Math.random() * names.length)];
+                const loc = locations[Math.floor(Math.random() * locations.length)];
+                const prod = products[Math.floor(Math.random() * products.length)];
+
+                const toast = document.createElement('div');
+                toast.className = 'purchase-toast';
+                toast.innerHTML = `
+                    <div class="w-9 h-9 rounded-full bg-blue-100 border border-blue-300 flex items-center justify-center shrink-0 text-blue-600 font-bold text-xs">
+                        <i class="fa-solid fa-user"></i>
+                    </div>
+                    <div class="text-xs">
+                        <div class="font-bold text-slate-900">${name} <span class="text-[10px] text-slate-400 font-normal">(${loc})</span></div>
+                        <div class="text-slate-600 text-[11px] mt-0.5">${prod}</div>
+                        <div class="text-[9px] text-blue-600 font-semibold italic mt-0.5"><i class="fa-solid fa-check"></i> Vừa xong</div>
+                    </div>
+                `;
+
+                container.appendChild(toast);
+                setTimeout(() => {
+                    if (toast.parentNode) toast.parentNode.removeChild(toast);
+                }, 5000);
+            }
+
+            function loopToast() {
+                const delay = Math.floor(Math.random() * 5000) + 4000;
+                setTimeout(() => {
+                    showToast();
+                    loopToast();
+                }, delay);
+            }
+
+            setTimeout(loopToast, 2000);
+        }
+
+        window.onload = function () {
+            khoiTaoSelectOptionSanPham();
+            khoiTaoThongBaoAo();
+
+            new Swiper(".heroSwiper", {
+                loop: true,
+                speed: 800,
+                autoplay: { delay: 3500, disableOnInteraction: false },
+                slidesPerView: 1,
+                spaceBetween: 12,
+                breakpoints: {
+                    640: { slidesPerView: 2, spaceBetween: 16 },
+                    1024: { slidesPerView: 3, spaceBetween: 16 }
+                },
+                pagination: { el: ".swiper-pagination", clickable: true },
+                navigation: {
+                    nextEl: ".swiper-button-next",
+                    prevEl: ".swiper-button-prev",
+                },
+                preventClicks: false,
+                preventClicksPropagation: false,
+                touchStartPreventDefault: false
+            });
+
+            Fancybox.bind("[data-fancybox]", {
+                Carousel: {
+                    transition: "fade"
+                }
+            });
+        };
+    </script>
+</body>
+
+</html>

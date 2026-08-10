@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TMV IN3D | Cửa Hàng Mô Hình In 3D Đẳng Cấp</title>
+  <meta name="description" content="TMV IN3D - Chuyên thiết kế và sản xuất mô hình in 3D linh hoạt, articulated dragons, cosplay prop & tượng resin sắc nét.">
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="header">
+    <div class="container">
+      <div class="nav-wrapper">
+        <a href="index.html" class="logo">
+          <div class="logo-icon"><i class="fa-solid fa-cube"></i></div>
+          <span>TMV <span class="gradient-text-gold">IN3D</span></span>
+        </a>
+
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link active"><i class="fa-solid fa-store"></i> Cửa Hàng</a></li>
+          <li><a href="#featured-section" class="nav-link"><i class="fa-solid fa-fire"></i> Nổi Bật</a></li>
+          <li><a href="#" class="nav-link" onclick="app.showCustomPrintInfo()"><i class="fa-solid fa-print"></i> In Theo Yêu Cầu</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <button class="btn-icon" id="cart-toggle-btn" title="Giỏ hàng">
+            <i class="fa-solid fa-cart-shopping"></i>
+            <span class="badge-count" id="cart-count">0</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero" id="featured-section">
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-content">
+          <div class="hero-tag">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Công Nghệ In 3D PLA Silk & Resin Cao Cấp
+          </div>
+          <h1 class="hero-title">
+            Thế Giới Mô Hình <br><span class="gradient-text-gold">In 3D Linh Hoạt</span> Tỉ Mỉ
+          </h1>
+          <p class="hero-desc">
+            Khám phá bộ sưu tập mô hình Sonic, Rồng uốn lượn Articulated, Mech Warrior và Prop Cosplay độ chi tiết vượt trội. Nhận đặt in 3D theo yêu cầu giá xưởng!
+          </p>
+
+          <div class="hero-features">
+            <div class="feature-pill"><i class="fa-solid fa-shield-halved" style="color: #10b981;"></i> Nhựa PLA Nguyên Sinh</div>
+            <div class="feature-pill"><i class="fa-solid fa-truck-fast" style="color: #0284c7;"></i> Giao Hàng Toàn Quốc</div>
+            <div class="feature-pill"><i class="fa-solid fa-microchip" style="color: #8b5cf6;"></i> Độ Chính Xác 0.05mm</div>
+          </div>
+        </div>
+
+        <!-- HERO FEATURED PRODUCT CARD -->
+        <div class="hero-card-featured">
+          <span class="hero-badge-float"><i class="fa-solid fa-star" style="color: #f59e0b;"></i> Sản Phẩm Hot Nhất</span>
+          
+          <a href="product.html?id=p5">
+            <div class="hero-img-box">
+              <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEjem5q7x4CcXGrq565HKUc_YPtzrsi3KhpUwUAnk1b23h1Zmt7XUYFgT_VtjRlndcIBHEhyphenhyphen1nrZBdQOOKHsyEQAXvZINt7ZW-LJohP7fcy0eK1wKWS4OwOFbOA3RN2c1bg5MXghuCxsXWSLt-1iDwzSVjROqTzb7j2IX_o9TtlpXlO7a9SenBoN2iCD34tc/s1600/TMV01520.jpg" alt="Mô hình Sonic 3D Articulated">
+            </div>
+          </a>
+
+          <div class="hero-card-info">
+            <div>
+              <div class="hero-card-title">Mô Hình Sonic 3D Articulated (Linh Hoạt)</div>
+              <div style="font-size: 0.82rem; color: var(--text-muted);">Khớp uốn lượn siêu bền • Size 22.5cm đến 45cm</div>
+            </div>
+            <div style="text-align: right;">
+              <div class="hero-card-price">550.000đ - 850.000đ</div>
+              <a href="product.html?id=p5" class="btn-primary" style="padding: 0.4rem 0.8rem; font-size: 0.8rem; margin-top: 0.3rem;">
+                Xem Ngay <i class="fa-solid fa-arrow-right"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CATALOG SECTION -->
+  <section style="padding: 3rem 0 5rem;">
+    <div class="container">
+      <div class="catalog-controls">
+        <div class="search-filter-bar">
+          <div class="search-input-wrapper">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="search-input" class="search-input" placeholder="Tìm kiếm mô hình in 3D trong TMV IN3D...">
+          </div>
+
+          <div class="category-chips" id="category-chips"></div>
+        </div>
+      </div>
+
+      <div class="products-grid" id="products-grid"></div>
+    </div>
+  </section>
+
+  <!-- CENTERED CHECKOUT MODAL -->
+  <div class="cart-drawer" id="cart-drawer">
+    <div class="cart-drawer-box">
+      <div class="cart-header">
+        <div class="cart-title">
+          <i class="fa-solid fa-credit-card" style="color: var(--accent-gold-dark);"></i> Đơn Hàng & Thanh Toán TMV IN3D
+        </div>
+        <button class="modal-close" id="cart-drawer-close"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+
+      <div class="cart-items-list" id="cart-items-list"></div>
+
+      <div class="cart-footer">
+        <div class="cart-total-row">
+          <span>Tổng tiền đơn hàng:</span>
+          <span class="gradient-text-gold" id="cart-total-price">0đ</span>
+        </div>
+
+        <form id="checkout-form" style="display: flex; flex-direction: column; gap: 0.8rem; margin-top: 0.5rem;">
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;">
+            <input type="text" id="cust-name" class="form-control" placeholder="Họ và tên người nhận *" required>
+            <input type="tel" id="cust-phone" class="form-control" placeholder="Số điện thoại liên hệ *" required>
+          </div>
+          <textarea id="cust-address" class="form-control" placeholder="Địa chỉ giao hàng chi tiết *" required style="height: 70px;"></textarea>
+          <input type="text" id="cust-note" class="form-control" placeholder="Ghi chú thêm (Nếu có)">
+
+          <button type="submit" class="btn-primary" style="width: 100%; justify-content: center; padding: 0.95rem; font-size: 1rem; margin-top: 0.5rem;" id="submit-order-btn">
+            <i class="fa-solid fa-paper-plane"></i> XÁC NHẬN ĐẶT HÀNG & THANH TOÁN
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADD TO CART CHOICE MODAL -->
+  <div class="modal-overlay" id="cart-choice-modal">
+    <div class="modal-container" style="max-width: 480px; padding: 2.2rem; text-align: center;">
+      <button class="modal-close" onclick="app.closeModal('cart-choice-modal')"><i class="fa-solid fa-xmark"></i></button>
+      
+      <div style="font-size: 3rem; color: #10b981; margin-bottom: 0.8rem;">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+      <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 0.4rem;">Đã Thêm Vào Giỏ Hàng!</h3>
+      <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 1.5rem;" id="choice-modal-msg">
+        Bạn có muốn chọn thêm mô hình khác hay chuyển sang thanh toán luôn?
+      </p>
+
+      <div style="display: flex; gap: 1rem; flex-direction: column;">
+        <button class="btn-primary" style="justify-content: center; padding: 0.95rem; font-size: 1rem;" onclick="app.proceedToCheckoutDirectly()">
+          <i class="fa-solid fa-credit-card"></i> THANH TOÁN LUÔN
+        </button>
+        <button class="btn-secondary" style="justify-content: center; padding: 0.85rem;" onclick="app.closeModal('cart-choice-modal')">
+          <i class="fa-solid fa-store"></i> Tiếp Tục Mua Sắm
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- DEPOSIT PAYMENT & VIETQR MODAL (BV BANK) -->
+  <div class="modal-overlay" id="deposit-payment-modal">
+    <div class="modal-container" style="max-width: 600px; padding: 2rem;">
+      <button class="modal-close" onclick="app.closeModal('deposit-payment-modal')"><i class="fa-solid fa-xmark"></i></button>
+
+      <div style="text-align: center; margin-bottom: 1.2rem;">
+        <span style="background: var(--accent-gold-light); color: var(--accent-gold-dark); font-weight: 800; font-size: 0.8rem; padding: 0.3rem 0.8rem; border-radius: var(--radius-full); border: 1px solid var(--border-gold);">
+          ⚡ XÁC NHẬN CHUYỂN CỌC ĐƠN HÀNG TMV IN3D
+        </span>
+        <h2 style="font-size: 1.6rem; font-weight: 800; margin-top: 0.5rem; color: var(--text-main);">
+          BẢNG THÔNG TIN ĐẶT CỌC (<span id="dep-amount-display" style="color: var(--accent-gold-dark);">200.000đ</span>)
+        </h2>
+        <p style="font-size: 0.85rem; color: var(--text-muted);">
+          Mã đơn hàng: <strong id="dep-order-id" style="color: var(--accent-gold-dark);">#TMV-123456</strong> • Tổng tiền: <strong id="dep-total-price">350.000đ</strong>
+        </p>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 0.85fr; gap: 1.2rem; background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 1.2rem; margin-bottom: 1.2rem;">
+        <div>
+          <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; margin-bottom: 0.4rem;">NGÂN HÀNG THỤ HƯỞNG</div>
+          <div style="font-weight: 800; font-size: 1.1rem; color: #0284c7; margin-bottom: 0.6rem;">TIMO BANK (BV BANK)</div>
+
+          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;">CHỦ TÀI KHOẢN</div>
+          <div style="font-weight: 800; font-size: 0.95rem; margin-bottom: 0.6rem;">NGUYEN THI NHUNG</div>
+
+          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;">SỐ TÀI KHOẢN (STK)</div>
+          <div style="display: flex; align-items: center; justify-content: space-between; background: #ffffff; padding: 0.4rem 0.7rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color); margin-bottom: 0.6rem;">
+            <strong style="font-family: monospace; font-size: 1rem; color: var(--accent-gold-dark);" id="dep-stk">9021186623244</strong>
+            <button type="button" class="btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="app.copyText('9021186623244')">Copy</button>
+          </div>
+
+          <div style="font-size: 0.8rem; color: var(--text-muted); font-weight: 700;">NỘI DUNG CHUYỂN KHOẢN (MÃ CK)</div>
+          <div style="display: flex; align-items: center; justify-content: space-between; background: #ffffff; padding: 0.4rem 0.7rem; border-radius: var(--radius-sm); border: 1px solid var(--border-color);">
+            <strong style="font-family: monospace; font-size: 1rem; color: #0284c7;" id="dep-transfer-code">TMV3D 1234</strong>
+            <button type="button" class="btn-secondary" style="padding: 0.2rem 0.5rem; font-size: 0.75rem;" onclick="app.copyTransferCode()">Copy</button>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center;">
+          <div style="background: #ffffff; border: 2px solid var(--accent-gold-bright); border-radius: var(--radius-md); padding: 0.5rem; width: 140px; height: 140px; margin-bottom: 0.5rem;">
+            <img id="dep-qr-img" src="" alt="VietQR TMV IN3D" style="width: 100%; height: 100%; object-fit: contain;">
+          </div>
+          <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: 600;">Mở app Ngân hàng quét QR</span>
+        </div>
+      </div>
+
+      <div style="background: #fef3c7; border: 1px solid var(--border-gold); border-radius: var(--radius-md); padding: 1rem; text-align: center; margin-bottom: 1.2rem;">
+        <div style="font-weight: 800; color: var(--accent-gold-dark); font-size: 0.9rem; margin-bottom: 0.2rem;">
+          <i class="fa-solid fa-spinner fa-spin"></i> ĐANG QUÉT TIỀN CỌC TỰ ĐỘNG TỪ GMAIL...
+        </div>
+        <p style="font-size: 0.8rem; color: #92400e;">
+          Chuyển cọc thành công hệ thống sẽ tự động gửi thông báo Telegram đến Shop & chốt đơn giao hàng.
+        </p>
+      </div>
+
+      <div style="display: flex; gap: 0.8rem;">
+        <a href="https://zalo.me/0969730105" target="_blank" class="btn-primary" style="flex: 1; justify-content: center; background: #0284c7;">
+          <i class="fa-solid fa-comment-dots"></i> ZALO: 0969730105
+        </a>
+        <a href="https://www.facebook.com/TungMuVang" target="_blank" class="btn-primary" style="flex: 1; justify-content: center; background: #1877f2;">
+          <i class="fa-brands fa-facebook"></i> FB: TÙNG NGUYỄN
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toast-container"></div>
+  <script src="app.js"></script>
+</body>
+</html>
