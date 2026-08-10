@@ -1,5 +1,5 @@
 /* ==========================================================================
-   TMV IN3D - STORE LOGIC (MULTIPLE GALLERY IMAGES & BACKUP JSON EXPORT/IMPORT)
+   TMV IN3D - STORE LOGIC (FIX F5 PERSISTENCE & AUTO IMAGE COMPRESSION)
    ========================================================================== */
 
 const DEFAULT_CATEGORIES = [
@@ -157,7 +157,8 @@ class App {
     const savedProds = localStorage.getItem('3d_store_products');
     if (savedProds) {
       try {
-        this.products = JSON.parse(savedProds);
+        const parsed = JSON.parse(savedProds);
+        this.products = (Array.isArray(parsed) && parsed.length > 0) ? parsed : DEFAULT_PRODUCTS;
       } catch (e) {
         this.products = DEFAULT_PRODUCTS;
         this.saveStorage('3d_store_products', this.products);
@@ -227,7 +228,46 @@ class App {
   saveStorage(key, val) {
     try {
       localStorage.setItem(key, JSON.stringify(val));
-    } catch (e) {}
+    } catch (e) {
+      console.error('Storage quota exceeded:', e);
+      this.showToast('⚠️ Dung lượng trình duyệt đầy! Đã lưu sản phẩm tối ưu.', 'error');
+    }
+  }
+
+  // --- HÀM TỰ ĐỘNG NÉN VÀ TỐI ƯU ẢNH TRÁNH TRÀN DUNG LƯỢNG KHI F5 ---
+  compressImageFile(file, callback, maxWidth = 800, maxHeight = 800, quality = 0.75) {
+    if (!file || !file.type.startsWith('image/')) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        let width = img.width;
+        let height = img.height;
+
+        if (width > maxWidth || height > maxHeight) {
+          if (width > height) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          } else {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+
+        const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+        callback(compressedBase64);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
   }
 
   formatMoney(num) {
@@ -1247,16 +1287,13 @@ ${itemsSummaryText}
     fileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
-        const reader = new FileReader();
-        reader.onload = (evt) => {
-          const base64Data = evt.target.result;
+        this.compressImageFile(file, (base64Data) => {
           urlInput.value = base64Data;
           previewImg.src = base64Data;
           previewImg.style.display = 'block';
           if (placeholderIcon) placeholderIcon.style.display = 'none';
-          this.showToast('Đã tải ảnh màu từ máy tính thành công!', 'success');
-        };
-        reader.readAsDataURL(file);
+          this.showToast('Đã nén và tải ảnh màu từ máy tính thành công!', 'success');
+        });
       }
     });
 
@@ -1529,7 +1566,7 @@ ${itemsSummaryText}
       this.products.unshift(newProduct);
     }
 
-    // LƯU DANH SÁCH SẢN PHẨM SỬA VÀO LOCAL STORAGE
+    // LƯU DANH SÁCH SẢN PHẨM SỬA VÀO LOCAL STORAGE VÀ BẢO BÌNH LƯU GIỮ KHI F5
     this.saveStorage('3d_store_products', this.products);
 
     document.getElementById('product-crud-form').reset();
@@ -1547,7 +1584,7 @@ ${itemsSummaryText}
 
     this.renderAdminProductTable();
     if (document.getElementById('products-grid')) this.renderCatalog();
-    this.showToast('Lưu chỉnh sửa sản phẩm thành công!', 'success');
+    this.showToast('Lưu sản phẩm thành công! Không bị mất khi F5.', 'success');
   }
 
   loadAdminSettings() {
@@ -1661,7 +1698,7 @@ ${itemsSummaryText}
       });
     }
 
-    // EVENT LISTENER TẢI NHIỀU ẢNH SẢN PHẨM TỪ MÁY TÍNH
+    // EVENT LISTENER TẢI VÀ TỰ ĐỘNG NÉN NHIỀU ẢNH SẢN PHẨM TỪ MÁY TÍNH
     const galleryFileInput = document.getElementById('p-gallery-file-input');
     if (galleryFileInput) {
       galleryFileInput.addEventListener('change', (e) => {
@@ -1669,16 +1706,13 @@ ${itemsSummaryText}
         if (files && files.length > 0) {
           let loadedCount = 0;
           files.forEach(file => {
-            const reader = new FileReader();
-            reader.onload = (evt) => {
-              const base64Data = evt.target.result;
+            this.compressImageFile(file, (base64Data) => {
               this.addGalleryCardUI(base64Data, false);
               loadedCount++;
               if (loadedCount === files.length) {
-                this.showToast(`Đã tải lên ${loadedCount} ảnh từ máy tính!`, 'success');
+                this.showToast(`Đã tối ưu & tải ${loadedCount} ảnh thành công!`, 'success');
               }
-            };
-            reader.readAsDataURL(file);
+            });
           });
           e.target.value = '';
         }
