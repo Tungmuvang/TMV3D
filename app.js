@@ -1,6 +1,4 @@
-/* ==========================================================================
-   TMV IN3D - STORE LOGIC (FIX F5 PERSISTENCE & AUTO IMAGE COMPRESSION)
-   ========================================================================== */
+const CURRENT_DATA_VERSION = "2026.08.10_v3";
 
 const DEFAULT_CATEGORIES = [
   { id: "Articulated", name: "Mô Hình Linh Hoạt (Articulated)" },
@@ -153,9 +151,15 @@ class App {
   constructor() {
     this.categories = this.loadStorage('3d_store_categories', DEFAULT_CATEGORIES);
     
-    // Đọc danh sách sản phẩm từ localStorage, CHỈ lấy default khi storage hoàn toàn trống
+    // ĐỌC VÀ TỰ ĐỘNG ĐỒNG BỘ PHIÊN BẢN SẢN PHẨM MỚI KHI UPDATE WEB
+    const savedVersion = localStorage.getItem('3d_store_app_version');
     const savedProds = localStorage.getItem('3d_store_products');
-    if (savedProds) {
+
+    if (!savedVersion || savedVersion !== CURRENT_DATA_VERSION || !savedProds) {
+      this.products = this.syncDefaultProducts(savedProds ? JSON.parse(savedProds) : []);
+      this.saveStorage('3d_store_products', this.products);
+      localStorage.setItem('3d_store_app_version', CURRENT_DATA_VERSION);
+    } else {
       try {
         const parsed = JSON.parse(savedProds);
         this.products = (Array.isArray(parsed) && parsed.length > 0) ? parsed : DEFAULT_PRODUCTS;
@@ -163,25 +167,6 @@ class App {
         this.products = DEFAULT_PRODUCTS;
         this.saveStorage('3d_store_products', this.products);
       }
-    } else {
-      this.products = DEFAULT_PRODUCTS;
-      this.saveStorage('3d_store_products', this.products);
-    }
-
-    // Tự động cập nhật ảnh đại diện chuẩn 30cm Sonic (sonic_30cm_hero.png) cho sản phẩm p5
-    const sonicItem = this.products.find(p => p.id === 'p5');
-    if (sonicItem) {
-      const sonic30cmUrl = "assets/images/sonic_30cm_hero.png";
-      sonicItem.image = sonic30cmUrl;
-      if (sonicItem.images && sonicItem.images.length > 0) {
-        sonicItem.images = [sonic30cmUrl, ...sonicItem.images.filter(img => img !== sonic30cmUrl)];
-      } else {
-        sonicItem.images = [sonic30cmUrl];
-      }
-      if (sonicItem.colors && sonicItem.colors.length > 0) {
-        sonicItem.colors[0].image = sonic30cmUrl;
-      }
-      this.saveStorage('3d_store_products', this.products);
     }
 
     this.cart = this.loadStorage('3d_store_cart', []);
@@ -248,6 +233,29 @@ class App {
       console.error('Storage quota exceeded:', e);
       this.showToast('⚠️ Dung lượng trình duyệt đầy! Đã lưu sản phẩm tối ưu.', 'error');
     }
+  }
+
+  syncDefaultProducts(existingList = []) {
+    if (!Array.isArray(existingList) || existingList.length === 0) {
+      return DEFAULT_PRODUCTS;
+    }
+    
+    // Giữ lại các sản phẩm tùy chỉnh do Admin tạo thêm
+    const customAdminProducts = existingList.filter(item => !DEFAULT_PRODUCTS.some(def => def.id === item.id));
+    
+    // Cập nhật danh sách mặc định mới nhất kết hợp sản phẩm tự tạo từ Admin
+    return [...DEFAULT_PRODUCTS, ...customAdminProducts];
+  }
+
+  forceRefreshSystemData() {
+    localStorage.removeItem('3d_store_products');
+    localStorage.removeItem('3d_store_categories');
+    localStorage.removeItem('3d_store_app_version');
+    localStorage.setItem('3d_store_app_version', CURRENT_DATA_VERSION);
+    this.products = DEFAULT_PRODUCTS;
+    this.saveStorage('3d_store_products', this.products);
+    this.showToast('✅ Đã xóa cache và làm mới dữ liệu mới nhất!', 'success');
+    setTimeout(() => location.reload(true), 800);
   }
 
   // --- HÀM TỰ ĐỘNG NÉN VÀ TỐI ƯU ẢNH TRÁNH TRÀN DUNG LƯỢNG KHI F5 ---

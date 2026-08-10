@@ -6,8 +6,13 @@
   <title>Trang Quản Trị Cửa Hàng | TMV IN3D Admin</title>
   <meta name="robots" content="noindex, nofollow">
   
+  <!-- CHỐNG CACHE TRÌNH DUYỆT ĐIỆN THOẠI / DESKTOP KHI UPDATE SẢN PHẨM MỚI -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles.css?v=20260810_v3">
 </head>
 <body style="background: var(--bg-body); color: var(--text-main); min-height: 100vh;">
 
@@ -20,7 +25,10 @@
           <span>TMV <span class="gradient-text-gold">ADMIN CMS</span></span>
         </a>
 
-        <div style="display: flex; gap: 1rem; align-items: center;">
+        <div style="display: flex; gap: 0.8rem; align-items: center;">
+          <button type="button" class="btn-secondary" onclick="app.forceRefreshSystemData()" style="font-size: 0.85rem; padding: 0.45rem 0.9rem;" title="Xóa cache và tự động tải dữ liệu sản phẩm mới nhất">
+            <i class="fa-solid fa-rotate"></i> Làm Mới Cache Web
+          </button>
           <a href="index.html" class="btn-secondary" style="font-size: 0.85rem; padding: 0.45rem 0.9rem;" target="_blank">
             <i class="fa-solid fa-store"></i> Xem Cửa Hàng Trang Chủ
           </a>
@@ -309,6 +317,6 @@
   </main>
 
   <div class="toast-container" id="toast-container"></div>
-  <script src="app.js"></script>
+  <script src="app.js?v=20260810_v3"></script>
 </body>
 </html>
