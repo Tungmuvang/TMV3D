@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hộp Đựng Pin FZ100 & Thẻ Nhớ Máy Ảnh - TMV IN3D</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: rgba(255, 255, 255, 0.1);
+      --accent-gold: #f59e0b;
+      --accent-gold-hover: #d97706;
+      --accent-gold-light: rgba(245, 158, 11, 0.15);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --success: #10b981;
+      --radius: 16px;
+      --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5), 0 8px 10px -6px rgba(0, 0, 0, 0.5);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding: 1rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .tmv-product-container {
+      max-width: 900px;
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      padding: 1.5rem;
+    }
+
+    .tmv-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
+
+    @media (min-width: 768px) {
+      .tmv-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* GALLERY */
+    .gallery-main {
+      width: 100%;
+      height: 320px;
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+      background: #000;
+      border: 1px solid var(--card-border);
+    }
+
+    .gallery-main img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .gallery-main:hover img {
+      transform: scale(1.05);
+    }
+
+    .gallery-thumbs {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+      overflow-x: auto;
+      padding-bottom: 0.3rem;
+    }
+
+    .thumb-item {
+      width: 64px;
+      height: 64px;
+      border-radius: 8px;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid transparent;
+      opacity: 0.7;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .thumb-item.active, .thumb-item:hover {
+      border-color: var(--accent-gold);
+      opacity: 1;
+    }
+
+    .thumb-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* DETAILS */
+    .product-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: var(--accent-gold-light);
+      color: var(--accent-gold);
+      border: 1px solid var(--accent-gold);
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .product-title {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 0.8rem;
+      line-height: 1.2;
+    }
+
+    .price-box {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--card-border);
+      padding: 1rem;
+      border-radius: 12px;
+      margin-bottom: 1.2rem;
+      display: flex;
+      align-items: baseline;
+      gap: 1rem;
+    }
+
+    .price-val {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: var(--accent-gold);
+    }
+
+    .deposit-tag {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    .feature-list {
+      list-style: none;
+      margin-bottom: 1.2rem;
+      font-size: 0.9rem;
+      color: #cbd5e1;
+    }
+
+    .feature-list li {
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .feature-list i {
+      color: var(--accent-gold);
+      width: 16px;
+    }
+
+    /* OPTIONS */
+    .option-title {
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .option-selected {
+      color: var(--accent-gold);
+      font-weight: 600;
+    }
+
+    .pill-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .pill-item {
+      padding: 0.5rem 0.9rem;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      color: #cbd5e1;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .pill-item:hover {
+      border-color: var(--accent-gold);
+      color: #fff;
+    }
+
+    .pill-item.active {
+      background: var(--accent-gold-light);
+      border-color: var(--accent-gold);
+      color: var(--accent-gold);
+      font-weight: 700;
+    }
+
+    .color-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      display: inline-block;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    /* INPUT NAME */
+    .custom-input-box {
+      margin-bottom: 1.2rem;
+    }
+
+    .custom-input-box label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.4rem;
+    }
+
+    .custom-input-box input {
+      width: 100%;
+      padding: 0.65rem 0.9rem;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .custom-input-box input:focus {
+      border-color: var(--accent-gold);
+    }
+
+    /* ACTIONS */
+    .action-row {
+      display: flex;
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .qty-control {
+      display: flex;
+      align-items: center;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .qty-btn {
+      width: 36px;
+      height: 42px;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .qty-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .qty-val {
+      width: 40px;
+      text-align: center;
+      font-weight: 700;
+      color: #fff;
+      font-size: 0.95rem;
+    }
+
+    .btn-buy {
+      flex: 1;
+      background: linear-gradient(135deg, var(--accent-gold), #d97706);
+      color: #000;
+      font-weight: 800;
+      font-size: 1rem;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      transition: all 0.2s ease;
+      box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+    }
+
+    .btn-buy:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(245, 158, 11, 0.4);
+    }
+
+    /* MODAL */
+    .tmv-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(5px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 99999;
+      opacity: 0;
+      pointer-events: none;
+      transition: all 0.3s ease;
+      padding: 1rem;
+    }
+
+    .tmv-modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .tmv-modal-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 1.5rem;
+      position: relative;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.5);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--card-border);
+      padding-bottom: 0.8rem;
+    }
+
+    .modal-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.3rem;
+      cursor: pointer;
+    }
+
+    .modal-close:hover {
+      color: #fff;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 0.3rem;
+    }
+
+    .form-group input, .form-group textarea {
+      width: 100%;
+      padding: 0.65rem 0.85rem;
+      background: rgba(15, 23, 42, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      color: #fff;
+      font-family: inherit;
+      font-size: 0.9rem;
+      outline: none;
+    }
+
+    .form-group input:focus, .form-group textarea:focus {
+      border-color: var(--accent-gold);
+    }
+
+    .order-summary-box {
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px dotted var(--accent-gold);
+      border-radius: 8px;
+      padding: 0.8rem;
+      margin-bottom: 1rem;
+      font-size: 0.85rem;
+    }
+
+    .order-summary-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.3rem;
+    }
+
+    .qr-container {
+      text-align: center;
+      padding: 1rem;
+      background: #fff;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+    }
+
+    .qr-container img {
+      max-width: 200px;
+      width: 100%;
+      height: auto;
+    }
+
+    .copy-btn {
+      padding: 0.3rem 0.6rem;
+      background: var(--accent-gold-light);
+      border: 1px solid var(--accent-gold);
+      color: var(--accent-gold);
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* TOAST */
+    .toast-box {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #10b981;
+      color: #fff;
+      padding: 0.8rem 1.2rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
+      z-index: 100000;
+      opacity: 0;
+      transform: translateY(20px);
+      transition: all 0.3s ease;
+    }
+
+    .toast-box.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="tmv-product-container">
+    <div class="tmv-grid">
+      <!-- LEFT: GALLERY -->
+      <div>
+        <div class="gallery-main">
+          <img id="main-img" src="https://tmv3d.tungmuvang.in/product?id=p_1786340946473" alt="Hộp đựng pin Fz100">
+        </div>
+        <div class="gallery-thumbs">
+          <div class="thumb-item active" onclick="changeImage('https://tmv3d.tungmuvang.in/product?id=p_1786340946473', this)">
+            <img src="https://tmv3d.tungmuvang.in/product?id=p_1786340946473" alt="Thumb 1">
+          </div>
+          <div class="thumb-item" onclick="changeImage('https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=600&q=80', this)">
+            <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=600&q=80" alt="Thumb 2">
+          </div>
+          <div class="thumb-item" onclick="changeImage('https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=80', this)">
+            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=600&q=80" alt="Thumb 3">
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: DETAILS & FORM -->
+      <div>
+        <span class="product-badge"><i class="fa-solid fa-layer-group"></i> Phụ Kiện Máy Ảnh 3D</span>
+        <h1 class="product-title">Hộp Đựng Pin FZ100 & Thẻ Nhớ Máy Ảnh</h1>
+        
+        <div class="price-box">
+          <span class="price-val" id="display-price">150.000đ</span>
+          <span class="deposit-tag">(Cọc trước: <strong style="color:#fff;" id="display-deposit">50.000đ</strong>)</span>
+        </div>
+
+        <ul class="feature-list">
+          <li><i class="fa-solid fa-battery-full"></i> Chứa 6 pin Sony FZ100 an toàn chống va đập</li>
+          <li><i class="fa-solid fa-sd-card"></i> Chứa 6 thẻ SD + 3 thẻ MicroSD chống rơi rớt</li>
+          <li><i class="fa-solid fa-pen-nib"></i> Miễn phí cá nhân hóa khắc tên riêng / logo lên hộp</li>
+          <li><i class="fa-solid fa-shield-halved"></i> Chất liệu in 3D Filament cao cấp, bền bỉ</li>
+        </ul>
+
+        <!-- COLOR SELECTOR -->
+        <div class="option-title">
+          1. Chọn Màu Sắc Filament: <span class="option-selected" id="selected-color-name">Đỏ + Đen</span>
+        </div>
+        <div class="pill-group">
+          <div class="pill-item active" onclick="selectColor('Đỏ + Đen', '#ef4444', this)">
+            <span class="color-dot" style="background:#ef4444;"></span> Đỏ + Đen
+          </div>
+          <div class="pill-item" onclick="selectColor('Đen + Trắng', '#000000', this)">
+            <span class="color-dot" style="background:#000000;"></span> Đen + Trắng
+          </div>
+          <div class="pill-item" onclick="selectColor('Đen + Cam', '#f97316', this)">
+            <span class="color-dot" style="background:#f97316;"></span> Đen + Cam
+          </div>
+        </div>
+
+        <!-- TYPE SELECTOR -->
+        <div class="option-title">
+          2. Chọn Phân Loại: <span class="option-selected" id="selected-type-name">Mặc Định</span>
+        </div>
+        <div class="pill-group">
+          <div class="pill-item active" onclick="selectType('Mặc Định', 0, this)">
+            <i class="fa-solid fa-box"></i> Mặc Định (150k)
+          </div>
+          <div class="pill-item" onclick="selectType('Thêm Tên + Logo', 0, this)">
+            <i class="fa-solid fa-signature"></i> Thêm Tên + Logo
+          </div>
+        </div>
+
+        <!-- NAME INPUT -->
+        <div class="custom-input-box">
+          <label><i class="fa-solid fa-pen-field"></i> Tên riêng / Logo muốn in lên hộp (nếu chọn Thêm Tên):</label>
+          <input type="text" id="custom-name-input" placeholder="Ví dụ: NGUYEN VAN A - 0912345678">
+        </div>
+
+        <!-- ACTION ROW -->
+        <div class="action-row">
+          <div class="qty-control">
+            <button class="qty-btn" onclick="updateQty(-1)">-</button>
+            <span class="qty-val" id="qty-val">1</span>
+            <button class="qty-btn" onclick="updateQty(1)">+</button>
+          </div>
+          <button class="btn-buy" onclick="openOrderModal()">
+            <i class="fa-solid fa-cart-shopping"></i> ĐẶT HÀNG NGAY
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ORDER MODAL -->
+  <div class="tmv-modal-overlay" id="order-modal">
+    <div class="tmv-modal-card">
+      <div class="modal-header">
+        <div class="modal-title"><i class="fa-solid fa-truck-fast"></i> Thông Tin Giao Hàng</div>
+        <button class="modal-close" onclick="closeOrderModal()">&times;</button>
+      </div>
+
+      <div class="order-summary-box">
+        <div class="order-summary-row">
+          <span>Sản phẩm:</span>
+          <strong style="color:#fff;" id="modal-summary-title">Hộp đựng pin Fz100</strong>
+        </div>
+        <div class="order-summary-row">
+          <span>Tùy chọn:</span>
+          <span style="color:var(--accent-gold);" id="modal-summary-opts">Đỏ + Đen | Mặc Định</span>
+        </div>
+        <div class="order-summary-row">
+          <span>Số lượng:</span>
+          <strong style="color:#fff;" id="modal-summary-qty">1</strong>
+        </div>
+        <div class="order-summary-row" style="border-top:1px solid var(--card-border); padding-top:0.4rem; margin-top:0.4rem;">
+          <span>Tổng tiền:</span>
+          <strong style="color:var(--accent-gold); font-size:1.1rem;" id="modal-summary-price">150.000đ</strong>
+        </div>
+      </div>
+
+      <form id="order-form" onsubmit="handleFormSubmit(event)">
+        <div class="form-group">
+          <label>Họ và Tên người nhận (*):</label>
+          <input type="text" id="cust-name" required placeholder="Nhập họ và tên đầy đủ">
+        </div>
+        <div class="form-group">
+          <label>Số điện thoại (*):</label>
+          <input type="tel" id="cust-phone" required pattern="[0-9]{9,11}" placeholder="Ví dụ: 0969730105">
+        </div>
+        <div class="form-group">
+          <label>Địa chỉ nhận hàng (*):</label>
+          <input type="text" id="cust-address" required placeholder="Số nhà, đường, phường/xã, quận/huyện, tỉnh/thành">
+        </div>
+        <div class="form-group">
+          <label>Ghi chú đơn hàng (Tùy chọn):</label>
+          <textarea id="cust-note" rows="2" placeholder="Ghi chú thời gian giao hàng hoặc yêu cầu đặc biệt..."></textarea>
+        </div>
+        <button type="submit" class="btn-buy" style="width:100%; padding:0.8rem;">
+          XÁC NHẬN & CHUYỂN KHOẢN ĐẶT CỌC <i class="fa-solid fa-arrow-right"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- DEPOSIT / VIETQR MODAL -->
+  <div class="tmv-modal-overlay" id="deposit-modal">
+    <div class="tmv-modal-card" style="text-align:center;">
+      <div class="modal-header">
+        <div class="modal-title" style="color:var(--success);"><i class="fa-solid fa-circle-check"></i> Đặt Hàng Thành Công!</div>
+        <button class="modal-close" onclick="closeDepositModal()">&times;</button>
+      </div>
+
+      <p style="font-size:0.9rem; color:var(--text-muted); margin-bottom:1rem;">
+        Vui lòng chuyển khoản tiền cọc <strong style="color:var(--accent-gold);" id="qr-deposit-amount">50.000đ</strong> để hệ thống tự động xác nhận đơn hàng!
+      </p>
+
+      <!-- VIETQR IMAGE -->
+      <div class="qr-container">
+        <img id="vietqr-img" src="" alt="VietQR Đặt cọc">
+        <div style="font-size:0.8rem; color:#334155; font-weight:700; margin-top:0.4rem;">
+          Ngân hàng TIMO - NGUYEN THANH TUNG
+        </div>
+        <div style="font-size:0.85rem; color:#0284c7; font-weight:800;">
+          STK: 9021186623244
+        </div>
+      </div>
+
+      <div style="background:rgba(15,23,42,0.8); border:1px solid var(--card-border); padding:0.8rem; border-radius:8px; margin-bottom:1rem; text-align:left; font-size:0.85rem;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+          <span>Nội dung chuyển khoản (Mã CK):</span>
+          <button class="copy-btn" onclick="copyText(currentTransferCode)">Copy</button>
+        </div>
+        <div style="font-family:monospace; font-size:1.1rem; color:var(--accent-gold); font-weight:800;" id="transfer-code-text">
+          TMV3D 1234
+        </div>
+      </div>
+
+      <button class="btn-buy" style="width:100%; padding:0.8rem; background:var(--success); color:#fff;" onclick="finishOrder()">
+        <i class="fa-solid fa-check-double"></i> TÔI ĐÃ CHUYỂN KHOẢN CỌC
+      </button>
+    </div>
+  </div>
+
+  <!-- TOAST NOTIFICATION -->
+  <div class="toast-box" id="toast">Thông báo</div>
+
+  <script>
+    // CONFIG SYSTEM ENDPOINTS & TELEGRAM BOT
+    const CONFIG = {
+      productTitle: "Hộp đựng pin Fz100",
+      basePrice: 150000,
+      baseDeposit: 50000,
+      tgToken: "8795810475:AAGiayX1izlJd8uUxtQAAThE-MffI_KoPKY",
+      tgChatIds: ["7744946591", "7607846055"],
+      scriptUrl: "https://script.google.com/macros/s/AKfycbziyxNEuLR_ncZKC1ACW3QZBLr4wyTQMaTnQhvaWdJonQPLb78jkk8itPCri2wXk13k/exec"
+    };
+
+    // STATE
+    let selectedColor = "Đỏ + Đen";
+    let selectedType = "Mặc Định";
+    let quantity = 1;
+    let currentTransferCode = "";
+
+    // DOM ELEMENTS
+    const displayPrice = document.getElementById("display-price");
+    const displayDeposit = document.getElementById("display-deposit");
+    const qtyVal = document.getElementById("qty-val");
+    const selectedColorName = document.getElementById("selected-color-name");
+    const selectedTypeName = document.getElementById("selected-type-name");
+
+    function formatVND(num) {
+      return num.toLocaleString('vi-VN') + 'đ';
+    }
+
+    function changeImage(src, el) {
+      document.getElementById('main-img').src = src;
+      document.querySelectorAll('.thumb-item').forEach(item => item.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function selectColor(colorName, hex, el) {
+      selectedColor = colorName;
+      selectedColorName.textContent = colorName;
+      document.querySelectorAll('.pill-group')[0].querySelectorAll('.pill-item').forEach(i => i.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function selectType(typeName, extraPrice, el) {
+      selectedType = typeName;
+      selectedTypeName.textContent = typeName;
+      document.querySelectorAll('.pill-group')[1].querySelectorAll('.pill-item').forEach(i => i.classList.remove('active'));
+      el.classList.add('active');
+      updatePrice();
+    }
+
+    function updateQty(delta) {
+      quantity = Math.max(1, quantity + delta);
+      qtyVal.textContent = quantity;
+      updatePrice();
+    }
+
+    function updatePrice() {
+      const totalPrice = CONFIG.basePrice * quantity;
+      const totalDeposit = CONFIG.baseDeposit * quantity;
+      displayPrice.textContent = formatVND(totalPrice);
+      displayDeposit.textContent = formatVND(totalDeposit);
+    }
+
+    // MODAL HANDLERS
+    function openOrderModal() {
+      const totalPrice = CONFIG.basePrice * quantity;
+      document.getElementById('modal-summary-opts').textContent = `${selectedColor} | ${selectedType}`;
+      document.getElementById('modal-summary-qty').textContent = quantity;
+      document.getElementById('modal-summary-price').textContent = formatVND(totalPrice);
+      document.getElementById('order-modal').classList.add('active');
+    }
+
+    function closeOrderModal() {
+      document.getElementById('order-modal').classList.remove('active');
+    }
+
+    function closeDepositModal() {
+      document.getElementById('deposit-modal').classList.remove('active');
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 3000);
+    }
+
+    function copyText(text) {
+      navigator.clipboard.writeText(text).then(() => {
+        showToast("✅ Đã sao chép mã chuyển khoản!");
+      });
+    }
+
+    // SUBMIT ORDER FORM
+    async function handleFormSubmit(e) {
+      e.preventDefault();
+
+      const custName = document.getElementById('cust-name').value.trim();
+      const custPhone = document.getElementById('cust-phone').value.trim();
+      const custAddress = document.getElementById('cust-address').value.trim();
+      const custNote = document.getElementById('cust-note').value.trim();
+      const customPrintName = document.getElementById('custom-name-input').value.trim();
+
+      const totalPrice = CONFIG.basePrice * quantity;
+      const totalDeposit = CONFIG.baseDeposit * quantity;
+      const remainingPrice = totalPrice - totalDeposit;
+
+      // GENERATE TRANSFER CODE
+      currentTransferCode = "TMV3D" + Math.floor(1000 + Math.random() * 9000);
+
+      // FULL NOTES FOR SHEET AND TELEGRAM
+      let fullNotes = `Màu: ${selectedColor} | Loại: ${selectedType}`;
+      if (customPrintName) fullNotes += ` | In tên: ${customPrintName}`;
+      if (custNote) fullNotes += ` | Ghi chú: ${custNote}`;
+      fullNotes += ` | Mã CK: ${currentTransferCode}`;
+
+      const orderItemName = `${CONFIG.productTitle} [${selectedColor}, ${selectedType}] (x${quantity})`;
+
+      // 1. SUBMIT TO GOOGLE SHEET
+      const sheetPayload = {
+        action: "create_order",
+        time: new Date().toLocaleString('vi-VN'),
+        name: custName,
+        address: custAddress,
+        phone: custPhone,
+        item: orderItemName,
+        price: totalPrice,
+        deposit: totalDeposit,
+        remaining: remainingPrice,
+        notes: fullNotes,
+        status: "Chờ cọc ⏳",
+        progress: "Chờ xử lý"
+      };
+
+      fetch(CONFIG.scriptUrl, {
+        method: "POST",
+        mode: "no-cors",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(sheetPayload)
+      }).catch(err => console.error("Sheet submit error:", err));
+
+      // 2. SUBMIT TO TELEGRAM BOT
+      const telegramMessage = `🛍️ <b>ĐƠN HÀNG MỚI TỪ BLOGSPOT!</b>\n` +
+        `--------------------------------\n` +
+        `👤 <b>Khách hàng:</b> ${custName}\n` +
+        `📞 <b>SĐT:</b> ${custPhone}\n` +
+        `📍 <b>Địa chỉ:</b> ${custAddress}\n` +
+        `📦 <b>Sản phẩm:</b> ${orderItemName}\n` +
+        `💵 <b>Tổng tiền:</b> ${formatVND(totalPrice)}\n` +
+        `💳 <b>Đã cọc:</b> 0đ (Chờ cọc: ${formatVND(totalDeposit)})\n` +
+        `💸 <b>Còn lại:</b> ${formatVND(remainingPrice)}\n` +
+        `📝 <b>Ghi chú:</b> ${fullNotes}\n` +
+        `🔑 <b>Mã CK Cọc:</b> <code>${currentTransferCode}</code>`;
+
+      CONFIG.tgChatIds.forEach(chatId => {
+        fetch(`https://api.telegram.org/bot${CONFIG.tgToken}/sendMessage`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: chatId,
+            text: telegramMessage,
+            parse_mode: "HTML"
+          })
+        }).catch(err => console.error("Telegram submit error:", err));
+      });
+
+      // 3. SHOW VIETQR MODAL
+      closeOrderModal();
+      document.getElementById('qr-deposit-amount').textContent = formatVND(totalDeposit);
+      document.getElementById('transfer-code-text').textContent = currentTransferCode;
+
+      // VietQR Image URL
+      const qrUrl = `https://img.vietqr.io/image/9021186623244-timo-compact2.png?amount=${totalDeposit}&addInfo=${currentTransferCode}&accountName=NGUYEN%20THANH%20TUNG`;
+      document.getElementById('vietqr-img').src = qrUrl;
+
+      document.getElementById('deposit-modal').classList.add('active');
+    }
+
+    function finishOrder() {
+      closeDepositModal();
+      showToast("🎉 Đơn hàng đã ghi nhận! Cảm ơn bạn đã mua hàng tại TMV IN3D!");
+    }
+  </script>
+</body>
+</html>
