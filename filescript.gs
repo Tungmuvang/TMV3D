@@ -269,7 +269,21 @@ function doPostSonic(e) {
                            .setMimeType(ContentService.MimeType.JSON);
     }
 
-    // C. LƯU & BẢO TỒN SẢN PHẨM CLOUD ONLINE
+    // C1. LẤY SẢN PHẨM CLOUD ONLINE
+    if (data && (data.action === "fetch_online_products" || data.action === "get_online_products" || data.action === "get_products")) {
+      var jsonStr = sonicScriptProps.getProperty("ONLINE_PRODUCTS_DATA");
+      var productsList = [];
+      if (jsonStr) {
+        try { productsList = JSON.parse(jsonStr); } catch (e) {}
+      }
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        products: productsList,
+        count: productsList.length
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // C2. LƯU & BẢO TỒN SẢN PHẨM CLOUD ONLINE
     if (data && (data.action === "save_online_products" || data.action === "save_products")) {
       var productsList = data.products || [];
       var jsonStr = JSON.stringify(productsList);
@@ -312,7 +326,19 @@ function doPostSonic(e) {
       return handleSonicFormWebPost(data);
     }
 
-    // D. ĐƠN ĐẶT CỌC TỰ ĐỘNG TỪ WEB SONIC
+    // E. CHỐNG SPAM ĐƠN RỖNG: CHỈ TẠO ĐƠN NẾU CÓ ĐẦY ĐỦ THÔNG TIN KHÁCH HÀNG / SẢN PHẨM / MÃ CK
+    var hasValidCustomer = (data.name && data.name.toString().trim() !== '') || (data.tenKhach && data.tenKhach.toString().trim() !== '');
+    var hasValidProduct = (data.product && data.product.toString().trim() !== '') || (data.item && data.item.toString().trim() !== '') || (data.tenDonHang && data.tenDonHang.toString().trim() !== '');
+    var hasValidCode = (data.transferCode && data.transferCode.toString().trim() !== '');
+
+    if (!hasValidCustomer && !hasValidProduct && !hasValidCode) {
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "ignored",
+        message: "Bỏ qua tạo đơn rỗng."
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // F. ĐƠN ĐẶT CỌC TỰ ĐỘNG TỪ WEB SONIC
     var sheet = getSonicSheet();
     var now = new Date();
     var timeStr = Utilities.formatDate(now, "GMT+7", "dd/MM/yyyy HH:mm:ss");
@@ -706,14 +732,24 @@ function cleanupSonicExpiredPendingOrders(sheet) {
 
     for (var i = values.length - 1; i >= 1; i--) {
       var row = values[i];
-      if (!row || row.length < 3) continue;
+      if (!row || row.length < 2) continue;
 
-      var dateStr = row[0];
+      var dateStr = (row[0] || '').toString().trim();
+      var customerName = (row[1] || '').toString().trim();
+      var customerPhone = (row[3] || row[2] || '').toString().trim();
+      var productName = (row[4] || '').toString().trim();
+      var status = (row[9] || getSonicRowStatus(row) || "").toString().trim();
+
+      // Nếu là dòng rỗng hoặc không có thời gian/tên/sản phẩm ➔ Xóa dòng rỗng im lặng, KHÔNG gửi Telegram
+      if (!dateStr || (!customerName && !customerPhone && !productName)) {
+        sheet.deleteRow(i + 1);
+        continue;
+      }
+
       var codeInfo = findSonicCodeInRow(row);
-      var status = (row[9] || getSonicRowStatus(row) || "").toString();
 
-      // Hủy mọi đơn hàng ở trạng thái 'Chờ' (ví dụ: Chờ cọc ⏳) hoặc chưa có trạng thái
-      if (status.indexOf('Chờ') !== -1 || status.trim() === "") {
+      // Hủy mọi đơn hàng ở trạng thái 'Chờ' (ví dụ: Chờ cọc ⏳)
+      if (status.indexOf('Chờ') !== -1) {
         var orderDate = parseVietDateTime(dateStr);
         if (orderDate && !isNaN(orderDate.getTime())) {
           var ageMs = now - orderDate.getTime();
@@ -722,9 +758,7 @@ function cleanupSonicExpiredPendingOrders(sheet) {
               sonicScriptProps.deleteProperty("PAID_STATUS_" + codeInfo.code);
             }
 
-            var customerName = row[1] || 'Khách lẻ';
-            var customerPhone = row[3] || row[2] || '';
-            var productName = row[4] || '';
+            var displayName = customerName || 'Khách lẻ';
             var rawCode = codeInfo ? codeInfo.raw : (row[8] || 'Không có');
 
             // Xóa dòng đơn hàng quá 15 phút khỏi Sheet
@@ -733,7 +767,7 @@ function cleanupSonicExpiredPendingOrders(sheet) {
             var cancelMsg = 
               "🗑️ <b>TỰ ĐỘNG HỦY ĐƠN (QUÁ 15 PHÚT CHƯA CỌC)</b>\n" +
               "━━━━━━━━━━━━━━━━━━\n" +
-              "👤 <b>Khách hàng:</b> " + customerName + "\n" +
+              "👤 <b>Khách hàng:</b> " + displayName + "\n" +
               "📞 <b>SĐT:</b> <code>" + customerPhone + "</code>\n" +
               "📦 <b>Sản phẩm:</b> " + productName + "\n" +
               "🏷️ <b>Mã CK / Ghi chú:</b> <code>" + rawCode + "</code>\n" +
