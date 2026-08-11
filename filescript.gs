@@ -2,7 +2,7 @@
 // CẤU HÌNH HỆ THỐNG QUẢN LÝ ĐƠN HÀNG (TELEGRAM BOT & WEB APP GOOGLE SHEETS)
 // Bot Token: 8795810475:AAGiayX1izlJd8uUxtQAAThE-MffI_KoPKY
 // Admin Chat IDs: 7744946591, 7607846055
-// Spreadsheet ID: 15mW6V31uoKEo0NNBWXQEdYuuaSay04clNz4DLUz36UM
+// Spreadsheet ID: 1NmZ3Ui1LIuPTQbiPRsqBVpsDgKJCMWncSivCtkVKaD4
 // =========================================================================
 
 // 1. Token Telegram Bot do @BotFather cung cấp
@@ -14,17 +14,17 @@ var ALLOWED_CHAT_ID = "";
 var SONIC_ADMIN_CHAT_IDS = ["7744946591", "7607846055"];
 
 // 3. Đường link & ID Google Sheets quản lý đơn hàng
-var SONIC_SPREADSHEET_ID = "15mW6V31uoKEo0NNBWXQEdYuuaSay04clNz4DLUz36UM";
+var SONIC_SPREADSHEET_ID = "1NmZ3Ui1LIuPTQbiPRsqBVpsDgKJCMWncSivCtkVKaD4";
 var GOOGLE_SHEET_URL = "https://docs.google.com/spreadsheets/d/" + SONIC_SPREADSHEET_ID + "/edit?gid=0#gid=0";
 var SONIC_SHEET_URL = GOOGLE_SHEET_URL;
 
-var SONIC_OLD_SPREADSHEET_ID = "15GrO9Y9hyLQ4PhjggVAqMkmZ_W-9MsDtr0r3SnvLxeo";
+var SONIC_OLD_SPREADSHEET_ID = "15mW6V31uoKEo0NNBWXQEdYuuaSay04clNz4DLUz36UM";
 var SONIC_OLD_SHEET_URL = "https://docs.google.com/spreadsheets/d/" + SONIC_OLD_SPREADSHEET_ID + "/edit";
 
 // 4. Đường link trang web đặt hàng & Web App Execution URL
 var ORDER_WEB_URL = "https://www.tungmuvang.in/p/at-hang.html";
 var SONIC_ORDER_WEB_URL = ORDER_WEB_URL;
-var SONIC_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxZg6wWKe_yuV9UgZv2dBquCLNPYPyTqxi0urqcquf9lYdUTNqE0DAN9N8y9g3fXJEj/exec";
+var SONIC_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbziyxNEuLR_ncZKC1ACW3QZBLr4wyTQMaTnQhvaWdJonQPLb78jkk8itPCri2wXk13k/exec";
 
 var sonicScriptProps = PropertiesService.getScriptProperties();
 
@@ -32,7 +32,7 @@ var sonicScriptProps = PropertiesService.getScriptProperties();
 // HÀM LẤY SHEET VÀ TỰ ĐỘNG KHỞI TẠO TIÊU ĐỀ 11 CỘT CHUẨN KHI SHEET TRỐNG
 // =========================================================================
 function getSonicSheet() {
-  var TARGET_ID = "15mW6V31uoKEo0NNBWXQEdYuuaSay04clNz4DLUz36UM";
+  var TARGET_ID = "1NmZ3Ui1LIuPTQbiPRsqBVpsDgKJCMWncSivCtkVKaD4";
   var sheet = null;
 
   try {

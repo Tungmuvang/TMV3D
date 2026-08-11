@@ -26,7 +26,8 @@
 
 ## 📊 2. CẤU TRÚC GOOGLE SHEETS 11 CỘT MỚI
 
-- **Link Google Sheets Mới**: `https://docs.google.com/spreadsheets/d/15mW6V31uoKEo0NNBWXQEdYuuaSay04clNz4DLUz36UM/edit?gid=0#gid=0`
+- **Link Google Sheets Mới**: `https://docs.google.com/spreadsheets/d/1NmZ3Ui1LIuPTQbiPRsqBVpsDgKJCMWncSivCtkVKaD4/edit?gid=0#gid=0`
+- **Link Web App Webhook Endpoint Mới**: `https://script.google.com/macros/s/AKfycbziyxNEuLR_ncZKC1ACW3QZBLr4wyTQMaTnQhvaWdJonQPLb78jkk8itPCri2wXk13k/exec`
 
 | Cột | Tên Cột | Mô Tả / Nội Dung Lưu |
 |---|---|---|

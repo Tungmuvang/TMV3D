@@ -1,4 +1,4 @@
-const CURRENT_DATA_VERSION = "2026.08.10_v12";
+const CURRENT_DATA_VERSION = "2026.08.11_v13";
 
 const DEFAULT_CATEGORIES = [
   {
@@ -278,10 +278,13 @@ class App {
     this.settings = this.loadStorage('3d_store_settings', {
       tgToken: '8795810475:AAGiayX1izlJd8uUxtQAAThE-MffI_KoPKY',
       tgChatId: '7744946591, 7607846055',
-      sheetUrl: 'https://script.google.com/macros/s/AKfycbxZg6wWKe_yuV9UgZv2dBquCLNPYPyTqxi0urqcquf9lYdUTNqE0DAN9N8y9g3fXJEj/exec',
+      sheetUrl: 'https://script.google.com/macros/s/AKfycbziyxNEuLR_ncZKC1ACW3QZBLr4wyTQMaTnQhvaWdJonQPLb78jkk8itPCri2wXk13k/exec',
       adminAccount: 'admin',
       adminPassword: '123456'
     });
+    // Tự động đồng bộ WebApp Endpoint mới nhất
+    this.settings.sheetUrl = 'https://script.google.com/macros/s/AKfycbziyxNEuLR_ncZKC1ACW3QZBLr4wyTQMaTnQhvaWdJonQPLb78jkk8itPCri2wXk13k/exec';
+    this.saveStorage('3d_store_settings', this.settings);
 
     this.currentCategory = 'all';
     this.searchQuery = '';
@@ -1883,7 +1886,7 @@ ${itemsSummaryText}
 
     if (tEl) tEl.value = this.settings.tgToken || '8795810475:AAGiayX1izlJd8uUxtQAAThE-MffI_KoPKY';
     if (cEl) cEl.value = this.settings.tgChatId || '7744946591, 7607846055';
-    if (sEl) sEl.value = this.settings.sheetUrl || 'https://script.google.com/macros/s/AKfycbxZg6wWKe_yuV9UgZv2dBquCLNPYPyTqxi0urqcquf9lYdUTNqE0DAN9N8y9g3fXJEj/exec';
+    if (sEl) sEl.value = this.settings.sheetUrl || 'https://script.google.com/macros/s/AKfycbziyxNEuLR_ncZKC1ACW3QZBLr4wyTQMaTnQhvaWdJonQPLb78jkk8itPCri2wXk13k/exec';
     if (accEl) accEl.value = this.settings.adminAccount || 'admin';
     if (passEl) passEl.value = this.settings.adminPassword || '123456';
   }
