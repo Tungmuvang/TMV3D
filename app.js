@@ -260,6 +260,15 @@ function getCookie(cname) {
   return null;
 }
 
+function setCookie(cname, cvalue, exdays) {
+  try {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    const expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + encodeURIComponent(JSON.stringify(cvalue)) + ";" + expires + ";path=/;SameSite=Lax";
+  } catch(e) {}
+}
+
 class App {
   constructor() {
     this.categories = this.loadStorage('3d_store_categories', DEFAULT_CATEGORIES);
@@ -1342,7 +1351,9 @@ class App {
           body: JSON.stringify(orderData)
         });
       } catch (err) {}
-    } else if (this.settings.tgToken && this.settings.tgChatId) {
+    }
+
+    if (this.settings.tgToken && this.settings.tgChatId) {
       const chatIds = this.settings.tgChatId.split(',').map(id => id.trim());
       const tgMsg = 
 `📩 <b>CÓ ĐƠN HÀNG TMV IN3D MỚI (CHỜ CỌC ${depositText})</b>
@@ -1362,7 +1373,7 @@ ${itemsSummaryText}
 
       for (let cid of chatIds) {
         try {
-          await fetch(`https://api.telegram.org/bot${this.settings.tgToken}/sendMessage`, {
+          fetch(`https://api.telegram.org/bot${this.settings.tgToken}/sendMessage`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
@@ -1370,7 +1381,7 @@ ${itemsSummaryText}
               text: tgMsg,
               parse_mode: 'HTML'
             })
-          });
+          }).catch(() => {});
         } catch (err) {}
       }
     }
