@@ -348,6 +348,19 @@ function doPostSonic(e) {
     var remainText = tinhSoTienConLai(data.price, data.deposit);
     sonicScriptProps.setProperty("PAID_STATUS_" + cleanCode, "false");
 
+    // LƯU BẢN SAO ĐƠN HÀNG ĐỂ CÓ THỂ PHỤC HỒI NẾU HỦY QUÁ 15 PHÚT
+    var backupPayload = {
+      timeStr: timeStr,
+      name: data.name || '',
+      address: data.address || '',
+      phone: data.phone || '',
+      product: data.product || '',
+      price: data.price || '',
+      deposit: data.deposit || '',
+      note: data.note || ''
+    };
+    sonicScriptProps.setProperty("ORDER_BACKUP_" + cleanCode, JSON.stringify(backupPayload));
+
     var noteCombined = (data.note ? data.note : "");
     if (rawCode) {
       noteCombined = noteCombined ? noteCombined + " | Mã CK: " + rawCode : "Mã CK: " + rawCode;
@@ -387,8 +400,7 @@ function doPostSonic(e) {
     var keyboard = {
       inline_keyboard: [
         [{ text: "⚡ XÁC NHẬN ĐÃ CỌC NGAY (TỨC THÌ)", callback_data: "confirm_pay_" + cleanCode }],
-        [{ text: "📊 CHECK SHEET MỚI (SONIC)", url: SONIC_SHEET_URL }],
-        [{ text: "📂 CHECK SHEET CỦ (TMV)", url: SONIC_OLD_SHEET_URL }],
+        [{ text: "📊 CHECK SHEET ĐƠN HÀNG", url: SONIC_SHEET_URL }],
         [{ text: "🌐 LINK ĐẶT HÀNG", url: SONIC_ORDER_WEB_URL }]
       ]
     };
@@ -761,6 +773,8 @@ function cleanupSonicExpiredPendingOrders(sheet) {
             var displayName = customerName || 'Khách lẻ';
             var rawCode = codeInfo ? codeInfo.raw : (row[8] || 'Không có');
 
+            var cleanCode = codeInfo ? codeInfo.code : cleanSonicCodeForMatching(rawCode);
+
             // Xóa dòng đơn hàng quá 15 phút khỏi Sheet
             sheet.deleteRow(i + 1);
 
@@ -771,11 +785,13 @@ function cleanupSonicExpiredPendingOrders(sheet) {
               "📞 <b>SĐT:</b> <code>" + customerPhone + "</code>\n" +
               "📦 <b>Sản phẩm:</b> " + productName + "\n" +
               "🏷️ <b>Mã CK / Ghi chú:</b> <code>" + rawCode + "</code>\n" +
-              "⏰ <b>Lý do:</b> Quá 15 phút không cọc (Đã tự động xóa khỏi Sheet).";
+              "⏰ <b>Lý do:</b> Quá 15 phút không cọc (Đã xóa khỏi Sheet).\n" +
+              "👉 <i>Bấm nút bên dưới nếu muốn phục hồi & xác nhận cọc cho đơn này!</i>";
             
             var sheetKeyboard = {
               inline_keyboard: [
-                [{ text: "📊 CHECK SHEET ĐƠN HÀNG", url: GOOGLE_SHEET_URL }]
+                [{ text: "⚡ XÁC NHẬN ĐÃ CỌC NGAY (PHỤC HỒI ĐƠN)", callback_data: "confirm_pay_" + cleanCode }],
+                [{ text: "📊 CHECK SHEET ĐƠN HÀNG", url: SONIC_SHEET_URL }]
               ]
             };
 
@@ -798,22 +814,61 @@ function handleSonicTelegramCallback(callbackQuery) {
   if (data && data.indexOf("confirm_pay_") === 0) {
     var cleanCode = data.replace("confirm_pay_", "");
     
-    if (sonicScriptProps.getProperty("PAID_STATUS_" + cleanCode) === "true") {
-      return;
-    }
-
+    // Đặt trạng thái đã cọc
     sonicScriptProps.setProperty("PAID_STATUS_" + cleanCode, "true");
-    updateSonicRowStatusByCode(cleanCode, 'ĐÃ CỌC ✅');
+
+    var updated = updateSonicRowStatusByCode(cleanCode, 'ĐÃ CỌC ✅');
+    var isRestored = false;
+
+    if (!updated) {
+      // NẾU ĐƠN ĐÃ BỊ XÓA SAU 15 PHÚT: PHỤC HỒI LẠI VÀO GOOGLE SHEET
+      var backupStr = sonicScriptProps.getProperty("ORDER_BACKUP_" + cleanCode);
+      if (backupStr) {
+        try {
+          var bData = JSON.parse(backupStr);
+          var sheet = getSonicSheet();
+          if (sheet) {
+            var timeStr = bData.timeStr || Utilities.formatDate(new Date(), "GMT+7", "dd/MM/yyyy HH:mm:ss");
+            var remainText = tinhSoTienConLai(bData.price, bData.deposit);
+            var noteCombined = bData.note || "";
+            if (cleanCode && noteCombined.indexOf(cleanCode) === -1) {
+              noteCombined = noteCombined ? noteCombined + " | Mã CK: " + cleanCode : "Mã CK: " + cleanCode;
+            }
+
+            sheet.appendRow([
+              timeStr,
+              bData.name || 'Khách lẻ',
+              bData.address || '',
+              "'" + (bData.phone || ''),
+              bData.product || '',
+              bData.price || '',
+              bData.deposit || '',
+              remainText,
+              noteCombined,
+              'ĐÃ CỌC ✅',
+              'Chưa làm'
+            ]);
+            isRestored = true;
+          }
+        } catch(eBackup) {
+          Logger.log("Err restore order: " + eBackup.toString());
+        }
+      }
+    }
 
     var sheetKeyboard = {
       inline_keyboard: [
-        [{ text: "📊 CHECK SHEET MỚI", url: GOOGLE_SHEET_URL }]
+        [{ text: "📊 CHECK SHEET ĐƠN HÀNG", url: SONIC_SHEET_URL }]
       ]
     };
 
+    var confirmMsg = isRestored ? 
+      "✅ <b>ĐÃ KHÔI PHÚC VÀ XÁC NHẬN CỌC THÀNH CÔNG!</b>\nMã CK: <code>" + cleanCode + "</code>\nĐơn hàng (quá 15p) đã được thêm lại vào Google Sheet với trạng thái <b>ĐÃ CỌC ✅</b>!" :
+      "✅ <b>ĐÃ XÁC NHẬN CỌC THỦ CÔNG TỪ TELEGRAM!</b>\nMã CK: <code>" + cleanCode + "</code>\nTrạng thái đơn hàng trong Google Sheet đã chuyển sang <b>ĐÃ CỌC ✅</b>!";
+
     sendSonicTelegramRequest("sendMessage", {
       chat_id: chatId,
-      text: "✅ <b>ĐÃ XÁC NHẬN CỌC THỦ CÔNG TỪ TELEGRAM!</b>\nMã CK: <code>" + cleanCode + "</code>\nMàn hình Web khách đã tự động chuyển sang Popup Thành công!",
+      text: confirmMsg,
       parse_mode: "HTML",
       reply_markup: JSON.stringify(sheetKeyboard)
     });
