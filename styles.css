@@ -836,23 +836,26 @@ input, select, textarea {
 }
 
 .size-options-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
+  align-items: center;
 }
 
 .size-option-btn {
-  padding: 0.5rem 0.8rem;
+  padding: 0.45rem 0.85rem;
   border: 1.5px solid var(--border-color);
   border-radius: var(--radius-md);
   background: #ffffff;
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  font-size: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  white-space: nowrap;
+  font-size: 0.82rem;
   font-weight: 600;
   transition: var(--transition-fast);
   cursor: pointer;
+  text-align: center;
 }
 
 .size-scale {

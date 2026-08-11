@@ -1,4 +1,4 @@
-const CURRENT_DATA_VERSION = "2026.08.11_v14";
+const CURRENT_DATA_VERSION = "2026.08.11_v15";
 
 const DEFAULT_CATEGORIES = [
   {
@@ -880,7 +880,7 @@ class App {
         const btn = document.createElement('button');
         btn.className = `size-option-btn ${idx === 0 ? 'active' : ''}`;
         btn.innerHTML = `
-          <span class="size-name" style="font-size: 0.95rem; font-weight: 700;">${sizeDisplayName}</span>
+          <span class="size-name" style="font-size: 0.83rem; font-weight: 700; white-space: nowrap;">${sizeDisplayName}</span>
         `;
         btn.onclick = () => {
           document.querySelectorAll('#detail-size-container .size-option-btn').forEach(el => el.classList.remove('active'));
