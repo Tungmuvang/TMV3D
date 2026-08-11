@@ -1,4 +1,4 @@
-const CURRENT_DATA_VERSION = "2026.08.11_v13";
+const CURRENT_DATA_VERSION = "2026.08.11_v14";
 
 const DEFAULT_CATEGORIES = [
   {
@@ -1495,7 +1495,7 @@ ${itemsSummaryText}
     });
   }
 
-  addAdminSizeRowUI(name = "", price = 550000) {
+  addAdminSizeRowUI(name = "", price = 150000) {
     const container = document.getElementById('admin-size-rows-container');
     if (!container) return;
 
@@ -1503,11 +1503,11 @@ ${itemsSummaryText}
     div.className = 'admin-size-row-item';
     div.innerHTML = `
       <div style="display: flex; gap: 0.8rem; align-items: center; flex-wrap: wrap;">
-        <input type="text" class="form-control size-name-input" placeholder="Tên Phân Loại / Kích Thước (Ví dụ: 6 Quả Pin / Cao 30cm / Size M)" value="${name}" style="flex: 1; min-width: 200px;" required>
+        <input type="text" class="form-control size-name-input" placeholder="Tên Phân Loại / Kích Thước (Ví dụ: 6 Pin - 4 thẻ nhỏ / Cao 30cm)" value="${name}" style="flex: 1; min-width: 200px;" required>
         
         <div style="display: flex; align-items: center; gap: 0.4rem;">
           <span style="font-size: 0.85rem; font-weight: 700; color: var(--accent-gold-dark);">Giá tiền (VNĐ):</span>
-          <input type="text" class="form-control size-price-input" placeholder="550.000" value="${this.formatPriceInput(price)}" style="width: 140px;" required>
+          <input type="text" class="form-control size-price-input" placeholder="150.000" value="${this.formatPriceInput(price)}" style="width: 140px;" required>
         </div>
         
         <button type="button" class="btn-secondary" style="color: #ef4444; border-color: #fca5a5; padding: 0.5rem 0.7rem; background: #ffffff;" onclick="this.closest('.admin-size-row-item').remove()">
@@ -1522,6 +1522,15 @@ ${itemsSummaryText}
     });
 
     container.appendChild(div);
+
+    const nameInput = div.querySelector('.size-name-input');
+    if (nameInput && !name) {
+      setTimeout(() => nameInput.focus(), 50);
+    }
+  }
+
+  addAdminSizeRow() {
+    this.addAdminSizeRowUI("", 150000);
   }
 
   // --- ADMIN CMS: FEATURED PRODUCT (HERO BANNER) MANAGER ---
