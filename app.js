@@ -1,4 +1,4 @@
-const CURRENT_DATA_VERSION = "2026.08.11_v18";
+const CURRENT_DATA_VERSION = "2026.08.11_v19";
 const SONIC_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbziyxNEuLR_ncZKC1ACW3QZBLr4wyTQMaTnQhvaWdJonQPLb78jkk8itPCri2wXk13k/exec";
 
 const DEFAULT_CATEGORIES = [
@@ -361,21 +361,26 @@ class App {
 
   syncDefaultProducts(existingList = []) {
     const sampleIds = ['p1', 'p2', 'p3', 'p4'];
+    const cleanDefaults = DEFAULT_PRODUCTS.filter(def => def && def.id && !sampleIds.includes(def.id));
     
-    // NẾU NGƯỜI DÙNG ĐÃ CÓ DANH SÁCH SẢN PHẨM CÁ NHÂN HÓA, BẢO TỒN 100% SẢN PHẨM CỦA NGƯỜI DÙNG
     if (Array.isArray(existingList) && existingList.length > 0) {
       const cleanExisting = existingList.filter(p => p && p.id && !sampleIds.includes(p.id));
       
-      // Bổ sung các sản phẩm mặc định mới nếu ID chưa tồn tại trong danh sách của người dùng
-      const newDefaultProducts = DEFAULT_PRODUCTS.filter(def => 
-        !sampleIds.includes(def.id) && !cleanExisting.some(ex => ex.id === def.id)
+      // CẬP NHẬT CÁC SẢN PHẨM TRÙNG ID BẰNG DỮ LIỆU MỚI NHẤT TỪ DEFAULT_PRODUCTS (Giá, Ảnh, Tên, Cọc, Tùy chọn)
+      const updatedExisting = cleanExisting.map(ex => {
+        const matchingDef = cleanDefaults.find(def => def.id === ex.id);
+        return matchingDef ? { ...ex, ...matchingDef } : ex;
+      });
+
+      // BỔ SUNG CÁC SẢN PHẨM MẶC ĐỊNH MỚI CHƯA CÓ TRONG LOCALSTORAGE
+      const brandNewDefaults = cleanDefaults.filter(def => 
+        !updatedExisting.some(ex => ex.id === def.id)
       );
 
-      return [...cleanExisting, ...newDefaultProducts];
+      return [...updatedExisting, ...brandNewDefaults];
     }
     
-    // Nếu chưa có dữ liệu nào trong trình duyệt, sử dụng danh sách sản phẩm mặc định
-    return DEFAULT_PRODUCTS.filter(p => !sampleIds.includes(p.id));
+    return cleanDefaults;
   }
 
   async restoreFromGitHubBackup() {
