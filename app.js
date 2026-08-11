@@ -1276,20 +1276,28 @@ class App {
   }
 
   async handleCheckout(e) {
-    e.preventDefault();
+    if (e) e.preventDefault();
 
     if (this.cart.length === 0) {
       this.showToast('Giỏ hàng trống! Hãy chọn sản phẩm trước.', 'error');
       return;
     }
 
-    const name = document.getElementById('cust-name').value.trim();
-    const phone = document.getElementById('cust-phone').value.trim();
-    const address = document.getElementById('cust-address').value.trim();
-    const note = document.getElementById('cust-note').value.trim();
+    const nameEl = document.getElementById('cust-name');
+    const phoneEl = document.getElementById('cust-phone');
+    const addressEl = document.getElementById('cust-address');
+    const noteEl = document.getElementById('cust-note');
+
+    const name = nameEl ? nameEl.value.trim() : '';
+    const phone = phoneEl ? phoneEl.value.trim() : '';
+    const address = addressEl ? addressEl.value.trim() : '';
+    const note = noteEl ? noteEl.value.trim() : '';
 
     if (!name || !phone || !address) {
-      this.showToast('Vui lòng điền đầy đủ Tên, SĐT và Địa chỉ.', 'error');
+      this.showToast('⚠️ Vui lòng điền đầy đủ Tên, SĐT và Địa chỉ giao hàng.', 'error');
+      if (!name && nameEl) nameEl.focus();
+      else if (!phone && phoneEl) phoneEl.focus();
+      else if (addressEl) addressEl.focus();
       return;
     }
 
@@ -1314,7 +1322,7 @@ class App {
     const remainingCod = Math.max(0, grandTotal - totalDeposit);
 
     const itemsSummaryText = this.cart.map(
-      item => `• ${item.title} (${item.color}, ${item.size}) x${item.qty} = ${this.formatMoney(item.unitPrice * item.qty)}`
+      item => `• ${item.title} (${item.color || 'Tiêu chuẩn'}, ${item.size || 'Mặc định'}) x${item.qty} = ${this.formatMoney(item.unitPrice * item.qty)}`
     ).join('\n');
 
     const orderData = {
@@ -1336,26 +1344,67 @@ class App {
     };
 
     const submitBtn = document.getElementById('submit-order-btn');
-    submitBtn.disabled = true;
-    submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang Đặt Hàng...`;
+    if (submitBtn) {
+      submitBtn.disabled = true;
+      submitBtn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> Đang Đặt Hàng...`;
+    }
 
     this.orders.unshift(orderData);
     this.saveStorage('3d_store_orders', this.orders);
 
-    if (this.settings.sheetUrl) {
-      try {
-        await fetch(this.settings.sheetUrl, {
-          method: 'POST',
-          mode: 'no-cors',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(orderData)
-        });
-      } catch (err) {}
+    // 1. CẬP NHẬT GIAO DIỆN VÀ MỞ MODAL THANH TOÁN VIETQR NGAY LẬP TỨC (0ms)
+    const depOrderId = document.getElementById('dep-order-id');
+    const depTotalPrice = document.getElementById('dep-total-price');
+    const depAmountDisplay = document.getElementById('dep-amount-display');
+    const depTransferCode = document.getElementById('dep-transfer-code');
+    const depQrImg = document.getElementById('dep-qr-img');
+
+    if (depOrderId) depOrderId.innerText = `#TMV-${orderNum}`;
+    if (depTotalPrice) depTotalPrice.innerText = this.formatMoney(grandTotal);
+    if (depAmountDisplay) depAmountDisplay.innerText = depositText;
+    if (depTransferCode) depTransferCode.innerText = transferCode;
+
+    if (depQrImg) {
+      const qrUrl = `https://img.vietqr.io/image/TIMO-9021186623244-qr_only.jpg?amount=${totalDeposit}&addInfo=${encodeURIComponent(transferCode)}&accountName=NGUYEN%20THI%20NHUNG`;
+      depQrImg.src = qrUrl;
     }
 
-    if (this.settings.tgToken && this.settings.tgChatId) {
-      const chatIds = this.settings.tgChatId.split(',').map(id => id.trim());
-      const tgMsg = 
+    this.cart = [];
+    this.saveStorage('3d_store_cart', this.cart);
+    this.updateCartBadge();
+
+    const checkoutForm = document.getElementById('checkout-form');
+    if (checkoutForm) checkoutForm.reset();
+
+    this.closeModal('cart-drawer');
+
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> XÁC NHẬN ĐẶT HÀNG & THANH TOÁN`;
+    }
+
+    const depositModal = document.getElementById('deposit-payment-modal');
+    if (depositModal) depositModal.classList.add('active');
+
+    this.startPaymentStatusPolling(transferCode);
+    this.showToast(`🎉 Đơn hàng #${orderNum} đã khởi tạo thành công! Vui lòng chuyển cọc ${depositText}.`, 'success');
+
+    // 2. GỬI DỮ LIỆU ĐƠN HÀNG VỀ GOOGLE SHEETS & TELEGRAM TRONG BACKGROUND (KHÔNG LÀM CHẬM UI)
+    (async () => {
+      if (this.settings.sheetUrl) {
+        try {
+          await fetch(this.settings.sheetUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+          });
+        } catch (err) {}
+      }
+
+      if (this.settings.tgToken && this.settings.tgChatId) {
+        const chatIds = this.settings.tgChatId.split(',').map(id => id.trim());
+        const tgMsg = 
 `📩 <b>CÓ ĐƠN HÀNG TMV IN3D MỚI (CHỜ CỌC ${depositText})</b>
 ━━━━━━━━━━━━━━━━━━
 👤 <b>Khách hàng:</b> ${name}
@@ -1371,43 +1420,21 @@ ${itemsSummaryText}
 📝 <b>Ghi chú:</b> ${note || 'Không có'}
 ⏳ <b>Trạng thái:</b> Chờ tiền cọc về Gmail ⏳`;
 
-      for (let cid of chatIds) {
-        try {
-          fetch(`https://api.telegram.org/bot${this.settings.tgToken}/sendMessage`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              chat_id: cid,
-              text: tgMsg,
-              parse_mode: 'HTML'
-            })
-          }).catch(() => {});
-        } catch (err) {}
+        for (let cid of chatIds) {
+          try {
+            fetch(`https://api.telegram.org/bot${this.settings.tgToken}/sendMessage`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                chat_id: cid,
+                text: tgMsg,
+                parse_mode: 'HTML'
+              })
+            }).catch(() => {});
+          } catch (err) {}
+        }
       }
-    }
-
-    this.cart = [];
-    this.saveStorage('3d_store_cart', this.cart);
-    this.updateCartBadge();
-    document.getElementById('checkout-form').reset();
-    this.closeModal('cart-drawer');
-
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = `<i class="fa-solid fa-paper-plane"></i> XÁC NHẬN ĐẶT HÀNG & THANH TOÁN`;
-
-    document.getElementById('dep-order-id').innerText = `#TMV-${orderNum}`;
-    document.getElementById('dep-total-price').innerText = this.formatMoney(grandTotal);
-    document.getElementById('dep-amount-display').innerText = depositText;
-    document.getElementById('dep-transfer-code').innerText = transferCode;
-
-    const qrUrl = `https://img.vietqr.io/image/TIMO-9021186623244-qr_only.jpg?amount=${totalDeposit}&addInfo=${encodeURIComponent(transferCode)}&accountName=NGUYEN%20THI%20NHUNG`;
-    document.getElementById('dep-qr-img').src = qrUrl;
-
-    const depositModal = document.getElementById('deposit-payment-modal');
-    if (depositModal) depositModal.classList.add('active');
-
-    this.startPaymentStatusPolling(transferCode);
-    this.showToast(`Đơn hàng #${orderNum} đã khởi tạo! Vui lòng chuyển cọc ${depositText}.`, 'success');
+    })();
   }
 
   copyText(text) {
@@ -2177,7 +2204,16 @@ ${itemsSummaryText}
     });
 
     const checkoutForm = document.getElementById('checkout-form');
-    if (checkoutForm) checkoutForm.onsubmit = (e) => this.handleCheckout(e);
+    if (checkoutForm) {
+      checkoutForm.onsubmit = (e) => this.handleCheckout(e);
+    }
+    const submitBtn = document.getElementById('submit-order-btn');
+    if (submitBtn) {
+      submitBtn.onclick = (e) => {
+        e.preventDefault();
+        this.handleCheckout(e);
+      };
+    }
 
     document.querySelectorAll('.admin-tab-btn').forEach(btn => {
       btn.onclick = () => {
