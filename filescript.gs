@@ -94,6 +94,21 @@ function doGetSonic(e) {
   var callback = params.callback;
   var result = {};
 
+  if (params && (params.action === "get_online_products" || params.action === "get_products")) {
+    var cloudData = sonicScriptProps.getProperty("ONLINE_PRODUCTS_DATA");
+    var products = [];
+    if (cloudData) {
+      try { products = JSON.parse(cloudData); } catch (err) {}
+    }
+    result = { status: "success", products: products, count: products.length };
+    if (callback) {
+      return ContentService.createTextOutput(callback + "(" + JSON.stringify(result) + ")")
+                           .setMimeType(ContentService.MimeType.JAVASCRIPT);
+    }
+    return ContentService.createTextOutput(JSON.stringify(result))
+                         .setMimeType(ContentService.MimeType.JSON);
+  }
+
   if (params && params.action === "check_payment_status") {
     var code = params.code;
     if (code) {
@@ -254,7 +269,45 @@ function doPostSonic(e) {
                            .setMimeType(ContentService.MimeType.JSON);
     }
 
-    // C. ĐƠN TỪ FORM WEB HANDLER
+    // C. LƯU & BẢO TỒN SẢN PHẨM CLOUD ONLINE
+    if (data && (data.action === "save_online_products" || data.action === "save_products")) {
+      var productsList = data.products || [];
+      var jsonStr = JSON.stringify(productsList);
+      sonicScriptProps.setProperty("ONLINE_PRODUCTS_DATA", jsonStr);
+      
+      // Đồng bộ vào Google Sheet tab "Danh Sách Sản Phẩm"
+      try {
+        var ss = SpreadsheetApp.openById(SONIC_SPREADSHEET_ID);
+        var productSheet = ss.getSheetByName("Danh Sách Sản Phẩm");
+        if (!productSheet) {
+          productSheet = ss.insertSheet("Danh Sách Sản Phẩm");
+        }
+        productSheet.clear();
+        productSheet.appendRow(["ID", "Tên Sản Phẩm", "Danh Mục", "Giá Tiền", "Tiền Cọc", "Mô Tả / Hình Ảnh"]);
+        for (var i = 0; i < productsList.length; i++) {
+          var p = productsList[i];
+          productSheet.appendRow([
+            p.id || '',
+            p.title || '',
+            p.category || '',
+            p.price || 0,
+            p.deposit || 0,
+            p.image || ''
+          ]);
+        }
+      } catch (errSheet) {
+        Logger.log("Err sync product sheet: " + errSheet.toString());
+      }
+
+      return ContentService.createTextOutput(JSON.stringify({
+        status: "success",
+        message: "Đã tự động sao lưu thành công " + productsList.length + " sản phẩm lên Cloud Google!",
+        count: productsList.length,
+        timestamp: new Date().getTime()
+      })).setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // D. ĐƠN TỪ FORM WEB HANDLER
     if (data.tenKhach && data.tenDonHang) {
       return handleSonicFormWebPost(data);
     }

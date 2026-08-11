@@ -1,4 +1,5 @@
-const CURRENT_DATA_VERSION = "2026.08.11_v15";
+const CURRENT_DATA_VERSION = "2026.08.11_v17";
+const SONIC_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbziyxNEuLR_ncZKC1ACW3QZBLr4wyTQMaTnQhvaWdJonQPLb78jkk8itPCri2wXk13k/exec";
 
 const DEFAULT_CATEGORIES = [
   {
@@ -316,6 +317,9 @@ class App {
     this.bindCommonEvents();
     this.loadAdminSettings();
 
+    // TỰ ĐỘNG ĐỒNG BỘ SẢN PHẨM TỪ CLOUD GOOGLE SCRIPT MỖI KHI MỞ TRANG
+    this.fetchOnlineProductsCloud(false);
+
     // KIỂM TRA NẾU ĐANG Ở TRANG DÀNH RIÊNG ADMINTMV.HTML
     if (document.getElementById('admin-login-wrapper')) {
       this.initAdminPageLogic();
@@ -390,6 +394,7 @@ class App {
         if (document.getElementById('products-grid')) this.renderCatalog();
 
         this.showToast(`✅ Đã khôi phục thành công ${this.products.length} sản phẩm từ GitHub Backup!`, 'success');
+        this.pushOnlineProductsCloud(true);
       } else {
         this.showToast('⚠️ File backup trên GitHub rỗng!', 'error');
       }
@@ -402,6 +407,58 @@ class App {
       this.renderAdminProductTable();
       this.showToast('✅ Đã khôi phục dữ liệu sản phẩm chuẩn ban đầu!', 'success');
     }
+  }
+
+  async pushOnlineProductsCloud(silent = false) {
+    if (!this.products || this.products.length === 0) return;
+    try {
+      if (!silent) this.showToast('⏳ Đang tự động lưu sản phẩm lên Cloud Google...', 'info');
+      
+      const payload = {
+        action: "save_online_products",
+        products: this.products
+      };
+      
+      const res = await fetch(SONIC_WEB_APP_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      });
+      
+      const data = await res.json();
+      if (data && data.status === "success") {
+        if (!silent) this.showToast(`☁️ Đã tự động lưu ${this.products.length} sản phẩm lên Cloud Google Online!`, 'success');
+      }
+    } catch (err) {
+      console.warn("Cloud push note:", err);
+    }
+  }
+
+  async fetchOnlineProductsCloud(showNotification = true) {
+    try {
+      if (showNotification) this.showToast('⏳ Đang tải sản phẩm từ Cloud Google...', 'info');
+      const response = await fetch(`${SONIC_WEB_APP_URL}?action=get_online_products&v=${Date.now()}`);
+      if (!response.ok) throw new Error('Cloud fetch error');
+      const data = await response.json();
+      
+      if (data && data.status === "success" && Array.isArray(data.products) && data.products.length > 0) {
+        this.products = data.products;
+        this.saveStorage('3d_store_products', this.products);
+        this.saveStorage('3d_store_user_products_backup', this.products);
+        
+        this.renderCategoryChips();
+        this.renderCategorySelectOptions();
+        this.renderCategoryAdminList();
+        this.renderAdminProductTable();
+        if (document.getElementById('products-grid')) this.renderCatalog();
+
+        if (showNotification) this.showToast(`☁️ Đã đồng bộ ${this.products.length} sản phẩm từ Cloud Google Online!`, 'success');
+        return true;
+      }
+    } catch (err) {
+      console.warn("Cloud fetch note:", err);
+    }
+    return false;
   }
 
   forceRefreshSystemData() {
@@ -1806,9 +1863,11 @@ ${itemsSummaryText}
     if (!confirm('Bạn có chắc chắn muốn xóa sản phẩm này?')) return;
     this.products = this.products.filter(item => item.id !== id);
     this.saveStorage('3d_store_products', this.products);
+    this.saveStorage('3d_store_user_products_backup', this.products);
     this.renderAdminProductTable();
     if (document.getElementById('products-grid')) this.renderCatalog();
     this.showToast('Đã xóa sản phẩm thành công!', 'success');
+    this.pushOnlineProductsCloud(false);
   }
 
   saveProductFromForm(e) {
@@ -1919,8 +1978,9 @@ ${itemsSummaryText}
       this.products.unshift(newProduct);
     }
 
-    // LƯU DANH SÁCH SẢN PHẨM SỬA VÀO LOCAL STORAGE VÀ BẢO BÌNH LƯU GIỮ KHI F5
+    // LƯU DANH SÁCH SẢN PHẨM SỬA VÀO LOCAL STORAGE VÀ TỰ ĐỘNG LƯU CLOUD ONLINE
     this.saveStorage('3d_store_products', this.products);
+    this.saveStorage('3d_store_user_products_backup', this.products);
 
     document.getElementById('product-crud-form').reset();
     document.getElementById('edit-product-id').value = '';
@@ -1937,7 +1997,8 @@ ${itemsSummaryText}
 
     this.renderAdminProductTable();
     if (document.getElementById('products-grid')) this.renderCatalog();
-    this.showToast('Lưu sản phẩm thành công! Không bị mất khi F5.', 'success');
+    this.showToast('Lưu sản phẩm thành công!', 'success');
+    this.pushOnlineProductsCloud(false);
   }
 
   loadAdminSettings() {
@@ -2121,6 +2182,12 @@ ${itemsSummaryText}
         if (prodTab) prodTab.click();
       };
     }
+
+    const githubBtn = document.getElementById('github-restore-btn');
+    if (githubBtn) githubBtn.onclick = () => this.restoreFromGitHubBackup();
+
+    const cloudSyncBtn = document.getElementById('cloud-sync-btn');
+    if (cloudSyncBtn) cloudSyncBtn.onclick = () => this.fetchOnlineProductsCloud(true);
 
     const resetBtn = document.getElementById('reset-demo-btn');
     if (resetBtn) resetBtn.onclick = () => this.resetDemoData();
