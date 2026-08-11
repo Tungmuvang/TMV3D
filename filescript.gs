@@ -809,11 +809,23 @@ function handleSonicTelegramCallback(callbackQuery) {
   var data = callbackQuery.data;
   var chatId = callbackQuery.message.chat.id.toString();
 
-  sendSonicTelegramRequest("answerCallbackQuery", { callback_query_id: callbackQuery.id });
+  try {
+    sendSonicTelegramRequest("answerCallbackQuery", { callback_query_id: callbackQuery.id });
+  } catch(e) {}
 
   if (data && data.indexOf("confirm_pay_") === 0) {
-    var cleanCode = data.replace("confirm_pay_", "");
-    
+    var rawTargetCode = data.replace("confirm_pay_", "");
+    var cleanCode = cleanSonicCodeForMatching(rawTargetCode);
+    if (!cleanCode) return;
+
+    // Chống Spam Callback: Nếu đơn này đã xử lý cọc/khôi phục rồi thì không gửi tin trùng lặp
+    var lockKey = "CB_DONE_" + cleanCode;
+    if (sonicScriptProps.getProperty(lockKey) === "true") {
+      Logger.log("Bỏ qua callback trùng lặp cho mã: " + cleanCode);
+      return;
+    }
+    sonicScriptProps.setProperty(lockKey, "true");
+
     // Đặt trạng thái đã cọc
     sonicScriptProps.setProperty("PAID_STATUS_" + cleanCode, "true");
 
@@ -821,7 +833,7 @@ function handleSonicTelegramCallback(callbackQuery) {
     var isRestored = false;
 
     if (!updated) {
-      // NẾU ĐƠN ĐÃ BỊ XÓA SAU 15 PHÚT: PHỤC HỒI LẠI VÀO GOOGLE SHEET
+      // NẾU ĐƠN ĐÃ BỊ XÓA SAU 15 PHÚT: PHỤC HỒI LẠI VÀO GOOGLE SHEET (Chỉ khôi phục 1 lần duy nhất)
       var backupStr = sonicScriptProps.getProperty("ORDER_BACKUP_" + cleanCode);
       if (backupStr) {
         try {
@@ -849,6 +861,8 @@ function handleSonicTelegramCallback(callbackQuery) {
               'Chưa làm'
             ]);
             isRestored = true;
+            // Xóa bản sao lưu để không bị khôi phục trùng lặp nữa
+            sonicScriptProps.deleteProperty("ORDER_BACKUP_" + cleanCode);
           }
         } catch(eBackup) {
           Logger.log("Err restore order: " + eBackup.toString());
@@ -994,17 +1008,23 @@ function checkSonicSheetPaidStatus(cleanSearchCode) {
 function updateSonicRowStatusByCode(cleanSearchCode, newStatus) {
   try {
     var sheet = getSonicSheet();
-    if (!sheet) return;
+    if (!sheet) return false;
     var values = sheet.getDataRange().getValues();
     for (var i = 1; i < values.length; i++) {
       var row = values[i];
       var codeInfo = findSonicCodeInRow(row);
       if (codeInfo && codeInfo.code === cleanSearchCode) {
         updateSonicRowStatus(sheet, i + 1, newStatus);
-        break;
+        return true;
+      }
+      var rowTextClean = cleanSonicCodeForMatching(row.join(" "));
+      if (cleanSearchCode && rowTextClean.indexOf(cleanSearchCode) !== -1) {
+        updateSonicRowStatus(sheet, i + 1, newStatus);
+        return true;
       }
     }
   } catch(e) {}
+  return false;
 }
 
 function sendSonicTelegramToAdmins(message, replyMarkup) {
