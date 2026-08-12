@@ -206,6 +206,25 @@
                     </button>
                   </div>
 
+                  <!-- KHUNG ĐIỀN THÔNG TIN ĐẶT HÀNG & THANH TOÁN TRỰC TIẾP TRÊN TRANG BÀI VIẾT -->
+                  <div class='inline-checkout-box' style='margin-top: 1.2rem; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 16px; padding: 1.2rem;'>
+                    <h3 style='font-size: 1.05rem; font-weight: 800; color: #0f172a; margin-bottom: 0.8rem; display: flex; align-items: center; gap: 0.5rem;'>
+                      <i class='fa-solid fa-file-invoice-dollar' style='color: #ea580c;'/> Thông Tin Đặt Hàng &amp; Thanh Toán Nhanh
+                    </h3>
+                    <form id='detail-direct-checkout-form' style='display: flex; flex-direction: column; gap: 0.8rem;'>
+                      <div style='display: grid; grid-template-columns: 1fr 1fr; gap: 0.8rem;'>
+                        <input class='form-control' id='detail-cust-name' placeholder='Họ và tên người nhận *' required='true' type='text'/>
+                        <input class='form-control' id='detail-cust-phone' placeholder='Số điện thoại liên hệ *' required='true' type='tel'/>
+                      </div>
+                      <textarea class='form-control' id='detail-cust-address' placeholder='Địa chỉ giao hàng chi tiết *' required='true' style='height: 65px;'/>
+                      <input class='form-control' id='detail-cust-note' placeholder='Ghi chú thêm (Ví dụ: Tên in lên hộp)' type='text'/>
+
+                      <button class='btn-primary' id='detail-submit-order-btn' style='width: 100%; justify-content: center; padding: 0.95rem; font-size: 1rem; margin-top: 0.4rem;' type='submit'>
+                        <i class='fa-solid fa-paper-plane'/> XÁC NHẬN ĐẶT HÀNG &amp; THANH TOÁN CỌC VIETQR
+                      </button>
+                    </form>
+                  </div>
+
                 </div>
               </div>
             </b:loop>
@@ -685,23 +704,52 @@
       this.renderCartItems();
     }
 
-    async handleCheckout(e) {
+    async handleCheckout(e, formSource = 'drawer') {
       if (e) e.preventDefault();
+
+      const isDetailForm = formSource === 'detail' || (e && e.target && e.target.id === 'detail-direct-checkout-form');
+
+      if (isDetailForm && this.cart.length === 0) {
+        const titleEl = document.querySelector('.detail-title');
+        const pageTitle = titleEl ? titleEl.innerText.trim() : document.title.replace(/ - TMV IN3D.*$/, '').trim();
+        this.cart = [{
+          id: `POST-DETAIL-${Date.now()}`,
+          title: `${pageTitle} (${this.selectedColor}, ${this.selectedVariant})`,
+          unitPrice: this.detailPrice || 150000,
+          deposit: this.detailDeposit || 50000,
+          qty: this.detailQty || 1
+        }];
+        this.saveStorage('3d_store_cart', this.cart);
+        this.updateCartBadge();
+      }
 
       if (this.cart.length === 0) {
         this.showToast('Giỏ hàng trống! Hãy chọn sản phẩm trước.', 'error');
         return;
       }
 
-      const nameEl = document.getElementById('cust-name');
-      const phoneEl = document.getElementById('cust-phone');
-      const addressEl = document.getElementById('cust-address');
-      const noteEl = document.getElementById('cust-note');
+      let nameEl = isDetailForm ? document.getElementById('detail-cust-name') : document.getElementById('cust-name');
+      let phoneEl = isDetailForm ? document.getElementById('detail-cust-phone') : document.getElementById('cust-phone');
+      let addressEl = isDetailForm ? document.getElementById('detail-cust-address') : document.getElementById('cust-address');
+      let noteEl = isDetailForm ? document.getElementById('detail-cust-note') : document.getElementById('cust-note');
 
-      const name = nameEl ? nameEl.value.trim() : '';
-      const phone = phoneEl ? phoneEl.value.trim() : '';
-      const address = addressEl ? addressEl.value.trim() : '';
-      const note = noteEl ? noteEl.value.trim() : '';
+      let name = nameEl ? nameEl.value.trim() : '';
+      let phone = phoneEl ? phoneEl.value.trim() : '';
+      let address = addressEl ? addressEl.value.trim() : '';
+      let note = noteEl ? noteEl.value.trim() : '';
+
+      if (!name) {
+        const altName = isDetailForm ? document.getElementById('cust-name') : document.getElementById('detail-cust-name');
+        if (altName) name = altName.value.trim();
+      }
+      if (!phone) {
+        const altPhone = isDetailForm ? document.getElementById('cust-phone') : document.getElementById('detail-cust-phone');
+        if (altPhone) phone = altPhone.value.trim();
+      }
+      if (!address) {
+        const altAddr = isDetailForm ? document.getElementById('cust-address') : document.getElementById('detail-cust-address');
+        if (altAddr) address = altAddr.value.trim();
+      }
 
       if (!name || !phone || !address) {
         this.showToast('⚠️ Vui lòng điền đầy đủ Tên, SĐT và Địa chỉ giao hàng.', 'error');
@@ -773,6 +821,8 @@
 
       const checkoutForm = document.getElementById('checkout-form');
       if (checkoutForm) checkoutForm.reset();
+      const detailCheckoutForm = document.getElementById('detail-direct-checkout-form');
+      if (detailCheckoutForm) detailCheckoutForm.reset();
       this.closeModal('cart-drawer');
 
       const depositModal = document.getElementById('deposit-payment-modal');
@@ -854,13 +904,25 @@ ${itemsSummaryText}
 
       const checkoutForm = document.getElementById('checkout-form');
       if (checkoutForm) {
-        checkoutForm.onsubmit = (e) => this.handleCheckout(e);
+        checkoutForm.onsubmit = (e) => this.handleCheckout(e, 'drawer');
       }
       const submitBtn = document.getElementById('submit-order-btn');
       if (submitBtn) {
         submitBtn.onclick = (e) => {
           e.preventDefault();
-          this.handleCheckout(e);
+          this.handleCheckout(e, 'drawer');
+        };
+      }
+
+      const detailCheckoutForm = document.getElementById('detail-direct-checkout-form');
+      if (detailCheckoutForm) {
+        detailCheckoutForm.onsubmit = (e) => this.handleCheckout(e, 'detail');
+      }
+      const detailSubmitBtn = document.getElementById('detail-submit-order-btn');
+      if (detailSubmitBtn) {
+        detailSubmitBtn.onclick = (e) => {
+          e.preventDefault();
+          this.handleCheckout(e, 'detail');
         };
       }
     }
@@ -874,6 +936,13 @@ ${itemsSummaryText}
         if (nameEl && saved.name) nameEl.value = saved.name;
         if (phoneEl && saved.phone) phoneEl.value = saved.phone;
         if (addressEl && saved.address) addressEl.value = saved.address;
+
+        const detailNameEl = document.getElementById('detail-cust-name');
+        const detailPhoneEl = document.getElementById('detail-cust-phone');
+        const detailAddressEl = document.getElementById('detail-cust-address');
+        if (detailNameEl && saved.name) detailNameEl.value = saved.name;
+        if (detailPhoneEl && saved.phone) detailPhoneEl.value = saved.phone;
+        if (detailAddressEl && saved.address) detailAddressEl.value = saved.address;
       }
     }
 
