@@ -92,31 +92,61 @@
     <!-- CATEGORY FILTER CHIPS -->
     <div class='chip-bar' id='category-chips'/>
 
-    <!-- DYNAMIC PRODUCTS CATALOG -->
-    <div class='grid-catalog' id='products-grid'/>
-
-    <!-- BLOGSPOT POSTS MAIN CONTENT VIEW (Dành cho trang bài viết chi tiết) -->
+    <!-- MAIN BLOGSPOT WIDGET FOR SERVER-SIDE POST RENDERING -->
     <b:section id='main' showaddelement='yes'>
       <b:widget id='Blog1' locked='false' title='Bài viết trên Blog' type='Blog'>
-        <b:widget-settings>
-          <b:widget-setting name='showDateHeader'>false</b:widget-setting>
-          <b:widget-setting name='style.textcolor'>#ffffff</b:widget-setting>
-          <b:widget-setting name='showShareButtons'>true</b:widget-setting>
-          <b:widget-setting name='authorLabel'>By</b:widget-setting>
-          <b:widget-setting name='showCommentLink'>true</b:widget-setting>
-          <b:widget-setting name='style.urlcolor'>#ffffff</b:widget-setting>
-          <b:widget-setting name='showAuthor'>false</b:widget-setting>
-          <b:widget-setting name='style.linkcolor'>#ffffff</b:widget-setting>
-          <b:widget-setting name='style.unvisitedlinkcolor'>#ffffff</b:widget-setting>
-          <b:widget-setting name='showAuthorProfile'>false</b:widget-setting>
-          <b:widget-setting name='showLabels'>true</b:widget-setting>
-
-        </b:widget-settings>
         <b:includable id='main'>
+          <!-- TRANG BÀI VIẾT CHI TIẾT (SINGLE POST VIEW) -->
           <b:if cond='data:view.isPost'>
-            <div class='post-body entry-content' style='background: #121826; border: 1px solid rgba(255,255,255,0.08); padding: 1.5rem; border-radius: 1rem; margin-bottom: 2rem;'>
-              <h1 style='color: #fbbf24; margin-bottom: 1rem;'><data:blog.pageName/></h1>
-              <b:eval expr='data:post.body'/>
+            <b:loop values='data:posts' var='post'>
+              <div class='post-single-wrap blogspot-anti-break' style='background: #121826; border: 1px solid rgba(255,255,255,0.08); padding: 1.5rem; border-radius: 1rem; margin-bottom: 2rem;'>
+                <h1 style='color: #fbbf24; margin-bottom: 1rem; font-size: 1.8rem;'><data:post.title/></h1>
+                <div class='post-body entry-content' id='post-body'>
+                  <b:eval expr='data:post.body'/>
+                </div>
+              </div>
+            </b:loop>
+          </b:if>
+
+          <!-- TRANG CHỦ VÀ DANH MỤC (HOMEPAGE & INDEX PRODUCT GRID) -->
+          <b:if cond='!data:view.isPost'>
+            <div class='grid-catalog' id='products-grid-server'>
+              <b:loop values='data:posts' var='post'>
+                <div class='product-card blogspot-anti-break' data-post-url='data:post.url'>
+                  <div class='card-img-wrap'>
+                    <b:if cond='data:post.featuredImage'>
+                      <img expr:alt='data:post.title' expr:src='data:post.featuredImage' expr:onclick='"window.location.href=\"" + data:post.url + "\""' loading='lazy'/>
+                    <b:else/>
+                      <img alt='Sản phẩm 3D' expr:onclick='"window.location.href=\"" + data:post.url + "\""' loading='lazy' src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&amp;fit=crop&amp;w=800&amp;q=80'/>
+                    </b:if>
+                    <span class='badge-cat'>
+                      <b:if cond='data:post.labels and data:post.labels.notEmpty'>
+                        <data:post.labels.first.name/>
+                      <b:else/>
+                        Mô Hình 3D
+                      </b:if>
+                    </span>
+                  </div>
+                  <div class='card-body'>
+                    <h3 class='card-title' expr:onclick='"window.location.href=\"" + data:post.url + "\""'><data:post.title/></h3>
+                    <div class='price-row'>
+                      <span class='price-val' data-price-tag='true'>350.000đ</span>
+                      <span class='deposit-tag' data-deposit-tag='true'>Cọc: 100.000đ</span>
+                    </div>
+                    <div class='post-raw-content' style='display:none;'>
+                      <b:eval expr='data:post.body'/>
+                    </div>
+                    <div class='card-actions'>
+                      <a class='btn-secondary' expr:href='data:post.url' style='flex: 1; text-align: center; text-decoration: none;'>
+                        <i class='fa-solid fa-eye'/> Chi Tiết
+                      </a>
+                      <button class='btn-primary' expr:onclick='"tmvStore.buyDirectFromPost(this, \"" + data:post.title + "\", \"" + data:post.url + "\")"'>
+                        <i class='fa-solid fa-cart-plus'/> Đặt Hàng
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </b:loop>
             </div>
           </b:if>
         </b:includable>
@@ -189,13 +219,575 @@
     </a>
   </div>
 
-  <!-- TẢI THƯ VIỆN JS CỐT LÕI TỰ ĐỘNG PARSE FEED BLOGSPOT -->
-  <script src='https://cdn.jsdelivr.net/gh/Tungmuvang/TMV3D@main/3d-store/tmv3d_blogspot_core.js'/>
+  <!-- EMBEDDED INLINE BLOGSPOT STORE ENGINE (100% INDEPENDENT & OFFLINE) -->
   <script><![CDATA[
-    // Fallback nếu chưa load được CDN
-    if (typeof TMV3DBlogspotStore === 'undefined') {
-      console.log('Tải trực tiếp Core Engine Blogspot');
+  class TMV3DBlogspotStore {
+    constructor() {
+      this.scriptUrl = "https://script.google.com/macros/s/AKfycbziyxNEuLR_ncZKC1ACW3QZBLr4wyTQMaTnQhvaWdJonQPLb78jkk8itPCri2wXk13k/exec";
+      this.tgToken = "8795810475:AAGiayX1izlJd8uUxtQAAThE-MffI_KoPKY";
+      this.tgChatIds = ["7744946591", "7607846055"];
+      
+      this.products = [];
+      this.cart = this.loadStorage('3d_store_cart') || [];
+      this.activeCategory = 'ALL';
+      this.pollingTimer = null;
+
+      this.init();
     }
+
+    init() {
+      this.loadGuestInfo();
+      this.updateCartBadge();
+      this.bindEvents();
+
+      // Scan tất cả card bài viết server-side từ Blogspot
+      this.parseServerRenderedPosts();
+
+      // Nếu đang xem bài viết chi tiết
+      if (document.body.classList.contains('item-view') || window.location.pathname.includes('/20') || window.location.pathname.includes('/p/')) {
+        this.setupSinglePostView();
+      }
+    }
+
+    parseServerRenderedPosts() {
+      const cards = document.querySelectorAll('#products-grid-server .product-card');
+      const parsedProducts = [];
+
+      cards.forEach((card, index) => {
+        const titleEl = card.querySelector('.card-title');
+        const imgEl = card.querySelector('.card-img-wrap img');
+        const catEl = card.querySelector('.badge-cat');
+        const rawContentEl = card.querySelector('.post-raw-content');
+        const linkEl = card.querySelector('.btn-secondary');
+
+        const title = titleEl ? titleEl.innerText.trim() : 'Sản phẩm 3D';
+        const image = imgEl ? imgEl.src : '';
+        const category = catEl ? catEl.innerText.trim() : 'Mô Hình 3D';
+        const url = linkEl ? linkEl.href : window.location.href;
+        const rawHtml = rawContentEl ? rawContentEl.innerHTML : '';
+
+        // Phân tích Giá bán & Tiền cọc từ nội dung bài
+        let price = 350000;
+        let deposit = 100000;
+
+        const priceAttrMatch = rawHtml.match(/data-price=["'](\d+)["']/i);
+        const depositAttrMatch = rawHtml.match(/data-deposit=["'](\d+)["']/i);
+
+        if (priceAttrMatch) {
+          price = parseInt(priceAttrMatch[1], 10);
+        } else {
+          const priceTextMatch = rawHtml.match(/(?:Giá|GIA|Price):\s*([\d\.,]+)\s*(?:đ|VND|k)?/i);
+          if (priceTextMatch) {
+            let rawP = priceTextMatch[1].replace(/[\.,]/g, '');
+            if (parseInt(rawP, 10) < 1000) rawP = parseInt(rawP, 10) * 1000;
+            price = parseInt(rawP, 10) || 350000;
+          }
+        }
+
+        if (depositAttrMatch) {
+          deposit = parseInt(depositAttrMatch[1], 10);
+        } else {
+          const depositTextMatch = rawHtml.match(/(?:Cọc|COC|Deposit):\s*([\d\.,]+)\s*(?:đ|VND|k)?/i);
+          if (depositTextMatch) {
+            let rawD = depositTextMatch[1].replace(/[\.,]/g, '');
+            if (parseInt(rawD, 10) < 1000) rawD = parseInt(rawD, 10) * 1000;
+            deposit = parseInt(rawD, 10) || 100000;
+          } else {
+            deposit = Math.min(200000, Math.round(price * 0.3));
+          }
+        }
+
+        // Update nhãn hiển thị giá trên card
+        const priceValEl = card.querySelector('[data-price-tag]');
+        const depositTagEl = card.querySelector('[data-deposit-tag]');
+        if (priceValEl) priceValEl.innerText = this.formatMoney(price);
+        if (depositTagEl) depositTagEl.innerText = `Cọc: ${this.formatMoney(deposit)}`;
+
+        parsedProducts.push({
+          id: `POST-${index + 1}`,
+          title: title,
+          category: category,
+          price: price,
+          deposit: deposit,
+          image: image,
+          url: url,
+          cardElement: card
+        });
+      });
+
+      this.products = parsedProducts;
+      this.renderCategoryChips();
+      this.renderHeroProduct();
+    }
+
+    renderCategoryChips() {
+      const container = document.getElementById('category-chips');
+      if (!container || this.products.length === 0) return;
+
+      const categories = ['ALL', ...new Set(this.products.map(p => p.category))];
+      container.innerHTML = categories.map(cat => `
+        <button class="chip-btn ${this.activeCategory === cat ? 'active' : ''}" data-cat="${cat}">
+          ${cat === 'ALL' ? '🌟 Tất Cả Sản Phẩm' : `📦 ${cat}`}
+        </button>
+      `).join('');
+
+      container.querySelectorAll('.chip-btn').forEach(btn => {
+        btn.onclick = () => {
+          this.activeCategory = btn.dataset.cat;
+          this.renderCategoryChips();
+          this.filterProductsGrid();
+        };
+      });
+    }
+
+    filterProductsGrid() {
+      this.products.forEach(p => {
+        if (!p.cardElement) return;
+        if (this.activeCategory === 'ALL' || p.category === this.activeCategory) {
+          p.cardElement.style.display = 'flex';
+        } else {
+          p.cardElement.style.display = 'none';
+        }
+      });
+    }
+
+    renderHeroProduct() {
+      const container = document.getElementById('hero-featured');
+      if (!container || this.products.length === 0) return;
+
+      const p = this.products[0];
+      container.innerHTML = `
+        <div class="hero-card blogspot-anti-break">
+          <div class="hero-img">
+            <img src="${p.image}" alt="${p.title}">
+          </div>
+          <div class="hero-info">
+            <span class="badge-hot">🔥 SẢN PHẨM NỔI BẬT</span>
+            <h2 style="font-size: 1.5rem; margin: 0.5rem 0; color: #fff;">${p.title}</h2>
+            <p style="color: #94a3b8;">Giá: <strong style="color: #fbbf24; font-size: 1.2rem;">${this.formatMoney(p.price)}</strong> (Cọc trước: ${this.formatMoney(p.deposit)})</p>
+            <div style="display: flex; gap: 0.8rem; margin-top: 1rem;">
+              <button class="btn-primary" onclick="tmvStore.buyDirectFromPost(null, '${p.title}', '${p.url}', ${p.price}, ${p.deposit})">
+                <i class="fa-solid fa-bolt"></i> MUA NGAY BÂY GIỜ
+              </button>
+              <a href="${p.url}" class="btn-secondary" style="text-decoration: none;">Xem Chi Tiết</a>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    setupSinglePostView() {
+      const postBody = document.querySelector('.post-body, .entry-content, #post-body');
+      if (!postBody) return;
+
+      const pageTitle = document.title.replace(/ - TMV IN3D.*$/, '').trim();
+      const rawHtml = postBody.innerHTML;
+
+      let price = 350000;
+      let deposit = 100000;
+
+      const priceMatch = rawHtml.match(/data-price=["'](\d+)["']/i) || rawHtml.match(/(?:Giá|Price):\s*([\d\.,]+)/i);
+      if (priceMatch) {
+        let p = priceMatch[1].replace(/[\.,]/g, '');
+        if (parseInt(p, 10) < 1000) p = parseInt(p, 10) * 1000;
+        price = parseInt(p, 10) || 350000;
+      }
+
+      const depMatch = rawHtml.match(/data-deposit=["'](\d+)["']/i) || rawHtml.match(/(?:Cọc|Deposit):\s*([\d\.,]+)/i);
+      if (depMatch) {
+        let d = depMatch[1].replace(/[\.,]/g, '');
+        if (parseInt(d, 10) < 1000) d = parseInt(d, 10) * 1000;
+        deposit = parseInt(d, 10) || 100000;
+      }
+
+      const buyBar = document.createElement('div');
+      buyBar.className = 'blogspot-anti-break buy-bar-widget';
+      buyBar.style.cssText = `
+        background: linear-gradient(135deg, rgba(30,41,59,0.95), rgba(15,23,42,0.95));
+        border: 2px solid #eab308;
+        border-radius: 1rem;
+        padding: 1.2rem;
+        margin: 2rem 0;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      `;
+
+      buyBar.innerHTML = `
+        <div>
+          <h3 style="color: #f8fafc; margin: 0 0 0.4rem 0; font-size: 1.2rem;">🛒 ĐẶT HÀNG IN 3D SẢN PHẨM NÀY</h3>
+          <p style="color: #94a3b8; margin: 0; font-size: 0.95rem;">
+            Giá niêm yết: <strong style="color: #fbbf24; font-size: 1.1rem;">${this.formatMoney(price)}</strong> | 
+            Cọc trước: <strong style="color: #38bdf8;">${this.formatMoney(deposit)}</strong>
+          </p>
+        </div>
+        <div style="display: flex; gap: 0.8rem;">
+          <button class="btn-primary" onclick="tmvStore.buyDirectFromPost(null, '${pageTitle}', '${window.location.href}', ${price}, ${deposit})" style="padding: 0.8rem 1.5rem; font-size: 1rem;">
+            <i class="fa-solid fa-paper-plane"></i> ĐẶT HÀNG & THANH TOÁN
+          </button>
+        </div>
+      `;
+
+      postBody.appendChild(buyBar);
+    }
+
+    buyDirectFromPost(btnEl, title, url, customPrice, customDeposit) {
+      let price = customPrice || 350000;
+      let deposit = customDeposit || 100000;
+
+      if (btnEl && !customPrice) {
+        const card = btnEl.closest('.product-card');
+        if (card) {
+          const matched = this.products.find(p => p.cardElement === card);
+          if (matched) {
+            price = matched.price;
+            deposit = matched.deposit;
+          }
+        }
+      }
+
+      this.cart = [{
+        id: `POST-${Date.now()}`,
+        title: title,
+        unitPrice: price,
+        deposit: deposit,
+        qty: 1
+      }];
+
+      this.saveStorage('3d_store_cart', this.cart);
+      this.updateCartBadge();
+      this.openModal('cart-drawer');
+      this.renderCartItems();
+    }
+
+    updateCartBadge() {
+      const totalQty = this.cart.reduce((sum, item) => sum + item.qty, 0);
+      document.querySelectorAll('#cart-count-badge, .cart-badge').forEach(badge => {
+        badge.innerText = totalQty;
+        badge.style.display = totalQty > 0 ? 'inline-flex' : 'none';
+      });
+    }
+
+    renderCartItems() {
+      const container = document.getElementById('cart-items-list');
+      const totalDisplay = document.getElementById('cart-total-price');
+      if (!container) return;
+
+      if (this.cart.length === 0) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: 2rem; color: #94a3b8;">
+            <i class="fa-solid fa-cart-shopping" style="font-size: 2.5rem; margin-bottom: 0.8rem;"></i>
+            <p>Giỏ hàng của bạn đang trống.</p>
+          </div>
+        `;
+        if (totalDisplay) totalDisplay.innerText = '0đ';
+        return;
+      }
+
+      let grandTotal = 0;
+      container.innerHTML = this.cart.map((item, index) => {
+        const lineTotal = item.unitPrice * item.qty;
+        grandTotal += lineTotal;
+        return `
+          <div class="cart-item blogspot-anti-break" style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
+            <div>
+              <h4 style="margin: 0; color: #f8fafc; font-size: 0.95rem;">${item.title}</h4>
+              <div style="font-size: 0.85rem; color: #94a3b8; margin-top: 0.2rem;">
+                ${this.formatMoney(item.unitPrice)} x ${item.qty} = <strong style="color: #fbbf24;">${this.formatMoney(lineTotal)}</strong>
+              </div>
+            </div>
+            <button onclick="tmvStore.removeCartItem(${index})" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 0.4rem;">
+              <i class="fa-solid fa-trash-can"></i>
+            </button>
+          </div>
+        `;
+      }).join('');
+
+      if (totalDisplay) totalDisplay.innerText = this.formatMoney(grandTotal);
+    }
+
+    removeCartItem(index) {
+      this.cart.splice(index, 1);
+      this.saveStorage('3d_store_cart', this.cart);
+      this.updateCartBadge();
+      this.renderCartItems();
+    }
+
+    async handleCheckout(e) {
+      if (e) e.preventDefault();
+
+      if (this.cart.length === 0) {
+        this.showToast('Giỏ hàng trống! Hãy chọn sản phẩm trước.', 'error');
+        return;
+      }
+
+      const nameEl = document.getElementById('cust-name');
+      const phoneEl = document.getElementById('cust-phone');
+      const addressEl = document.getElementById('cust-address');
+      const noteEl = document.getElementById('cust-note');
+
+      const name = nameEl ? nameEl.value.trim() : '';
+      const phone = phoneEl ? phoneEl.value.trim() : '';
+      const address = addressEl ? addressEl.value.trim() : '';
+      const note = noteEl ? noteEl.value.trim() : '';
+
+      if (!name || !phone || !address) {
+        this.showToast('⚠️ Vui lòng điền đầy đủ Tên, SĐT và Địa chỉ giao hàng.', 'error');
+        if (!name && nameEl) nameEl.focus();
+        else if (!phone && phoneEl) phoneEl.focus();
+        else if (addressEl) addressEl.focus();
+        return;
+      }
+
+      const guestData = { name, phone, address };
+      this.setCookie('tmv_guest_info', guestData, 60);
+      this.saveStorage('tmv_guest_info', guestData);
+
+      const orderNum = Math.floor(1000 + Math.random() * 9000);
+      const transferCode = `TMV3D ${orderNum}`;
+
+      const grandTotal = this.cart.reduce((sum, item) => sum + (item.unitPrice * item.qty), 0);
+      let totalDeposit = 0;
+      this.cart.forEach(item => {
+        totalDeposit += (item.deposit || 100000) * item.qty;
+      });
+      totalDeposit = Math.min(totalDeposit, grandTotal);
+
+      const depositText = this.formatMoney(totalDeposit);
+      const remainingCod = Math.max(0, grandTotal - totalDeposit);
+
+      const itemsSummaryText = this.cart.map(
+        item => `• ${item.title} x${item.qty} = ${this.formatMoney(item.unitPrice * item.qty)}`
+      ).join('\n');
+
+      const orderData = {
+        orderId: `TMV-${orderNum}`,
+        name: name,
+        customerName: name,
+        customerEmail: `${phone}@khach.tmvin3d.com`,
+        phone: phone,
+        address: address,
+        note: note,
+        product: itemsSummaryText,
+        itemsSummary: itemsSummaryText,
+        price: this.formatMoney(grandTotal),
+        totalPrice: this.formatMoney(grandTotal),
+        deposit: depositText,
+        remainingCod: this.formatMoney(remainingCod),
+        transferCode: transferCode,
+        timestamp: new Date().toLocaleString('vi-VN')
+      };
+
+      // 1. MỞ MODAL THANH TOÁN VIETQR NGAY LẬP TỨC (0ms)
+      const depOrderId = document.getElementById('dep-order-id');
+      const depTotalPrice = document.getElementById('dep-total-price');
+      const depAmountDisplay = document.getElementById('dep-amount-display');
+      const depTransferCode = document.getElementById('dep-transfer-code');
+      const depQrImg = document.getElementById('dep-qr-img');
+
+      if (depOrderId) depOrderId.innerText = `#TMV-${orderNum}`;
+      if (depTotalPrice) depTotalPrice.innerText = this.formatMoney(grandTotal);
+      if (depAmountDisplay) depAmountDisplay.innerText = depositText;
+      if (depTransferCode) depTransferCode.innerText = transferCode;
+
+      if (depQrImg) {
+        const qrUrl = `https://img.vietqr.io/image/TIMO-9021186623244-qr_only.jpg?amount=${totalDeposit}&addInfo=${encodeURIComponent(transferCode)}&accountName=NGUYEN%20THI%20NHUNG`;
+        depQrImg.src = qrUrl;
+      }
+
+      this.cart = [];
+      this.saveStorage('3d_store_cart', this.cart);
+      this.updateCartBadge();
+
+      const checkoutForm = document.getElementById('checkout-form');
+      if (checkoutForm) checkoutForm.reset();
+      this.closeModal('cart-drawer');
+
+      const depositModal = document.getElementById('deposit-payment-modal');
+      if (depositModal) depositModal.classList.add('active');
+
+      this.startPaymentStatusPolling(transferCode);
+      this.showToast(`🎉 Đơn hàng #${orderNum} đã tạo! Vui lòng cọc ${depositText}.`, 'success');
+
+      // 2. GỬI DỮ LIỆU ĐƠN HÀNG VỀ GOOGLE SHEETS & TELEGRAM TRONG BACKGROUND
+      (async () => {
+        try {
+          await fetch(this.scriptUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(orderData)
+          });
+        } catch (err) {}
+
+        const tgMsg = 
+`📩 <b>CÓ ĐƠN HÀNG TMV IN3D MỚI (CHỜ CỌC ${depositText})</b>
+━━━━━━━━━━━━━━━━━━
+👤 <b>Khách hàng:</b> ${name}
+📞 <b>SĐT:</b> <code>${phone}</code>
+🏠 <b>Địa chỉ:</b> ${address}
+📦 <b>Sản phẩm đã chọn:</b>
+${itemsSummaryText}
+
+💰 <b>Tổng đơn:</b> ${this.formatMoney(grandTotal)}
+💵 <b>Cần cọc:</b> <b>${depositText}</b>
+💳 <b>Còn lại thu COD:</b> <b>${this.formatMoney(remainingCod)}</b>
+🏷️ <b>Mã CK:</b> <code>${transferCode}</code>
+📝 <b>Ghi chú:</b> ${note || 'Không có'}
+⏳ <b>Trạng thái:</b> Chờ tiền cọc về Gmail ⏳`;
+
+        for (let cid of this.tgChatIds) {
+          try {
+            fetch(`https://api.telegram.org/bot${this.tgToken}/sendMessage`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ chat_id: cid, text: tgMsg, parse_mode: 'HTML' })
+            }).catch(() => {});
+          } catch (e) {}
+        }
+      })();
+    }
+
+    startPaymentStatusPolling(code) {
+      if (this.pollingTimer) clearInterval(this.pollingTimer);
+      const cleanCode = code.replace(/[^A-Z0-9]/gi, '').toUpperCase();
+      this.pollingTimer = setInterval(async () => {
+        try {
+          const res = await fetch(`${this.scriptUrl}?action=check_payment_status&code=${cleanCode}`);
+          const data = await res.json();
+          if (data.status === 'paid') {
+            clearInterval(this.pollingTimer);
+            const statusTextEl = document.getElementById('payment-status-text');
+            if (statusTextEl) {
+              statusTextEl.innerHTML = `<span style="color: #22c55e;"><i class="fa-solid fa-circle-check"></i> ĐÃ NHẬN CỌC THÀNH CÔNG!</span>`;
+            }
+            this.showToast('🎉 Ngân hàng Timo đã nhận tiền cọc! Đơn hàng đang được xử lý.', 'success');
+          }
+        } catch (e) {}
+      }, 4000);
+    }
+
+    bindEvents() {
+      document.addEventListener('click', (e) => {
+        const modalOpenBtn = e.target.closest('[data-open-modal]');
+        if (modalOpenBtn) {
+          this.openModal(modalOpenBtn.dataset.openModal);
+          if (modalOpenBtn.dataset.openModal === 'cart-drawer') this.renderCartItems();
+        }
+        const modalCloseBtn = e.target.closest('[data-close-modal]');
+        if (modalCloseBtn) {
+          this.closeModal(modalCloseBtn.dataset.closeModal);
+        }
+      });
+
+      const checkoutForm = document.getElementById('checkout-form');
+      if (checkoutForm) {
+        checkoutForm.onsubmit = (e) => this.handleCheckout(e);
+      }
+      const submitBtn = document.getElementById('submit-order-btn');
+      if (submitBtn) {
+        submitBtn.onclick = (e) => {
+          e.preventDefault();
+          this.handleCheckout(e);
+        };
+      }
+    }
+
+    loadGuestInfo() {
+      const saved = this.loadStorage('tmv_guest_info') || this.getCookie('tmv_guest_info');
+      if (saved) {
+        const nameEl = document.getElementById('cust-name');
+        const phoneEl = document.getElementById('cust-phone');
+        const addressEl = document.getElementById('cust-address');
+        if (nameEl && saved.name) nameEl.value = saved.name;
+        if (phoneEl && saved.phone) phoneEl.value = saved.phone;
+        if (addressEl && saved.address) addressEl.value = saved.address;
+      }
+    }
+
+    openModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.add('active');
+    }
+
+    closeModal(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.remove('active');
+    }
+
+    formatMoney(num) {
+      return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(num || 0);
+    }
+
+    saveStorage(key, data) {
+      try { localStorage.setItem(key, JSON.stringify(data)); } catch (e) {}
+    }
+
+    loadStorage(key) {
+      try {
+        const data = localStorage.getItem(key);
+        return data ? JSON.parse(data) : null;
+      } catch (e) { return null; }
+    }
+
+    setCookie(cname, cvalue, exdays) {
+      try {
+        const d = new Date();
+        d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+        const expires = "expires=" + d.toUTCString();
+        const val = typeof cvalue === 'object' ? JSON.stringify(cvalue) : cvalue;
+        document.cookie = cname + "=" + encodeURIComponent(val) + ";" + expires + ";path=/";
+      } catch (e) {}
+    }
+
+    getCookie(cname) {
+      try {
+        const name = cname + "=";
+        const decodedCookie = decodeURIComponent(document.cookie);
+        const ca = decodedCookie.split(';');
+        for (let i = 0; i < ca.length; i++) {
+          let c = ca[i].trim();
+          if (c.indexOf(name) === 0) {
+            const val = c.substring(name.length, c.length);
+            try { return JSON.parse(val); } catch (err) { return val; }
+          }
+        }
+      } catch (e) {}
+      return "";
+    }
+
+    showToast(message, type = 'info') {
+      let container = document.getElementById('toast-container');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = 'toast-container';
+        container.style.cssText = 'position: fixed; bottom: 20px; right: 20px; z-index: 9999; display: flex; flex-direction: column; gap: 10px;';
+        document.body.appendChild(container);
+      }
+
+      const toast = document.createElement('div');
+      toast.className = `blogspot-anti-break toast-item ${type}`;
+      toast.style.cssText = `
+        background: ${type === 'success' ? '#166534' : type === 'error' ? '#991b1b' : '#1e293b'};
+        color: #fff;
+        padding: 12px 18px;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        font-size: 0.9rem;
+        border-left: 4px solid ${type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#3b82f6'};
+      `;
+      toast.innerHTML = message;
+      container.appendChild(toast);
+      setTimeout(() => toast.remove(), 4000);
+    }
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    window.tmvStore = new TMV3DBlogspotStore();
+  });
   ]]></script>
 </body>
 </html>
