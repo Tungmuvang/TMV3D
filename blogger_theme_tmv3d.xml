@@ -7,13 +7,13 @@
   <title><data:blog.pageTitle/></title>
   
   <!-- Google Fonts & FontAwesome 6 -->
-  <link href='https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&amp;display=swap' rel='stylesheet'/>
+  <link href='https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700;800;900&amp;display=swap' rel='stylesheet'/>
   <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css' rel='stylesheet'/>
 
   <b:skin><![CDATA[
-    /* CSS RESET ĐẶC TRỊ LỖI KHOẢNG CÁCH BLOGSPOT */
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { background-color: #0b0f19; color: #f8fafc; font-family: 'Outfit', sans-serif; min-height: 100vh; }
+    /* CSS RESET ĐẶC TRỊ LỖI KHOẢNG CÁCH BLOGSPOT - LIGHT THEME (GIAO DIỆN TRẮNG CHUẨN WEB CŨ) */
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Be Vietnam Pro', sans-serif; }
+    html, body { background-color: #f8fafc; color: #0f172a; min-height: 100vh; line-height: 1.5; }
     
     .blogspot-anti-break br { display: none !important; }
     .blogspot-anti-break p, .blogspot-anti-break h3, .blogspot-anti-break h4 { margin: 0 !important; padding: 0 !important; }
@@ -21,62 +21,101 @@
 
     /* LAYOUT & UTILITIES */
     .container { max-width: 1200px; margin: 0 auto; padding: 0 1.2rem; }
-    .gradient-text-gold { background: linear-gradient(135deg, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .gradient-text-orange { background: linear-gradient(135deg, #ea580c, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-    /* HEADER & NAVBAR */
-    .site-header { position: sticky; top: 0; z-index: 100; background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.08); padding: 0.8rem 0; }
+    /* HEADER & NAVBAR (WHITE LIGHT THEME) */
+    .site-header { position: sticky; top: 0; z-index: 100; background: #ffffff; border-bottom: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.03); padding: 0.85rem 0; }
     .nav-wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
-    .brand-logo { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; font-size: 1.4rem; font-weight: 800; color: #fff; }
-    .cart-btn-trigger { position: relative; background: linear-gradient(135deg, #2563eb, #1d4ed8); border: none; color: #fff; padding: 0.6rem 1.2rem; border-radius: 99px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
-    .cart-badge { background: #ef4444; color: #fff; font-size: 0.75rem; font-weight: 700; width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; }
+    .brand-logo { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; font-size: 1.4rem; font-weight: 800; color: #0f172a; }
+    .cart-btn-trigger { position: relative; background: linear-gradient(135deg, #ea580c, #f59e0b); border: none; color: #ffffff; padding: 0.6rem 1.3rem; border-radius: 99px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; box-shadow: 0 4px 14px rgba(234, 88, 12, 0.25); }
+    .cart-badge { background: #ef4444; color: #ffffff; font-size: 0.75rem; font-weight: 800; width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; }
 
     /* HERO FEATURED BANNER */
     .hero-sec { margin: 1.5rem 0; }
-    .hero-card { background: linear-gradient(135deg, rgba(30,41,59,0.7), rgba(15,23,42,0.8)); border: 1px solid rgba(255,255,255,0.1); border-radius: 1.2rem; padding: 1.5rem; display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.5rem; align-items: center; }
-    .hero-img img { width: 100%; max-height: 280px; object-fit: cover; border-radius: 0.8rem; }
-    .badge-hot { background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid rgba(239,68,68,0.3); padding: 0.3rem 0.8rem; border-radius: 99px; font-size: 0.8rem; font-weight: 700; }
+    .hero-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 1.2rem; padding: 1.5rem; display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.5rem; align-items: center; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+    .hero-img img { width: 100%; max-height: 280px; object-fit: cover; border-radius: 0.8rem; border: 1px solid #e2e8f0; }
+    .badge-hot { background: #fef2f2; color: #ef4444; border: 1px solid #fecaca; padding: 0.3rem 0.8rem; border-radius: 99px; font-size: 0.8rem; font-weight: 700; display: inline-block; }
 
     /* CATEGORY CHIPS */
     .chip-bar { display: flex; gap: 0.6rem; overflow-x: auto; padding: 0.8rem 0; margin-bottom: 1.5rem; }
-    .chip-btn { background: rgba(30,41,59,0.8); border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; padding: 0.5rem 1rem; border-radius: 99px; white-space: nowrap; cursor: pointer; transition: all 0.2s; }
-    .chip-btn.active, .chip-btn:hover { background: #2563eb; color: #fff; border-color: #3b82f6; }
+    .chip-btn { background: #ffffff; border: 1px solid #cbd5e1; color: #475569; padding: 0.55rem 1.1rem; border-radius: 99px; white-space: nowrap; cursor: pointer; transition: all 0.2s; font-weight: 600; box-shadow: 0 2px 6px rgba(0,0,0,0.02); }
+    .chip-btn.active, .chip-btn:hover { background: #ea580c; color: #ffffff; border-color: #ea580c; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25); }
 
-    /* PRODUCTS GRID */
-    .grid-catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.2rem; margin-bottom: 3rem; }
-    .product-card { background: rgba(18, 24, 38, 0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 1rem; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, border-color 0.2s; }
-    .product-card:hover { transform: translateY(-4px); border-color: rgba(59, 130, 246, 0.4); }
-    .card-img-wrap { position: relative; width: 100%; aspect-ratio: 4/3; background: #000; overflow: hidden; }
+    /* PRODUCTS GRID CATALOG (LIGHT MODE) */
+    .grid-catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.5rem; margin-bottom: 3rem; }
+    .product-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 1rem; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 15px rgba(0,0,0,0.03); }
+    .product-card:hover { transform: translateY(-4px); box-shadow: 0 12px 25px rgba(0,0,0,0.08); border-color: #f59e0b; }
+    .card-img-wrap { position: relative; width: 100%; aspect-ratio: 4/3; background: #f1f5f9; overflow: hidden; }
     .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
-    .badge-cat { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.6); color: #fbbf24; backdrop-filter: blur(4px); font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 6px; }
-    .card-body { padding: 1rem; display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
-    .card-title { font-size: 1rem; font-weight: 600; color: #f1f5f9; margin-bottom: 0.5rem; cursor: pointer; }
+    .badge-cat { position: absolute; top: 10px; left: 10px; background: #fef3c7; color: #d97706; border: 1px solid #fde68a; font-size: 0.75rem; font-weight: 700; padding: 0.2rem 0.6rem; border-radius: 99px; }
+    .card-body { padding: 1.1rem; display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
+    .card-title { font-size: 1.05rem; font-weight: 700; color: #0f172a; margin-bottom: 0.6rem; cursor: pointer; line-height: 1.3; }
     .price-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
-    .price-val { font-size: 1.1rem; font-weight: 700; color: #fbbf24; }
-    .deposit-tag { font-size: 0.8rem; color: #38bdf8; }
-    .card-actions { display: flex; gap: 0.5rem; }
-    .btn-primary { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; border: none; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; }
-    .btn-secondary { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.15); padding: 0.6rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
+    .price-val { font-size: 1.2rem; font-weight: 800; color: #d97706; }
+    .deposit-tag { font-size: 0.8rem; color: #0284c7; background: #e0f2fe; border: 1px solid #bae6fd; padding: 0.15rem 0.5rem; border-radius: 6px; font-weight: 600; }
+    .card-actions { display: flex; gap: 0.6rem; }
+    .btn-primary { background: linear-gradient(135deg, #f59e0b, #ea580c); color: #ffffff; border: none; padding: 0.65rem 1rem; border-radius: 10px; font-weight: 700; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.4rem; box-shadow: 0 4px 12px rgba(234, 88, 12, 0.25); }
+    .btn-secondary { background: #f1f5f9; color: #334155; border: 1px solid #cbd5e1; padding: 0.65rem 1rem; border-radius: 10px; font-weight: 600; cursor: pointer; }
 
-    /* MODALS & CART DRAWER */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 1rem; }
+    /* SINGLE PRODUCT DETAIL VIEW (LIGHT THEME MATCHING ANH 1 EXACTLY) */
+    .product-detail-card { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 20px; padding: 2rem; margin-bottom: 3rem; box-shadow: 0 10px 30px rgba(0,0,0,0.05); display: grid; grid-template-columns: 1fr 1fr; gap: 2.2rem; align-items: start; }
+    
+    .gallery-main-wrap { position: relative; width: 100%; aspect-ratio: 4/3; background: #000; border-radius: 16px; overflow: hidden; border: 1px solid #cbd5e1; }
+    .gallery-main-wrap img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+    .zoom-badge { position: absolute; bottom: 12px; right: 12px; background: rgba(15,23,42,0.85); color: #ffffff; font-size: 0.8rem; font-weight: 600; padding: 0.4rem 0.8rem; border-radius: 8px; backdrop-filter: blur(4px); cursor: pointer; }
+    
+    .thumbs-row { display: flex; gap: 0.6rem; overflow-x: auto; margin-top: 1rem; padding-bottom: 0.4rem; }
+    .thumb-item { width: 68px; height: 68px; border-radius: 10px; border: 2px solid #e2e8f0; object-fit: cover; cursor: pointer; transition: all 0.2s; flex-shrink: 0; }
+    .thumb-item.active, .thumb-item:hover { border-color: #ea580c; box-shadow: 0 0 10px rgba(234, 88, 12, 0.4); transform: scale(1.05); }
+
+    .detail-info-col { display: flex; flex-direction: column; gap: 1rem; }
+    .badge-cat-light { background: #fef3c7; color: #d97706; border: 1px solid #fde68a; border-radius: 99px; padding: 0.25rem 0.8rem; font-size: 0.8rem; font-weight: 700; align-self: flex-start; }
+    .detail-title { font-size: 1.8rem; font-weight: 900; color: #0f172a; line-height: 1.25; }
+    
+    /* KHUNG GIÁ THANH TOÁN TỔNG CỘNG (CHUẨN ANH 1) */
+    .price-box-light { background: #fef9c3; border: 1px solid #fef08a; border-radius: 14px; padding: 1.1rem 1.4rem; }
+    .price-box-label { font-size: 0.9rem; font-weight: 600; color: #78350f; }
+    .price-box-val { font-size: 2.2rem; font-weight: 900; color: #d97706; margin-top: 0.2rem; }
+
+    .detail-body-text { color: #334155; font-size: 0.95rem; line-height: 1.6; border-bottom: 1px solid #f1f5f9; padding-bottom: 1rem; }
+
+    /* OPTION SELECTOR GROUPS */
+    .opt-group { display: flex; flex-direction: column; gap: 0.5rem; }
+    .opt-label { font-size: 0.95rem; font-weight: 700; color: #0f172a; }
+    .opt-label span { color: #d97706; }
+    .opt-pills { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+    .opt-pill { background: #ffffff; border: 1px solid #cbd5e1; color: #334155; padding: 0.55rem 1.2rem; border-radius: 99px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 0.4rem; }
+    .opt-pill.active { background: #fef9c3; border: 2px solid #f59e0b; color: #92400e; font-weight: 700; box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2); }
+    .dot-color { width: 12px; height: 12px; border-radius: 50%; display: inline-block; }
+
+    /* BUY ROW */
+    .buy-control-row { display: flex; items-center; gap: 1rem; margin-top: 0.5rem; }
+    .qty-box { display: flex; align-items: center; border: 1px solid #cbd5e1; border-radius: 12px; background: #f8fafc; overflow: hidden; }
+    .qty-btn { width: 40px; height: 44px; border: none; background: transparent; font-size: 1.2rem; font-weight: 700; color: #0f172a; cursor: pointer; }
+    .qty-input { width: 44px; height: 44px; border: none; background: transparent; text-align: center; font-size: 1.05rem; font-weight: 800; color: #0f172a; }
+    .btn-buy-now-detail { flex: 1; background: linear-gradient(135deg, #f59e0b, #ea580c); color: #ffffff; border: none; padding: 0.9rem 1.5rem; border-radius: 12px; font-size: 1.1rem; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.6rem; box-shadow: 0 6px 20px rgba(234, 88, 12, 0.35); }
+
+    /* MODALS & CART DRAWER (LIGHT MODE) */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.75); backdrop-filter: blur(8px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 1rem; }
     .modal-overlay.active { display: flex; }
-    .modal-card { background: #0f172a; border: 1px solid rgba(255,255,255,0.15); border-radius: 1.2rem; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; padding: 1.5rem; position: relative; }
-    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
-    .close-btn { background: none; border: none; color: #94a3b8; font-size: 1.2rem; cursor: pointer; }
-    .form-control { width: 100%; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 0.8rem 1rem; border-radius: 8px; font-size: 0.95rem; }
+    .modal-card { background: #ffffff; border: 1px solid #cbd5e1; border-radius: 1.5rem; width: 100%; max-width: 500px; max-height: 92vh; overflow-y: auto; padding: 1.6rem; position: relative; box-shadow: 0 25px 50px rgba(0,0,0,0.15); }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; border-bottom: 1px solid #f1f5f9; padding-bottom: 0.8rem; }
+    .close-btn { background: none; border: none; color: #64748b; font-size: 1.3rem; cursor: pointer; }
+    .form-control { width: 100%; background: #f8fafc; border: 1px solid #cbd5e1; color: #0f172a; padding: 0.8rem 1rem; border-radius: 10px; font-size: 0.95rem; font-weight: 500; }
+    .form-control:focus { outline: none; border-color: #ea580c; background: #ffffff; }
 
     @media (max-width: 768px) {
-      .hero-card { grid-template-columns: 1fr; }
+      .hero-card, .product-detail-card { grid-template-columns: 1fr; }
     }
   ]]></b:skin>
 </head>
 <body class='blogspot-anti-break'>
 
-  <!-- HEADER NAVBAR -->
+  <!-- HEADER NAVBAR LIGHT MODE -->
   <header class='site-header'>
     <div class='container nav-wrap'>
       <a class='brand-logo' href='/'>
-        <i class='fa-solid fa-cube gradient-text-gold'/> TMV IN3D STORE
+        <i class='fa-solid fa-cube gradient-text-orange'/> TMV IN3D STORE
       </a>
       <button class='cart-btn-trigger' data-open-modal='cart-drawer'>
         <i class='fa-solid fa-cart-shopping'/> Giỏ Hàng 
@@ -96,13 +135,77 @@
     <b:section id='main' showaddelement='yes'>
       <b:widget id='Blog1' locked='false' title='Bài viết trên Blog' type='Blog'>
         <b:includable id='main'>
-          <!-- TRANG BÀI VIẾT CHI TIẾT (SINGLE POST VIEW) -->
+          
+          <!-- TRANG BÀI VIẾT CHI TIẾT (SINGLE POST VIEW MATCHING ANH 1 EXACTLY) -->
           <b:if cond='data:view.isPost'>
             <b:loop values='data:posts' var='post'>
-              <div class='post-single-wrap blogspot-anti-break' style='background: #121826; border: 1px solid rgba(255,255,255,0.08); padding: 1.5rem; border-radius: 1rem; margin-bottom: 2rem;'>
-                <h1 style='color: #fbbf24; margin-bottom: 1rem; font-size: 1.8rem;'><data:post.title/></h1>
-                <div class='post-body entry-content' id='post-body'>
-                  <b:eval expr='data:post.body'/>
+              <div class='product-detail-card blogspot-anti-break' id='single-product-root'>
+                
+                <!-- LEFT COL: GALLERY MAIN IMAGE + THUMBNAILS -->
+                <div class='detail-gallery-col'>
+                  <div class='gallery-main-wrap'>
+                    <img id='main-detail-img' expr:alt='data:post.title' expr:src='data:post.firstImageUrl ? data:post.firstImageUrl : "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&amp;fit=crop&amp;w=800&amp;q=80"'/>
+                    <span class='zoom-badge' onclick='tmvStore.zoomMainImage()'><i class='fa-solid fa-expand'/> Bấm Phóng To Full Màn Hình</span>
+                  </div>
+                  <div class='thumbs-row' id='detail-thumbs-list'>
+                    <!-- Sẽ tự động nhặt các ảnh <img> trong bài tạo thành thumbnail chọn bên dưới -->
+                  </div>
+                </div>
+
+                <!-- RIGHT COL: PRODUCT INFO & OPTIONS -->
+                <div class='detail-info-col'>
+                  <span class='badge-cat-light'>
+                    <b:if cond='data:post.labels and data:post.labels.notEmpty'>
+                      <data:post.labels.first.name/>
+                    <b:else/>
+                      Phụ Kiện
+                    </b:if>
+                  </span>
+                  <h1 class='detail-title'><data:post.title/></h1>
+
+                  <!-- GIÁ THANH TOÁN TỔNG CỘNG BOX -->
+                  <div class='price-box-light'>
+                    <div class='price-box-label'>Giá thanh toán tổng cộng</div>
+                    <div class='price-box-val' id='detail-price-display'>150.000đ</div>
+                  </div>
+
+                  <!-- MÔ TẢ NỘI DUNG BÀI VIẾT TỪ BLOGSPOT -->
+                  <div class='detail-body-text' id='detail-post-body'>
+                    <b:eval expr='data:post.body'/>
+                  </div>
+
+                  <!-- OPTION 1: CHỌN MÀU SẮC FILAMENT -->
+                  <div class='opt-group'>
+                    <label class='opt-label'>1. Chọn Màu Sắc Filament: <span id='selected-color-label'>Đỏ + Đen</span></label>
+                    <div class='opt-pills' id='color-pills-list'>
+                      <button class='opt-pill active' data-color='Đỏ + Đen' onclick='tmvStore.selectColor(this)'><span class='dot-color' style='background:#ef4444;'/> Đỏ + Đen</button>
+                      <button class='opt-pill' data-color='Đen + Trắng' onclick='tmvStore.selectColor(this)'><span class='dot-color' style='background:#000000;'/> Đen + Trắng</button>
+                      <button class='opt-pill' data-color='Đen + Cam' onclick='tmvStore.selectColor(this)'><span class='dot-color' style='background:#f97316;'/> Đen + Cam</button>
+                    </div>
+                  </div>
+
+                  <!-- OPTION 2: CHỌN PHÂN LOẠI SẢN PHẨM -->
+                  <div class='opt-group'>
+                    <label class='opt-label'>2. Chọn Phân Loại Sản Phẩm: <span id='selected-variant-label'>Mặc Định</span></label>
+                    <div class='opt-pills' id='variant-pills-list'>
+                      <button class='opt-pill active' data-variant='Mặc Định' onclick='tmvStore.selectVariant(this)'>Mặc Định</button>
+                      <button class='opt-pill' data-variant='Thêm Tên' onclick='tmvStore.selectVariant(this)'>Thêm Tên</button>
+                      <button class='opt-pill' data-variant='Thêm Logo' onclick='tmvStore.selectVariant(this)'>Thêm Logo</button>
+                    </div>
+                  </div>
+
+                  <!-- QUANTITY & ADD TO CART BAR -->
+                  <div class='buy-control-row'>
+                    <div class='qty-box'>
+                      <button class='qty-btn' onclick='tmvStore.changeDetailQty(-1)'>-</button>
+                      <input class='qty-input' id='detail-qty-input' readonly='true' type='text' value='1'/>
+                      <button class='qty-btn' onclick='tmvStore.changeDetailQty(1)'>+</button>
+                    </div>
+                    <button class='btn-buy-now-detail' expr:onclick='"tmvStore.addToCartFromDetailPage(\"" + data:post.title + "\")"'>
+                      <i class='fa-solid fa-cart-shopping'/> Thêm Vào Giỏ Hàng
+                    </button>
+                  </div>
+
                 </div>
               </div>
             </b:loop>
@@ -114,8 +217,8 @@
               <b:loop values='data:posts' var='post'>
                 <div class='product-card blogspot-anti-break' data-post-url='data:post.url'>
                   <div class='card-img-wrap'>
-                    <b:if cond='data:post.featuredImage'>
-                      <img expr:alt='data:post.title' expr:src='data:post.featuredImage' expr:onclick='"window.location.href=\"" + data:post.url + "\""' loading='lazy'/>
+                    <b:if cond='data:post.firstImageUrl'>
+                      <img expr:alt='data:post.title' expr:src='data:post.firstImageUrl' expr:onclick='"window.location.href=\"" + data:post.url + "\""' loading='lazy'/>
                     <b:else/>
                       <img alt='Sản phẩm 3D' expr:onclick='"window.location.href=\"" + data:post.url + "\""' loading='lazy' src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&amp;fit=crop&amp;w=800&amp;q=80'/>
                     </b:if>
@@ -130,8 +233,8 @@
                   <div class='card-body'>
                     <h3 class='card-title' expr:onclick='"window.location.href=\"" + data:post.url + "\""'><data:post.title/></h3>
                     <div class='price-row'>
-                      <span class='price-val' data-price-tag='true'>350.000đ</span>
-                      <span class='deposit-tag' data-deposit-tag='true'>Cọc: 100.000đ</span>
+                      <span class='price-val' data-price-tag='true'>150.000đ</span>
+                      <span class='deposit-tag' data-deposit-tag='true'>Cọc: 50.000đ</span>
                     </div>
                     <div class='post-raw-content' style='display:none;'>
                       <b:eval expr='data:post.body'/>
@@ -149,33 +252,34 @@
               </b:loop>
             </div>
           </b:if>
+
         </b:includable>
       </b:widget>
     </b:section>
   </main>
 
-  <!-- CART DRAWER MODAL -->
+  <!-- CART DRAWER MODAL (LIGHT MODE) -->
   <div class='modal-overlay' id='cart-drawer'>
     <div class='modal-card'>
       <div class='modal-header'>
-        <h3 style='color: #fff;'><i class='fa-solid fa-cart-shopping gradient-text-gold'/> Giỏ Hàng Đã Chọn</h3>
+        <h3 style='color: #0f172a; font-weight: 800;'><i class='fa-solid fa-cart-shopping gradient-text-orange'/> Giỏ Hàng Đã Chọn</h3>
         <button class='close-btn' data-close-modal='cart-drawer'><i class='fa-solid fa-xmark'/></button>
       </div>
       
-      <div id='cart-items-list' style='max-height: 220px; overflow-y: auto; margin-bottom: 1rem;'/>
+      <div id='cart-items-list' style='max-height: 240px; overflow-y: auto; margin-bottom: 1rem;'/>
 
-      <div style='display: flex; justify-content: space-between; padding: 0.8rem 0; border-top: 1px solid rgba(255,255,255,0.1); margin-bottom: 1rem;'>
-        <span style='color: #94a3b8;'>Tổng tiền đơn hàng:</span>
-        <strong class='gradient-text-gold' id='cart-total-price' style='font-size: 1.2rem;'>0đ</strong>
+      <div style='display: flex; justify-content: space-between; padding: 0.9rem 0; border-top: 1px solid #f1f5f9; margin-bottom: 1rem;'>
+        <span style='color: #64748b; font-weight: 600;'>Tổng tiền đơn hàng:</span>
+        <strong class='gradient-text-orange' id='cart-total-price' style='font-size: 1.3rem; font-weight: 900;'>0đ</strong>
       </div>
 
       <form id='checkout-form' style='display: flex; flex-direction: column; gap: 0.8rem;'>
         <input class='form-control' id='cust-name' placeholder='Họ và tên người nhận *' required='true' type='text'/>
         <input class='form-control' id='cust-phone' placeholder='Số điện thoại liên hệ *' required='true' type='tel'/>
         <textarea class='form-control' id='cust-address' placeholder='Địa chỉ giao hàng chi tiết *' required='true' style='height: 70px;'/>
-        <input class='form-control' id='cust-note' placeholder='Ghi chú thêm (Nếu có)' type='text'/>
+        <input class='form-control' id='cust-note' placeholder='Ghi chú thêm (Ví dụ: tên in trên hộp)' type='text'/>
 
-        <button class='btn-primary' id='submit-order-btn' style='width: 100%; justify-content: center; padding: 0.95rem; margin-top: 0.5rem;' type='submit'>
+        <button class='btn-primary' id='submit-order-btn' style='width: 100%; justify-content: center; padding: 0.95rem; margin-top: 0.5rem; font-size: 1rem;' type='submit'>
           <i class='fa-solid fa-paper-plane'/> XÁC NHẬN ĐẶT HÀNG &amp; THANH TOÁN
         </button>
       </form>
@@ -186,40 +290,40 @@
   <div class='modal-overlay' id='deposit-payment-modal'>
     <div class='modal-card' style='text-align: center;'>
       <div class='modal-header'>
-        <h3 style='color: #22c55e;'><i class='fa-solid fa-qrcode'/> ĐẶT CỌC QUA VIETQR TIMO</h3>
+        <h3 style='color: #16a34a; font-weight: 800;'><i class='fa-solid fa-qrcode'/> ĐẶT CỌC QUA VIETQR TIMO</h3>
         <button class='close-btn' data-close-modal='deposit-payment-modal'><i class='fa-solid fa-xmark'/></button>
       </div>
 
-      <p style='font-size: 0.9rem; color: #94a3b8; margin-bottom: 0.8rem;'>
-        Quét mã QR bằng App Ngân hàng bất kỳ để xác nhận cọc cho đơn <strong id='dep-order-id' style='color: #fbbf24;'>#TMV</strong>
+      <p style='font-size: 0.9rem; color: #64748b; margin-bottom: 0.8rem;'>
+        Quét mã QR bằng App Ngân hàng bất kỳ để xác nhận cọc cho đơn <strong id='dep-order-id' style='color: #ea580c;'>#TMV</strong>
       </p>
 
-      <div style='background: #fff; padding: 0.8rem; border-radius: 12px; display: inline-block; margin-bottom: 1rem;'>
+      <div style='background: #fff; padding: 0.8rem; border-radius: 14px; display: inline-block; margin-bottom: 1rem; border: 1px solid #e2e8f0; box-shadow: 0 4px 15px rgba(0,0,0,0.05);'>
         <img id='dep-qr-img' alt='Mã VietQR Timo' style='width: 220px; height: 220px; display: block;'/>
       </div>
 
-      <div style='background: rgba(255,255,255,0.05); padding: 0.8rem; border-radius: 8px; font-size: 0.9rem; text-align: left; margin-bottom: 1rem;'>
+      <div style='background: #f8fafc; border: 1px solid #cbd5e1; padding: 0.9rem; border-radius: 12px; font-size: 0.9rem; text-align: left; margin-bottom: 1rem;'>
         <div>Ngân hàng: <strong>Timo (Bản Việt)</strong></div>
         <div>Số tài khoản: <strong>9021186623244</strong></div>
         <div>Chủ tài khoản: <strong>NGUYEN THI NHUNG</strong></div>
-        <div>Số tiền cọc: <strong id='dep-amount-display' style='color: #fbbf24;'>200.000đ</strong></div>
-        <div>Nội dung CK: <strong id='dep-transfer-code' style='color: #38bdf8;'>TMV3D 1234</strong></div>
+        <div>Số tiền cọc: <strong id='dep-amount-display' style='color: #d97706;'>100.000đ</strong></div>
+        <div>Nội dung CK: <strong id='dep-transfer-code' style='color: #0284c7;'>TMV3D 1234</strong></div>
       </div>
 
-      <div id='payment-status-text' style='color: #eab308; font-size: 0.9rem; margin-top: 0.5rem;'>
+      <div id='payment-status-text' style='color: #d97706; font-size: 0.9rem; margin-top: 0.5rem; font-weight: 600;'>
         <i class='fa-solid fa-spinner fa-spin'/> Đang tự động kiểm tra biến động số dư Timo...
       </div>
     </div>
   </div>
 
-  <!-- NÚT LIÊN HỆ ZALO & HOTLINE FLOAT -->
+  <!-- NÚT LIÊN HỆ ZALO FLOAT -->
   <div style='position: fixed; bottom: 20px; left: 20px; z-index: 99; display: flex; flex-direction: column; gap: 10px;'>
-    <a href='https://zalo.me/0987654321' target='_blank' style='background: #0088ff; color: #fff; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 4px 12px rgba(0,136,255,0.4);'>
-      <i class='fa-solid fa-comment-dots' style='font-size: 1.3rem;'/>
+    <a href='https://zalo.me/0987654321' target='_blank' style='background: #0088ff; color: #fff; width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 4px 14px rgba(0,136,255,0.4);'>
+      <i class='fa-solid fa-comment-dots' style='font-size: 1.4rem;'/>
     </a>
   </div>
 
-  <!-- EMBEDDED INLINE BLOGSPOT STORE ENGINE (100% INDEPENDENT & OFFLINE) -->
+  <!-- INLINE CORE JAVASCRIPT ENGINE (LIGHT THEME + FULL OPTION LOGIC MATCHING ANH 1) -->
   <script><![CDATA[
   class TMV3DBlogspotStore {
     constructor() {
@@ -230,7 +334,11 @@
       this.products = [];
       this.cart = this.loadStorage('3d_store_cart') || [];
       this.activeCategory = 'ALL';
-      this.pollingTimer = null;
+      this.selectedColor = 'Đỏ + Đen';
+      this.selectedVariant = 'Mặc Định';
+      this.detailQty = 1;
+      this.detailPrice = 150000;
+      this.detailDeposit = 50000;
 
       this.init();
     }
@@ -240,11 +348,11 @@
       this.updateCartBadge();
       this.bindEvents();
 
-      // Scan tất cả card bài viết server-side từ Blogspot
+      // Scan sản phẩm ngoài Index
       this.parseServerRenderedPosts();
 
-      // Nếu đang xem bài viết chi tiết
-      if (document.body.classList.contains('item-view') || window.location.pathname.includes('/20') || window.location.pathname.includes('/p/')) {
+      // Setup trang bài viết chi tiết
+      if (document.getElementById('single-product-root') || document.body.classList.contains('item-view') || window.location.pathname.includes('/20') || window.location.pathname.includes('/p/')) {
         this.setupSinglePostView();
       }
     }
@@ -261,14 +369,23 @@
         const linkEl = card.querySelector('.btn-secondary');
 
         const title = titleEl ? titleEl.innerText.trim() : 'Sản phẩm 3D';
-        const image = imgEl ? imgEl.src : '';
-        const category = catEl ? catEl.innerText.trim() : 'Mô Hình 3D';
+        const category = catEl ? catEl.innerText.trim() : 'Phụ Kiện';
         const url = linkEl ? linkEl.href : window.location.href;
         const rawHtml = rawContentEl ? rawContentEl.innerHTML : '';
 
-        // Phân tích Giá bán & Tiền cọc từ nội dung bài
-        let price = 350000;
-        let deposit = 100000;
+        // TỰ ĐỘNG BẮT ẢNH ĐẦU TIÊN TRONG BÀI VIẾT CHO INDEX
+        let firstImg = '';
+        const imgMatch = rawHtml.match(/<img[^>]+src=["']([^"']+)["']/i);
+        if (imgMatch) {
+          firstImg = imgMatch[1];
+          if (imgEl) imgEl.src = firstImg;
+        } else if (imgEl) {
+          firstImg = imgEl.src;
+        }
+
+        // Tự động phân tích Giá & Cọc
+        let price = 150000;
+        let deposit = 50000;
 
         const priceAttrMatch = rawHtml.match(/data-price=["'](\d+)["']/i);
         const depositAttrMatch = rawHtml.match(/data-deposit=["'](\d+)["']/i);
@@ -280,7 +397,7 @@
           if (priceTextMatch) {
             let rawP = priceTextMatch[1].replace(/[\.,]/g, '');
             if (parseInt(rawP, 10) < 1000) rawP = parseInt(rawP, 10) * 1000;
-            price = parseInt(rawP, 10) || 350000;
+            price = parseInt(rawP, 10) || 150000;
           }
         }
 
@@ -291,13 +408,12 @@
           if (depositTextMatch) {
             let rawD = depositTextMatch[1].replace(/[\.,]/g, '');
             if (parseInt(rawD, 10) < 1000) rawD = parseInt(rawD, 10) * 1000;
-            deposit = parseInt(rawD, 10) || 100000;
+            deposit = parseInt(rawD, 10) || 50000;
           } else {
-            deposit = Math.min(200000, Math.round(price * 0.3));
+            deposit = Math.min(100000, Math.round(price * 0.3));
           }
         }
 
-        // Update nhãn hiển thị giá trên card
         const priceValEl = card.querySelector('[data-price-tag]');
         const depositTagEl = card.querySelector('[data-deposit-tag]');
         if (priceValEl) priceValEl.innerText = this.formatMoney(price);
@@ -309,7 +425,7 @@
           category: category,
           price: price,
           deposit: deposit,
-          image: image,
+          image: firstImg,
           url: url,
           cardElement: card
         });
@@ -362,9 +478,9 @@
             <img src="${p.image}" alt="${p.title}">
           </div>
           <div class="hero-info">
-            <span class="badge-hot">🔥 SẢN PHẨM NỔI BẬT</span>
-            <h2 style="font-size: 1.5rem; margin: 0.5rem 0; color: #fff;">${p.title}</h2>
-            <p style="color: #94a3b8;">Giá: <strong style="color: #fbbf24; font-size: 1.2rem;">${this.formatMoney(p.price)}</strong> (Cọc trước: ${this.formatMoney(p.deposit)})</p>
+            <span class="badge-hot">🔥 SẢN PHẨM BÁN CHẠY</span>
+            <h2 style="font-size: 1.6rem; font-weight: 800; margin: 0.5rem 0; color: #0f172a;">${p.title}</h2>
+            <p style="color: #64748b; font-size: 1rem;">Giá: <strong style="color: #d97706; font-size: 1.3rem;">${this.formatMoney(p.price)}</strong> (Cọc trước: ${this.formatMoney(p.deposit)})</p>
             <div style="display: flex; gap: 0.8rem; margin-top: 1rem;">
               <button class="btn-primary" onclick="tmvStore.buyDirectFromPost(null, '${p.title}', '${p.url}', ${p.price}, ${p.deposit})">
                 <i class="fa-solid fa-bolt"></i> MUA NGAY BÂY GIỜ
@@ -376,67 +492,120 @@
       `;
     }
 
+    // XỬ LÝ TRANG BÀI VIẾT CHI TIẾT CHUẨN ANH 1
     setupSinglePostView() {
-      const postBody = document.querySelector('.post-body, .entry-content, #post-body');
+      const postBody = document.getElementById('detail-post-body');
       if (!postBody) return;
 
-      const pageTitle = document.title.replace(/ - TMV IN3D.*$/, '').trim();
       const rawHtml = postBody.innerHTML;
 
-      let price = 350000;
-      let deposit = 100000;
+      // Phân tích giá & cọc từ bài viết
+      let price = 150000;
+      let deposit = 50000;
 
       const priceMatch = rawHtml.match(/data-price=["'](\d+)["']/i) || rawHtml.match(/(?:Giá|Price):\s*([\d\.,]+)/i);
       if (priceMatch) {
         let p = priceMatch[1].replace(/[\.,]/g, '');
         if (parseInt(p, 10) < 1000) p = parseInt(p, 10) * 1000;
-        price = parseInt(p, 10) || 350000;
+        price = parseInt(p, 10) || 150000;
       }
 
       const depMatch = rawHtml.match(/data-deposit=["'](\d+)["']/i) || rawHtml.match(/(?:Cọc|Deposit):\s*([\d\.,]+)/i);
       if (depMatch) {
         let d = depMatch[1].replace(/[\.,]/g, '');
         if (parseInt(d, 10) < 1000) d = parseInt(d, 10) * 1000;
-        deposit = parseInt(d, 10) || 100000;
+        deposit = parseInt(d, 10) || 50000;
       }
 
-      const buyBar = document.createElement('div');
-      buyBar.className = 'blogspot-anti-break buy-bar-widget';
-      buyBar.style.cssText = `
-        background: linear-gradient(135deg, rgba(30,41,59,0.95), rgba(15,23,42,0.95));
-        border: 2px solid #eab308;
-        border-radius: 1rem;
-        padding: 1.2rem;
-        margin: 2rem 0;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        justify-content: space-between;
-        gap: 1rem;
-      `;
+      this.detailPrice = price;
+      this.detailDeposit = deposit;
 
-      buyBar.innerHTML = `
-        <div>
-          <h3 style="color: #f8fafc; margin: 0 0 0.4rem 0; font-size: 1.2rem;">🛒 ĐẶT HÀNG IN 3D SẢN PHẨM NÀY</h3>
-          <p style="color: #94a3b8; margin: 0; font-size: 0.95rem;">
-            Giá niêm yết: <strong style="color: #fbbf24; font-size: 1.1rem;">${this.formatMoney(price)}</strong> | 
-            Cọc trước: <strong style="color: #38bdf8;">${this.formatMoney(deposit)}</strong>
-          </p>
-        </div>
-        <div style="display: flex; gap: 0.8rem;">
-          <button class="btn-primary" onclick="tmvStore.buyDirectFromPost(null, '${pageTitle}', '${window.location.href}', ${price}, ${deposit})" style="padding: 0.8rem 1.5rem; font-size: 1rem;">
-            <i class="fa-solid fa-paper-plane"></i> ĐẶT HÀNG & THANH TOÁN
-          </button>
-        </div>
-      `;
+      const priceDisplayEl = document.getElementById('detail-price-display');
+      if (priceDisplayEl) priceDisplayEl.innerText = this.formatMoney(price);
 
-      postBody.appendChild(buyBar);
+      // TỰ ĐỘNG BẮT TẤT CẢ ẢNH TRONG BÀI VIẾT ĐỂ TẠO THUMBNAIL CHỌN ẢNH (CHUẨN ANH 1)
+      const images = [];
+      const imgMatches = rawHtml.matchAll(/<img[^>]+src=["']([^"']+)["']/gi);
+      for (const match of imgMatches) {
+        if (match[1] && !images.includes(match[1])) {
+          images.push(match[1]);
+        }
+      }
+
+      const mainImgEl = document.getElementById('main-detail-img');
+      const thumbsContainer = document.getElementById('detail-thumbs-list');
+
+      if (images.length > 0) {
+        if (mainImgEl) mainImgEl.src = images[0];
+
+        if (thumbsContainer) {
+          thumbsContainer.innerHTML = images.map((imgSrc, idx) => `
+            <img src="${imgSrc}" class="thumb-item ${idx === 0 ? 'active' : ''}" onclick="tmvStore.swapMainImage(this, '${imgSrc}')">
+          `).join('');
+        }
+      }
+    }
+
+    swapMainImage(thumbEl, imgSrc) {
+      const mainImg = document.getElementById('main-detail-img');
+      if (mainImg) mainImg.src = imgSrc;
+
+      document.querySelectorAll('#detail-thumbs-list .thumb-item').forEach(el => el.classList.remove('active'));
+      if (thumbEl) thumbEl.classList.add('active');
+    }
+
+    zoomMainImage() {
+      const mainImg = document.getElementById('main-detail-img');
+      if (mainImg && mainImg.src) {
+        window.open(mainImg.src, '_blank');
+      }
+    }
+
+    selectColor(btnEl) {
+      document.querySelectorAll('#color-pills-list .opt-pill').forEach(b => b.classList.remove('active'));
+      if (btnEl) {
+        btnEl.classList.add('active');
+        this.selectedColor = btnEl.dataset.color || btnEl.innerText.trim();
+        const label = document.getElementById('selected-color-label');
+        if (label) label.innerText = this.selectedColor;
+      }
+    }
+
+    selectVariant(btnEl) {
+      document.querySelectorAll('#variant-pills-list .opt-pill').forEach(b => b.classList.remove('active'));
+      if (btnEl) {
+        btnEl.classList.add('active');
+        this.selectedVariant = btnEl.dataset.variant || btnEl.innerText.trim();
+        const label = document.getElementById('selected-variant-label');
+        if (label) label.innerText = this.selectedVariant;
+      }
+    }
+
+    changeDetailQty(delta) {
+      this.detailQty = Math.max(1, this.detailQty + delta);
+      const input = document.getElementById('detail-qty-input');
+      if (input) input.value = this.detailQty;
+    }
+
+    addToCartFromDetailPage(title) {
+      this.cart.push({
+        id: `POST-DETAIL-${Date.now()}`,
+        title: `${title} (${this.selectedColor}, ${this.selectedVariant})`,
+        unitPrice: this.detailPrice,
+        deposit: this.detailDeposit,
+        qty: this.detailQty
+      });
+
+      this.saveStorage('3d_store_cart', this.cart);
+      this.updateCartBadge();
+      this.showToast(`🛒 Đã thêm ${this.detailQty}x "${title}" vào giỏ hàng!`, 'success');
+      this.openModal('cart-drawer');
+      this.renderCartItems();
     }
 
     buyDirectFromPost(btnEl, title, url, customPrice, customDeposit) {
-      let price = customPrice || 350000;
-      let deposit = customDeposit || 100000;
+      let price = customPrice || 150000;
+      let deposit = customDeposit || 50000;
 
       if (btnEl && !customPrice) {
         const card = btnEl.closest('.product-card');
@@ -478,7 +647,7 @@
 
       if (this.cart.length === 0) {
         container.innerHTML = `
-          <div style="text-align: center; padding: 2rem; color: #94a3b8;">
+          <div style="text-align: center; padding: 2rem; color: #64748b;">
             <i class="fa-solid fa-cart-shopping" style="font-size: 2.5rem; margin-bottom: 0.8rem;"></i>
             <p>Giỏ hàng của bạn đang trống.</p>
           </div>
@@ -492,11 +661,11 @@
         const lineTotal = item.unitPrice * item.qty;
         grandTotal += lineTotal;
         return `
-          <div class="cart-item blogspot-anti-break" style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0; border-bottom: 1px solid rgba(255,255,255,0.08);">
+          <div class="cart-item blogspot-anti-break" style="display: flex; justify-content: space-between; align-items: center; padding: 0.8rem 0; border-bottom: 1px solid #f1f5f9;">
             <div>
-              <h4 style="margin: 0; color: #f8fafc; font-size: 0.95rem;">${item.title}</h4>
-              <div style="font-size: 0.85rem; color: #94a3b8; margin-top: 0.2rem;">
-                ${this.formatMoney(item.unitPrice)} x ${item.qty} = <strong style="color: #fbbf24;">${this.formatMoney(lineTotal)}</strong>
+              <h4 style="margin: 0; color: #0f172a; font-size: 0.95rem; font-weight: 700;">${item.title}</h4>
+              <div style="font-size: 0.85rem; color: #64748b; margin-top: 0.2rem;">
+                ${this.formatMoney(item.unitPrice)} x ${item.qty} = <strong style="color: #d97706;">${this.formatMoney(lineTotal)}</strong>
               </div>
             </div>
             <button onclick="tmvStore.removeCartItem(${index})" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 0.4rem;">
@@ -552,7 +721,7 @@
       const grandTotal = this.cart.reduce((sum, item) => sum + (item.unitPrice * item.qty), 0);
       let totalDeposit = 0;
       this.cart.forEach(item => {
-        totalDeposit += (item.deposit || 100000) * item.qty;
+        totalDeposit += (item.deposit || 50000) * item.qty;
       });
       totalDeposit = Math.min(totalDeposit, grandTotal);
 
@@ -662,7 +831,7 @@ ${itemsSummaryText}
             clearInterval(this.pollingTimer);
             const statusTextEl = document.getElementById('payment-status-text');
             if (statusTextEl) {
-              statusTextEl.innerHTML = `<span style="color: #22c55e;"><i class="fa-solid fa-circle-check"></i> ĐÃ NHẬN CỌC THÀNH CÔNG!</span>`;
+              statusTextEl.innerHTML = `<span style="color: #16a34a; font-weight: 800;"><i class="fa-solid fa-circle-check"></i> ĐÃ NHẬN CỌC THÀNH CÔNG!</span>`;
             }
             this.showToast('🎉 Ngân hàng Timo đã nhận tiền cọc! Đơn hàng đang được xử lý.', 'success');
           }
@@ -771,13 +940,14 @@ ${itemsSummaryText}
       const toast = document.createElement('div');
       toast.className = `blogspot-anti-break toast-item ${type}`;
       toast.style.cssText = `
-        background: ${type === 'success' ? '#166534' : type === 'error' ? '#991b1b' : '#1e293b'};
-        color: #fff;
+        background: ${type === 'success' ? '#15803d' : type === 'error' ? '#b91c1c' : '#0f172a'};
+        color: #ffffff;
         padding: 12px 18px;
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        font-size: 0.9rem;
-        border-left: 4px solid ${type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#3b82f6'};
+        border-radius: 10px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        font-size: 0.95rem;
+        font-weight: 600;
+        border-left: 4px solid ${type === 'success' ? '#22c55e' : type === 'error' ? '#ef4444' : '#ea580c'};
       `;
       toast.innerHTML = message;
       container.appendChild(toast);
