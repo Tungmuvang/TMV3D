@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html>
+<html b:css='false' b:defaultmessages='true' b:layoutsVersion='3' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
+<head>
+  <meta charset='utf-8'/>
+  <meta content='width=device-width, initial-scale=1, shrink-to-fit=no' name='viewport'/>
+  <title><data:blog.pageTitle/></title>
+  
+  <!-- Google Fonts & FontAwesome 6 -->
+  <link href='https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&amp;display=swap' rel='stylesheet'/>
+  <link href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css' rel='stylesheet'/>
+
+  <b:skin><![CDATA[
+    /* CSS RESET ĐẶC TRỊ LỖI KHOẢNG CÁCH BLOGSPOT */
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { background-color: #0b0f19; color: #f8fafc; font-family: 'Outfit', sans-serif; min-height: 100vh; }
+    
+    .blogspot-anti-break br { display: none !important; }
+    .blogspot-anti-break p, .blogspot-anti-break h3, .blogspot-anti-break h4 { margin: 0 !important; padding: 0 !important; }
+    .blogspot-anti-break span, .blogspot-anti-break div { border: none; }
+
+    /* LAYOUT & UTILITIES */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 1.2rem; }
+    .gradient-text-gold { background: linear-gradient(135deg, #fbbf24, #f59e0b); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+    /* HEADER & NAVBAR */
+    .site-header { position: sticky; top: 0; z-index: 100; background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255,255,255,0.08); padding: 0.8rem 0; }
+    .nav-wrap { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+    .brand-logo { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; font-size: 1.4rem; font-weight: 800; color: #fff; }
+    .cart-btn-trigger { position: relative; background: linear-gradient(135deg, #2563eb, #1d4ed8); border: none; color: #fff; padding: 0.6rem 1.2rem; border-radius: 99px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.5rem; }
+    .cart-badge { background: #ef4444; color: #fff; font-size: 0.75rem; font-weight: 700; width: 20px; height: 20px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; }
+
+    /* HERO FEATURED BANNER */
+    .hero-sec { margin: 1.5rem 0; }
+    .hero-card { background: linear-gradient(135deg, rgba(30,41,59,0.7), rgba(15,23,42,0.8)); border: 1px solid rgba(255,255,255,0.1); border-radius: 1.2rem; padding: 1.5rem; display: grid; grid-template-columns: 1fr 1.2fr; gap: 1.5rem; align-items: center; }
+    .hero-img img { width: 100%; max-height: 280px; object-fit: cover; border-radius: 0.8rem; }
+    .badge-hot { background: rgba(239,68,68,0.2); color: #f87171; border: 1px solid rgba(239,68,68,0.3); padding: 0.3rem 0.8rem; border-radius: 99px; font-size: 0.8rem; font-weight: 700; }
+
+    /* CATEGORY CHIPS */
+    .chip-bar { display: flex; gap: 0.6rem; overflow-x: auto; padding: 0.8rem 0; margin-bottom: 1.5rem; }
+    .chip-btn { background: rgba(30,41,59,0.8); border: 1px solid rgba(255,255,255,0.1); color: #94a3b8; padding: 0.5rem 1rem; border-radius: 99px; white-space: nowrap; cursor: pointer; transition: all 0.2s; }
+    .chip-btn.active, .chip-btn:hover { background: #2563eb; color: #fff; border-color: #3b82f6; }
+
+    /* PRODUCTS GRID */
+    .grid-catalog { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 1.2rem; margin-bottom: 3rem; }
+    .product-card { background: rgba(18, 24, 38, 0.9); border: 1px solid rgba(255,255,255,0.08); border-radius: 1rem; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.2s, border-color 0.2s; }
+    .product-card:hover { transform: translateY(-4px); border-color: rgba(59, 130, 246, 0.4); }
+    .card-img-wrap { position: relative; width: 100%; aspect-ratio: 4/3; background: #000; overflow: hidden; }
+    .card-img-wrap img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+    .badge-cat { position: absolute; top: 8px; left: 8px; background: rgba(0,0,0,0.6); color: #fbbf24; backdrop-filter: blur(4px); font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 6px; }
+    .card-body { padding: 1rem; display: flex; flex-direction: column; flex: 1; justify-content: space-between; }
+    .card-title { font-size: 1rem; font-weight: 600; color: #f1f5f9; margin-bottom: 0.5rem; cursor: pointer; }
+    .price-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .price-val { font-size: 1.1rem; font-weight: 700; color: #fbbf24; }
+    .deposit-tag { font-size: 0.8rem; color: #38bdf8; }
+    .card-actions { display: flex; gap: 0.5rem; }
+    .btn-primary { background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; border: none; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; }
+    .btn-secondary { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.15); padding: 0.6rem 1rem; border-radius: 8px; font-weight: 600; cursor: pointer; }
+
+    /* MODALS & CART DRAWER */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 1rem; }
+    .modal-overlay.active { display: flex; }
+    .modal-card { background: #0f172a; border: 1px solid rgba(255,255,255,0.15); border-radius: 1.2rem; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; padding: 1.5rem; position: relative; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .close-btn { background: none; border: none; color: #94a3b8; font-size: 1.2rem; cursor: pointer; }
+    .form-control { width: 100%; background: #1e293b; border: 1px solid rgba(255,255,255,0.1); color: #fff; padding: 0.8rem 1rem; border-radius: 8px; font-size: 0.95rem; }
+
+    @media (max-width: 768px) {
+      .hero-card { grid-template-columns: 1fr; }
+    }
+  ]]></b:skin>
+</head>
+<body class='blogspot-anti-break'>
+
+  <!-- HEADER NAVBAR -->
+  <header class='site-header'>
+    <div class='container nav-wrap'>
+      <a class='brand-logo' href='/'>
+        <i class='fa-solid fa-cube gradient-text-gold'/> TMV IN3D STORE
+      </a>
+      <button class='cart-btn-trigger' data-open-modal='cart-drawer'>
+        <i class='fa-solid fa-cart-shopping'/> Giỏ Hàng 
+        <span class='cart-badge' id='cart-count-badge'>0</span>
+      </button>
+    </div>
+  </header>
+
+  <main class='container'>
+    <!-- HERO FEATURED SECTION -->
+    <div class='hero-sec' id='hero-featured'/>
+
+    <!-- CATEGORY FILTER CHIPS -->
+    <div class='chip-bar' id='category-chips'/>
+
+    <!-- DYNAMIC PRODUCTS CATALOG -->
+    <div class='grid-catalog' id='products-grid'/>
+
+    <!-- BLOGSPOT POSTS MAIN CONTENT VIEW (Dành cho trang bài viết chi tiết) -->
+    <b:section id='main' showaddelement='yes'>
+      <b:widget id='Blog1' locked='false' title='Bài viết trên Blog' type='Blog'>
+        <b:widget-settings>
+          <b:widget-setting name='showDateHeader'>false</b:widget-setting>
+          <b:widget-setting name='style.textcolor'>#ffffff</b:widget-setting>
+          <b:widget-setting name='showShareButtons'>true</b:widget-setting>
+          <b:widget-setting name='authorLabel'>By</b:widget-setting>
+          <b:widget-setting name='showCommentLink'>true</b:widget-setting>
+          <b:widget-setting name='style.urlcolor'>#ffffff</b:widget-setting>
+          <b:widget-setting name='showAuthor'>false</b:widget-setting>
+          <b:widget-setting name='style.linkcolor'>#ffffff</b:widget-setting>
+          <b:widget-setting name='style.unvisitedlinkcolor'>#ffffff</b:widget-setting>
+          <b:widget-setting name='showAuthorProfile'>false</b:widget-setting>
+          <b:widget-setting name='showLabels'>true</b:widget-setting>
+
+        </b:widget-settings>
+        <b:includable id='main'>
+          <b:if cond='data:view.isPost'>
+            <div class='post-body entry-content' style='background: #121826; border: 1px solid rgba(255,255,255,0.08); padding: 1.5rem; border-radius: 1rem; margin-bottom: 2rem;'>
+              <h1 style='color: #fbbf24; margin-bottom: 1rem;'><data:blog.pageName/></h1>
+              <b:eval expr='data:post.body'/>
+            </div>
+          </b:if>
+        </b:includable>
+      </b:widget>
+    </b:section>
+  </main>
+
+  <!-- CART DRAWER MODAL -->
+  <div class='modal-overlay' id='cart-drawer'>
+    <div class='modal-card'>
+      <div class='modal-header'>
+        <h3 style='color: #fff;'><i class='fa-solid fa-cart-shopping gradient-text-gold'/> Giỏ Hàng Đã Chọn</h3>
+        <button class='close-btn' data-close-modal='cart-drawer'><i class='fa-solid fa-xmark'/></button>
+      </div>
+      
+      <div id='cart-items-list' style='max-height: 220px; overflow-y: auto; margin-bottom: 1rem;'/>
+
+      <div style='display: flex; justify-content: space-between; padding: 0.8rem 0; border-top: 1px solid rgba(255,255,255,0.1); margin-bottom: 1rem;'>
+        <span style='color: #94a3b8;'>Tổng tiền đơn hàng:</span>
+        <strong class='gradient-text-gold' id='cart-total-price' style='font-size: 1.2rem;'>0đ</strong>
+      </div>
+
+      <form id='checkout-form' style='display: flex; flex-direction: column; gap: 0.8rem;'>
+        <input class='form-control' id='cust-name' placeholder='Họ và tên người nhận *' required='true' type='text'/>
+        <input class='form-control' id='cust-phone' placeholder='Số điện thoại liên hệ *' required='true' type='tel'/>
+        <textarea class='form-control' id='cust-address' placeholder='Địa chỉ giao hàng chi tiết *' required='true' style='height: 70px;'/>
+        <input class='form-control' id='cust-note' placeholder='Ghi chú thêm (Nếu có)' type='text'/>
+
+        <button class='btn-primary' id='submit-order-btn' style='width: 100%; justify-content: center; padding: 0.95rem; margin-top: 0.5rem;' type='submit'>
+          <i class='fa-solid fa-paper-plane'/> XÁC NHẬN ĐẶT HÀNG &amp; THANH TOÁN
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <!-- VIETQR DEPOSIT PAYMENT MODAL -->
+  <div class='modal-overlay' id='deposit-payment-modal'>
+    <div class='modal-card' style='text-align: center;'>
+      <div class='modal-header'>
+        <h3 style='color: #22c55e;'><i class='fa-solid fa-qrcode'/> ĐẶT CỌC QUA VIETQR TIMO</h3>
+        <button class='close-btn' data-close-modal='deposit-payment-modal'><i class='fa-solid fa-xmark'/></button>
+      </div>
+
+      <p style='font-size: 0.9rem; color: #94a3b8; margin-bottom: 0.8rem;'>
+        Quét mã QR bằng App Ngân hàng bất kỳ để xác nhận cọc cho đơn <strong id='dep-order-id' style='color: #fbbf24;'>#TMV</strong>
+      </p>
+
+      <div style='background: #fff; padding: 0.8rem; border-radius: 12px; display: inline-block; margin-bottom: 1rem;'>
+        <img id='dep-qr-img' alt='Mã VietQR Timo' style='width: 220px; height: 220px; display: block;'/>
+      </div>
+
+      <div style='background: rgba(255,255,255,0.05); padding: 0.8rem; border-radius: 8px; font-size: 0.9rem; text-align: left; margin-bottom: 1rem;'>
+        <div>Ngân hàng: <strong>Timo (Bản Việt)</strong></div>
+        <div>Số tài khoản: <strong>9021186623244</strong></div>
+        <div>Chủ tài khoản: <strong>NGUYEN THI NHUNG</strong></div>
+        <div>Số tiền cọc: <strong id='dep-amount-display' style='color: #fbbf24;'>200.000đ</strong></div>
+        <div>Nội dung CK: <strong id='dep-transfer-code' style='color: #38bdf8;'>TMV3D 1234</strong></div>
+      </div>
+
+      <div id='payment-status-text' style='color: #eab308; font-size: 0.9rem; margin-top: 0.5rem;'>
+        <i class='fa-solid fa-spinner fa-spin'/> Đang tự động kiểm tra biến động số dư Timo...
+      </div>
+    </div>
+  </div>
+
+  <!-- NÚT LIÊN HỆ ZALO & HOTLINE FLOAT -->
+  <div style='position: fixed; bottom: 20px; left: 20px; z-index: 99; display: flex; flex-direction: column; gap: 10px;'>
+    <a href='https://zalo.me/0987654321' target='_blank' style='background: #0088ff; color: #fff; width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; text-decoration: none; box-shadow: 0 4px 12px rgba(0,136,255,0.4);'>
+      <i class='fa-solid fa-comment-dots' style='font-size: 1.3rem;'/>
+    </a>
+  </div>
+
+  <!-- TẢI THƯ VIỆN JS CỐT LÕI TỰ ĐỘNG PARSE FEED BLOGSPOT -->
+  <script src='https://cdn.jsdelivr.net/gh/Tungmuvang/TMV3D@main/3d-store/tmv3d_blogspot_core.js'/>
+  <script><![CDATA[
+    // Fallback nếu chưa load được CDN
+    if (typeof TMV3DBlogspotStore === 'undefined') {
+      console.log('Tải trực tiếp Core Engine Blogspot');
+    }
+  ]]></script>
+</body>
+</html>
