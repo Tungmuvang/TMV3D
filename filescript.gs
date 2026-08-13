@@ -29,10 +29,10 @@ var SONIC_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbziyxNEuLR_ncZK
 var sonicScriptProps = PropertiesService.getScriptProperties();
 
 // =========================================================================
-// HÀM LẤY SHEET VÀ TỰ ĐỘNG KHỞI TẠO TIÊU ĐỀ 11 CỘT CHUẨN KHI SHEET TRỐNG
+// HÀM LẤY SHEET CHÍNH VÀ SHEET ĐƠN HỦY (TỰ ĐỘNG KHỞI TẠO TIÊU ĐỀ 11 CỘT CHUẨN)
 // =========================================================================
 function getSonicSheet() {
-  var TARGET_ID = "1NmZ3Ui1LIuPTQbiPRsqBVpsDgKJCMWncSivCtkVKaD4";
+  var TARGET_ID = SONIC_SPREADSHEET_ID;
   var sheet = null;
 
   try {
@@ -69,6 +69,38 @@ function getSonicSheet() {
   }
 
   return sheet;
+}
+
+// LẤY HOẶC TẠO TAB "ĐƠN HỦY" BÊN CẠNH ĐỂ LƯU LẠI DỮ LIỆU ĐƠN HỦY
+function getSonicCancelSheet(ss) {
+  try {
+    if (!ss) {
+      ss = SpreadsheetApp.openById(SONIC_SPREADSHEET_ID);
+    }
+    var cancelSheet = ss.getSheetByName("Đơn Hủy") || ss.getSheetByName("Đơn hủy");
+    if (!cancelSheet) {
+      cancelSheet = ss.insertSheet("Đơn Hủy");
+    }
+    if (cancelSheet && cancelSheet.getLastRow() === 0) {
+      cancelSheet.appendRow([
+        "Thời gian",          // Cột A
+        "Tên khách hàng",     // Cột B
+        "Địa chỉ người nhận", // Cột C
+        "Số điện thoại",      // Cột D
+        "Tên đơn hàng",       // Cột E
+        "Tổng tiền",          // Cột F
+        "Đã cọc",             // Cột G
+        "Còn lại",            // Cột H
+        "Lưu ý / Ghi chú",    // Cột I
+        "Trạng thái",         // Cột J
+        "Tiến độ"             // Cột K
+      ]);
+    }
+    return cancelSheet;
+  } catch(e) {
+    Logger.log("Lỗi getSonicCancelSheet: " + e.toString());
+    return null;
+  }
 }
 
 // =========================================================================
@@ -166,7 +198,7 @@ function saveOrderFromForm(data) {
     var rowData = [
       Utilities.formatDate(new Date(), "GMT+7", "dd/MM/yyyy HH:mm:ss"), // Cột A: Thời gian
       data.tenKhach || '',                                              // Cột B: Tên khách hàng
-      data.address || data.linkContact || '-',                           // Cột C: Địa chỉ người nhận (Thay cho Link FB/Zalo)
+      data.address || data.linkContact || '-',                           // Cột C: Địa chỉ người nhận
       "'" + (data.sdt || ''),                                           // Cột D: Số điện thoại
       data.tenDonHang || '',                                            // Cột E: Tên đơn hàng
       formatCurrency(tongTien),                                         // Cột F: Tổng tiền
@@ -245,7 +277,7 @@ function doPostSonic(e) {
     var data;
     try { data = JSON.parse(e.postData.contents); } catch (err) { return; }
 
-    // CHỐNG TELEGRAM RETRY SPAM TIN NHẮN
+    // CHỐNG TELEGRAM RETRY SPAM TIN NHẮN TRÙNG LẶP
     if (data.update_id) {
       var updateKey = "TG_UPDATE_" + data.update_id;
       if (sonicScriptProps.getProperty(updateKey) === "done") {
@@ -339,11 +371,24 @@ function doPostSonic(e) {
     }
 
     // F. ĐƠN ĐẶT CỌC TỰ ĐỘNG TỪ WEB SONIC
+    var rawCode = (data.transferCode || '').toString().trim();
+    var cleanCode = cleanSonicCodeForMatching(rawCode);
+
+    // CHỐNG BẮN THÔNG BÁO X2 LẦN CHO CÙNG 1 MÃ ĐƠN HÀNG
+    if (cleanCode) {
+      var lockSentKey = "ORDER_SENT_" + cleanCode;
+      if (sonicScriptProps.getProperty(lockSentKey) === "true") {
+        Logger.log("Bỏ qua gửi thông báo trùng cho đơn: " + cleanCode);
+        var remainVal = tinhSoTienConLai(data.price, data.deposit);
+        return ContentService.createTextOutput(JSON.stringify({ status: "success", conLai: remainVal }))
+                             .setMimeType(ContentService.MimeType.JSON);
+      }
+      sonicScriptProps.setProperty(lockSentKey, "true");
+    }
+
     var sheet = getSonicSheet();
     var now = new Date();
     var timeStr = Utilities.formatDate(now, "GMT+7", "dd/MM/yyyy HH:mm:ss");
-    var rawCode = (data.transferCode || '').toString().trim();
-    var cleanCode = cleanSonicCodeForMatching(rawCode);
 
     var remainText = tinhSoTienConLai(data.price, data.deposit);
     sonicScriptProps.setProperty("PAID_STATUS_" + cleanCode, "false");
@@ -370,7 +415,7 @@ function doPostSonic(e) {
       sheet.appendRow([
         timeStr,                  // Cột A: Thời gian
         data.name || '',          // Cột B: Tên khách hàng
-        data.address || '',       // Cột C: Địa chỉ người nhận (Thay cho Link FB/Zalo)
+        data.address || '',       // Cột C: Địa chỉ người nhận
         "'" + (data.phone || ''), // Cột D: Số điện thoại
         data.product || '',       // Cột E: Tên đơn hàng
         data.price || '',         // Cột F: Tổng tiền
@@ -383,7 +428,7 @@ function doPostSonic(e) {
     }
 
     var msg = 
-      "📩 <b>CÓ ĐƠN HÀNG SONIC MỚI (CHỜ CỌC)</b>\n" +
+      "📩 <b>CÓ ĐƠN HÀNG MỚI (CHỜ CỌC)</b>\n" +
       "━━━━━━━━━━━━━━━━━━\n" +
       "👤 <b>Khách hàng:</b> " + (data.name || '') + "\n" +
       "📞 <b>SĐT:</b> <code>" + (data.phone || '') + "</code>\n" +
@@ -474,7 +519,7 @@ function handleSonicTelegramMessage(msgObj) {
       sheet.appendRow([
         Utilities.formatDate(new Date(), "GMT+7", "dd/MM/yyyy HH:mm:ss"), // Cột A: Thời gian
         orderData.tenKhach || '',        // Cột B: Tên khách hàng
-        orderData.address || orderData.linkContact || '-', // Cột C: Địa chỉ người nhận (Thay cho Link FB/Zalo)
+        orderData.address || orderData.linkContact || '-', // Cột C: Địa chỉ người nhận
         "'" + (orderData.sdt || ''),     // Cột D: Số điện thoại
         orderData.tenDonHang || '',      // Cột E: Tên đơn hàng
         formatCurrency(tongTien),        // Cột F: Tổng tiền
@@ -682,6 +727,7 @@ function checkSonicBankDepositEmails() {
                   sonicScriptProps.setProperty("PAID_STATUS_" + cleanCode, "true");
 
                   if (status.includes('Chờ') || status === "") {
+                    // CẬP NHẬT CHUẨN VÀO CỘT J (TRẠNG THÁI = ĐÃ CỌC ✅)
                     updateSonicRowStatus(sheet, i + 1, 'ĐÃ CỌC ✅');
 
                     var confirmMsg = 
@@ -699,8 +745,7 @@ function checkSonicBankDepositEmails() {
                       
                     var sheetKeyboard = {
                       inline_keyboard: [
-                        [{ text: "📊 CHECK SHEET MỚI (SONIC)", url: SONIC_SHEET_URL }],
-                        [{ text: "📂 CHECK SHEET CỦ (TMV)", url: SONIC_OLD_SHEET_URL }]
+                        [{ text: "📊 CHECK SHEET ĐƠN HÀNG", url: SONIC_SHEET_URL }]
                       ]
                     };
 
@@ -735,6 +780,9 @@ function cleanupSonicExpiredPendingOrders(sheet) {
   try {
     if (!sheet) sheet = getSonicSheet();
     if (!sheet) return;
+
+    var ss = SpreadsheetApp.openById(SONIC_SPREADSHEET_ID);
+    var cancelSheet = getSonicCancelSheet(ss);
 
     var values = sheet.getDataRange().getValues();
     if (!values || values.length <= 1) return;
@@ -772,10 +820,16 @@ function cleanupSonicExpiredPendingOrders(sheet) {
 
             var displayName = customerName || 'Khách lẻ';
             var rawCode = codeInfo ? codeInfo.raw : (row[8] || 'Không có');
-
             var cleanCode = codeInfo ? codeInfo.code : cleanSonicCodeForMatching(rawCode);
 
-            // Xóa dòng đơn hàng quá 15 phút khỏi Sheet
+            // 1. CHUYỂN DỮ LIỆU ĐƠN HÀNG SANG TAB "ĐƠN HỦY"
+            if (cancelSheet) {
+              var cancelRowData = row.slice(0, 11);
+              cancelRowData[9] = 'Đã hủy ❌'; // Cột J: Trạng thái = Đã hủy ❌
+              cancelSheet.appendRow(cancelRowData);
+            }
+
+            // 2. XÓA KHỎI TAB ĐƠN HÀNG CHÍNH
             sheet.deleteRow(i + 1);
 
             var cancelMsg = 
@@ -785,7 +839,7 @@ function cleanupSonicExpiredPendingOrders(sheet) {
               "📞 <b>SĐT:</b> <code>" + customerPhone + "</code>\n" +
               "📦 <b>Sản phẩm:</b> " + productName + "\n" +
               "🏷️ <b>Mã CK / Ghi chú:</b> <code>" + rawCode + "</code>\n" +
-              "⏰ <b>Lý do:</b> Quá 15 phút không cọc (Đã xóa khỏi Sheet).\n" +
+              "⏰ <b>Lý do:</b> Quá 15 phút không cọc (Đã lưu sang tab <b>Đơn Hủy</b>).\n" +
               "👉 <i>Bấm nút bên dưới nếu muốn phục hồi & xác nhận cọc cho đơn này!</i>";
             
             var sheetKeyboard = {
@@ -805,6 +859,36 @@ function cleanupSonicExpiredPendingOrders(sheet) {
   }
 }
 
+// HÀM KHÔI PHÚC ĐƠN HÀNG TỪ TAB "ĐƠN HỦY" VỀ TAB CHÍNH
+function restoreOrderFromCancelSheet(cleanCode) {
+  try {
+    var ss = SpreadsheetApp.openById(SONIC_SPREADSHEET_ID);
+    var cancelSheet = getSonicCancelSheet(ss);
+    if (!cancelSheet) return false;
+
+    var values = cancelSheet.getDataRange().getValues();
+    for (var i = values.length - 1; i >= 1; i--) {
+      var row = values[i];
+      var codeInfo = findSonicCodeInRow(row);
+      var rowTextClean = cleanSonicCodeForMatching(row.join(" "));
+
+      if ((codeInfo && codeInfo.code === cleanCode) || (cleanCode && rowTextClean.indexOf(cleanCode) !== -1)) {
+        var mainSheet = getSonicSheet();
+        if (mainSheet) {
+          var restoredRow = row.slice(0, 11);
+          restoredRow[9] = 'ĐÃ CỌC ✅'; // Cột J: Trạng thái = ĐÃ CỌC ✅
+          mainSheet.appendRow(restoredRow);
+          cancelSheet.deleteRow(i + 1); // Xóa khỏi tab Đơn Hủy
+          return true;
+        }
+      }
+    }
+  } catch(e) {
+    Logger.log("Err restoreOrderFromCancelSheet: " + e.toString());
+  }
+  return false;
+}
+
 function handleSonicTelegramCallback(callbackQuery) {
   var data = callbackQuery.data;
   var chatId = callbackQuery.message.chat.id.toString();
@@ -818,7 +902,7 @@ function handleSonicTelegramCallback(callbackQuery) {
     var cleanCode = cleanSonicCodeForMatching(rawTargetCode);
     if (!cleanCode) return;
 
-    // Chống Spam Callback: Nếu đơn này đã xử lý cọc/khôi phục rồi thì không gửi tin trùng lặp
+    // Chống Spam Callback
     var lockKey = "CB_DONE_" + cleanCode;
     if (sonicScriptProps.getProperty(lockKey) === "true") {
       Logger.log("Bỏ qua callback trùng lặp cho mã: " + cleanCode);
@@ -826,14 +910,19 @@ function handleSonicTelegramCallback(callbackQuery) {
     }
     sonicScriptProps.setProperty(lockKey, "true");
 
-    // Đặt trạng thái đã cọc
     sonicScriptProps.setProperty("PAID_STATUS_" + cleanCode, "true");
 
+    // 1. Cập nhật trạng thái trong Sheet chính
     var updated = updateSonicRowStatusByCode(cleanCode, 'ĐÃ CỌC ✅');
     var isRestored = false;
 
+    // 2. Nếu không tìm thấy ở Sheet chính ➔ Tìm và phục hồi từ tab "Đơn Hủy"
     if (!updated) {
-      // NẾU ĐƠN ĐÃ BỊ XÓA SAU 15 PHÚT: PHỤC HỒI LẠI VÀO GOOGLE SHEET (Chỉ khôi phục 1 lần duy nhất)
+      isRestored = restoreOrderFromCancelSheet(cleanCode);
+    }
+
+    // 3. Nếu chưa phục hồi được từ tab "Đơn Hủy" ➔ Phục hồi từ Backup Property
+    if (!updated && !isRestored) {
       var backupStr = sonicScriptProps.getProperty("ORDER_BACKUP_" + cleanCode);
       if (backupStr) {
         try {
@@ -861,7 +950,6 @@ function handleSonicTelegramCallback(callbackQuery) {
               'Chưa làm'
             ]);
             isRestored = true;
-            // Xóa bản sao lưu để không bị khôi phục trùng lặp nữa
             sonicScriptProps.deleteProperty("ORDER_BACKUP_" + cleanCode);
           }
         } catch(eBackup) {
@@ -877,7 +965,7 @@ function handleSonicTelegramCallback(callbackQuery) {
     };
 
     var confirmMsg = isRestored ? 
-      "✅ <b>ĐÃ KHÔI PHÚC VÀ XÁC NHẬN CỌC THÀNH CÔNG!</b>\nMã CK: <code>" + cleanCode + "</code>\nĐơn hàng (quá 15p) đã được thêm lại vào Google Sheet với trạng thái <b>ĐÃ CỌC ✅</b>!" :
+      "✅ <b>ĐÃ KHÔI PHÚC VÀ XÁC NHẬN CỌC THÀNH CÔNG!</b>\nMã CK: <code>" + cleanCode + "</code>\nĐơn hàng (quá 15p) đã được chuyển từ tab <b>Đơn Hủy</b> về Sheet chính với trạng thái <b>ĐÃ CỌC ✅</b>!" :
       "✅ <b>ĐÃ XÁC NHẬN CỌC THỦ CÔNG TỪ TELEGRAM!</b>\nMã CK: <code>" + cleanCode + "</code>\nTrạng thái đơn hàng trong Google Sheet đã chuyển sang <b>ĐÃ CỌC ✅</b>!";
 
     sendSonicTelegramRequest("sendMessage", {
@@ -922,16 +1010,9 @@ function getSonicRowStatus(row) {
   return (row[9] || "").toString();
 }
 
+// CẬP NHẬT CHÍNH XÁC VÀO CỘT J (CỘT 10: TRẠNG THÁI) TRÁNH ĐÈ NHẦM CỘT KHÁC
 function updateSonicRowStatus(sheet, rowLine, newStatus) {
   try {
-    var rowValues = sheet.getRange(rowLine, 1, 1, 12).getValues()[0];
-    for (var c = 0; c < rowValues.length; c++) {
-      var val = (rowValues[c] || "").toString();
-      if (val.includes("Chờ") || val === "") {
-        sheet.getRange(rowLine, c + 1).setValue(newStatus);
-        return;
-      }
-    }
     sheet.getRange(rowLine, 10).setValue(newStatus);
   } catch(e) {}
 }
@@ -982,7 +1063,7 @@ function runAutoCancelCheck() {
   var sheet = getSonicSheet();
   if (sheet) {
     cleanupSonicExpiredPendingOrders(sheet);
-    Logger.log("✅ Đã chạy kiểm tra tự động hủy đơn quá 15 phút!");
+    Logger.log("✅ Đã chạy kiểm tra tự động dọn đơn quá 15 phút!");
   }
 }
 
